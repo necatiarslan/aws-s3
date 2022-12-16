@@ -1,0 +1,234 @@
+{
+  "name": "aws-s3-vscode-extension",
+  "displayName": "Aws S3",
+  "description": "Browse Your AWS S3 Buckets",
+  "version": "1.0.1",
+  "publisher": "Necati ARSLAN",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/necatiarslan/aws-s3"
+  },
+  "icon": "media/aws-s3-logo-extension.png",
+  "engines": {
+    "vscode": "^1.71.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "AWS",
+    "S3"
+  ],
+  "activationEvents": [
+    "onView:S3TreeView"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "S3TreeView.CheckAccessibility",
+        "title": "Aws S3:Check Accessibility"
+      },
+      {
+        "command": "S3TreeView.Refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "S3TreeView.Filter",
+        "title": "Filter",
+        "icon": "$(filter)"
+      },
+      {
+        "command": "S3TreeView.ShowOnlyFavorite",
+        "title": "Show Only Favorite",
+        "icon": "$(bookmark)"
+      },
+      {
+        "command": "S3TreeView.AddToFav",
+        "title": "Fav"
+      },
+      {
+        "command": "S3TreeView.DeleteFromFav",
+        "title": "UnFav"
+      },
+      {
+        "command": "S3TreeView.AddLogGroup",
+        "title": "Add Log Group (From List)",
+        "icon": "$(new-folder)"
+      },
+      {
+        "command": "S3TreeView.AddLogGroupByName",
+        "title": "Add Log Group (By Name)",
+        "icon": "$(root-folder)"
+      },
+      {
+        "command": "S3TreeView.RemoveLogGroup",
+        "title": "Remove Log Group"
+      },
+      {
+        "command": "S3TreeView.AddLogStream",
+        "title": "Add Log Stream"
+      },
+      {
+        "command": "S3TreeView.RemoveLogStream",
+        "title": "Remove Log Stream"
+      },
+      {
+        "command": "S3TreeView.AddAllLogStreams",
+        "title": "Add All Log Streams"
+      },
+      {
+        "command": "S3TreeView.RemoveAllLogStreams",
+        "title": "Remove All Log Streams"
+      },
+      {
+        "command": "S3TreeView.ShowS3LogView",
+        "title": "Show Logs",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "S3TreeView.SelectAwsProfile",
+        "title": "Select Aws Profile",
+        "icon": "$(account)"
+      },
+      {
+        "command": "S3TreeView.ChangeView",
+        "title": "Change View",
+        "icon": "$(symbol-class)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "S3TreeView.ShowOnlyFavorite",
+          "when": "view == S3TreeView",
+          "group": "navigation@1"
+        },
+        {
+          "command": "S3TreeView.Filter",
+          "when": "view == S3TreeView",
+          "group": "navigation@2"
+        },
+        {
+          "command": "S3TreeView.AddLogGroup",
+          "when": "view == S3TreeView",
+          "group": "navigation@3"
+        },
+        {
+          "command": "S3TreeView.AddLogGroupByName",
+          "when": "view == S3TreeView",
+          "group": "navigation@4"
+        },
+        {
+          "command": "S3TreeView.ChangeView",
+          "when": "view == S3TreeView",
+          "group": "navigation@5"
+        },
+        {
+          "command": "S3TreeView.SelectAwsProfile",
+          "when": "view == S3TreeView",
+          "group": "navigation@6"
+        },
+        {
+          "command": "S3TreeView.Refresh",
+          "when": "view == S3TreeView",
+          "group": "navigation@7"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "S3TreeView.AddToFav",
+          "when": "view == S3TreeView",
+          "group": "Fav"
+        },
+        {
+          "command": "S3TreeView.DeleteFromFav",
+          "when": "view == S3TreeView",
+          "group": "Fav"
+        },
+        {
+          "command": "S3TreeView.RemoveLogGroup",
+          "when": "view == S3TreeView",
+          "group": "LogGroup"
+        },
+        {
+          "command": "S3TreeView.AddLogStream",
+          "when": "view == S3TreeView",
+          "group": "LogGroup"
+        },
+        {
+          "command": "S3TreeView.RemoveLogStream",
+          "when": "view == S3TreeView",
+          "group": "LogStream"
+        },
+        {
+          "command": "S3TreeView.AddAllLogStreams",
+          "when": "view == S3TreeView",
+          "group": "LogGroup"
+        },
+        {
+          "command": "S3TreeView.RemoveAllLogStreams",
+          "when": "view == S3TreeView",
+          "group": "LogGroup"
+        },
+        {
+          "command": "S3TreeView.ShowS3LogView",
+          "when": "view == S3TreeView",
+          "group": "inline"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "aws-s3-vscode-extension",
+          "title": "Aws S3",
+          "icon": "media/aws-s3-logo-activitybar.png"
+        }
+      ]
+    },
+    "views": {
+      "aws-s3-vscode-extension": [
+        {
+          "id": "S3TreeView",
+          "name": "Aws S3",
+          "icon": "media/aws-s3-logo-activitybar.png"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "S3TreeView",
+        "contents": "\n\n\n\n Please wait... \n\n If you can not connect after a while check your Aws Credentials, Network and Proxy settings. \n\n\n\n To Access Aws, you need to configure aws credentials. \n For more detail on Aws Credentials [Click Here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) \n For a Youtube Tutorial [Click Here](https://www.youtube.com/watch?v=SON8sY1iOBU)"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.0.0",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^18.11.3",
+    "@types/vscode": "^1.71.0",
+    "@typescript-eslint/eslint-plugin": "^5.30.0",
+    "@typescript-eslint/parser": "^5.30.0",
+    "@vscode/test-electron": "^2.1.5",
+    "eslint": "^8.18.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.0.0",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@aws-sdk/credential-provider-node": "^3.181.0",
+    "@vscode/webview-ui-toolkit": "^1.2.0",
+    "aws-sdk": "^2.1271.0",
+    "tmp": "^0.2.1"
+  }
+}

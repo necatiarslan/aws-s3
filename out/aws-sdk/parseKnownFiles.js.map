@@ -1,0 +1,1 @@
+{"version":3,"file":"parseKnownFiles.js","sourceRoot":"","sources":["../../src/aws-sdk/parseKnownFiles.ts"],"names":[],"mappings":";;;AAEA,mEAAkF;AASlF;;;;;GAKG;AACI,MAAM,eAAe,GAAG,KAAK,EAAE,IAAuB,EAA0B,EAAE;IACvF,MAAM,WAAW,GAAG,MAAM,IAAA,6CAAqB,EAAC,IAAI,CAAC,CAAC;IACtD,OAAO;QACL,GAAG,WAAW,CAAC,UAAU;QACzB,GAAG,WAAW,CAAC,eAAe;KAC/B,CAAC;AACJ,CAAC,CAAC;AANW,QAAA,eAAe,mBAM1B"}
