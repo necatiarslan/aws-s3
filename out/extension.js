@@ -28,29 +28,17 @@ function activate(context) {
     vscode.commands.registerCommand('S3TreeView.DeleteFromFav', (node) => {
         treeView.DeleteFromFav(node);
     });
-    vscode.commands.registerCommand('S3TreeView.AddLogGroup', () => {
-        treeView.AddLogGroup();
+    vscode.commands.registerCommand('S3TreeView.AddBucket', () => {
+        treeView.AddBucket();
     });
-    vscode.commands.registerCommand('S3TreeView.AddLogGroupByName', () => {
-        treeView.AddLogGroupByName();
+    vscode.commands.registerCommand('S3TreeView.RemoveBucket', (node) => {
+        treeView.RemoveBucket(node);
     });
-    vscode.commands.registerCommand('S3TreeView.RemoveLogGroup', (node) => {
-        treeView.RemoveLogGroup(node);
+    vscode.commands.registerCommand('S3TreeView.RemoveShortcut', (node) => {
+        treeView.RemoveShortcut(node);
     });
-    vscode.commands.registerCommand('S3TreeView.AddLogStream', (node) => {
-        treeView.AddLogStream(node);
-    });
-    vscode.commands.registerCommand('S3TreeView.RemoveLogStream', (node) => {
-        treeView.RemoveLogStream(node);
-    });
-    vscode.commands.registerCommand('S3TreeView.AddAllLogStreams', (node) => {
-        treeView.AddAllLogStreams(node);
-    });
-    vscode.commands.registerCommand('S3TreeView.RemoveAllLogStreams', (node) => {
-        treeView.RemoveAllLogStreams(node);
-    });
-    vscode.commands.registerCommand('S3TreeView.ShowS3LogView', (node) => {
-        treeView.ShowS3LogView(node);
+    vscode.commands.registerCommand('S3TreeView.ShowS3Explorer', (node) => {
+        treeView.ShowS3Explorer(node);
     });
     vscode.commands.registerCommand('S3TreeView.SelectAwsProfile', (node) => {
         treeView.SelectAwsProfile(node);

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isValidDate = exports.isJsonString = exports.convertMsToTime = exports.getDuration = exports.getSeconds = exports.getMilliSeconds = exports.openFile = exports.getExtensionVersion = exports.showErrorMessage = exports.showWarningMessage = exports.showInfoMessage = exports.logToOutput = exports.showOutputMessage = exports.getUri = void 0;
+exports.bytesToText = exports.isValidDate = exports.isJsonString = exports.convertMsToTime = exports.getDuration = exports.getSeconds = exports.getMilliSeconds = exports.openFile = exports.getExtensionVersion = exports.showErrorMessage = exports.showWarningMessage = exports.showInfoMessage = exports.logToOutput = exports.showOutputMessage = exports.getUri = void 0;
 const vscode = require("vscode");
 const fs_1 = require("fs");
 const path_1 = require("path");
@@ -140,4 +140,14 @@ function isValidDate(dateString) {
     return d.toISOString().slice(0, 10) === dateString;
 }
 exports.isValidDate = isValidDate;
+function bytesToText(bytes) {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    if (bytes === undefined)
+        return '';
+    if (bytes === 0)
+        return '';
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+}
+exports.bytesToText = bytesToText;
 //# sourceMappingURL=UI.js.map

@@ -9,6 +9,117 @@ import { join } from "path";
 import { parseKnownFiles, SourceProfileInit } from "../aws-sdk/parseKnownFiles";
 import { ParsedIniData } from "@aws-sdk/types";
 
+export async function GetS3ObjectList(Profile:string, Bucket:string, Key:string): Promise<MethodResult<AWS.S3.ObjectList | undefined>> {
+  let result:MethodResult<AWS.S3.ObjectList | undefined> = new MethodResult<AWS.S3.ObjectList | undefined>();
+  result.result = [];
+
+  try 
+  {
+    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+    const s3 = new AWS.S3({credentials:credentials});
+
+    let param = {
+      Bucket:Bucket,
+      Prefix:Key
+    }
+
+    let response = await s3.listObjectsV2(param).promise();
+    result.isSuccessful = true;
+    result.result = response.Contents;
+    return result;
+  } 
+  catch (error:any) 
+  {
+    result.isSuccessful = false;
+    result.error = error;
+    ui.showErrorMessage('api.GetS3ObjectList Error !!!', error);
+    ui.logToOutput("api.GetS3ObjectList Error !!!", error); 
+    return result;
+  }
+}
+
+export async function DownloadS3Object(Profile:string, Bucket:string, Key:string): Promise<MethodResult<AWS.S3.GetObjectOutput | undefined>> {
+  let result:MethodResult<AWS.S3.GetObjectOutput | undefined> = new MethodResult<AWS.S3.GetObjectOutput | undefined>();
+
+  try 
+  {
+    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+    const s3 = new AWS.S3({credentials:credentials});
+
+    const param = {
+      Bucket: Bucket,
+      Key: Key
+    };
+
+    result.isSuccessful = true;
+    return result;
+  } 
+  catch (error:any) 
+  {
+    result.isSuccessful = false;
+    result.error = error;
+    ui.showErrorMessage('api.GetS3ObjectList Error !!!', error);
+    ui.logToOutput("api.GetS3ObjectList Error !!!", error); 
+    return result;
+  }
+}
+
+export async function GetBucketList(Profile:string, BucketName?:string): Promise<MethodResult<string[]>> {
+  let result:MethodResult<string[]> = new MethodResult<string[]>();
+  result.result = [];
+
+  try 
+  {
+    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+    const s3 = new AWS.S3({credentials:credentials});
+
+    let response = await s3.listBuckets().promise();
+    result.isSuccessful = true;
+    if(response.Buckets)
+    {
+      for(var bucket of response.Buckets)
+      {
+        if(bucket.Name && (BucketName === undefined  || BucketName === "" || bucket.Name.includes(BucketName)))
+        {
+          result.result.push(bucket.Name);
+        }
+      }
+    }
+    return result;
+  } 
+  catch (error:any) 
+  {
+    result.isSuccessful = false;
+    result.error = error;
+    ui.showErrorMessage('api.GetBucketList Error !!!', error);
+    ui.logToOutput("api.GetBucketList Error !!!", error); 
+    return result;
+  }
+}
+
+export async function TestAwsConnection(Profile:string): Promise<MethodResult<boolean>> {
+  let result:MethodResult<boolean> = new MethodResult<boolean>();
+
+  try 
+  {
+    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+    const iam = new AWS.IAM({credentials:credentials});
+
+    let response = await iam.getUser().promise();
+    result.isSuccessful = true;
+    result.result = true;
+    return result;
+  } 
+  catch (error:any) 
+  {
+    result.isSuccessful = false;
+    result.error = error;
+    ui.showErrorMessage('api.TestAwsConnection Error !!!', error);
+    ui.logToOutput("api.TestAwsConnection Error !!!", error); 
+    return result;
+  }
+}
+
 export async function GetRegionList(Profile:string): Promise<MethodResult<string[]>> {
   let result:MethodResult<string[]> = new MethodResult<string[]>();
   result.result = [];

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = void 0;
+exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadS3Object = exports.GetS3ObjectList = void 0;
 /* eslint-disable @typescript-eslint/naming-convention */
 const AWS = require("aws-sdk");
 const ui = require("./UI");
@@ -9,6 +9,96 @@ const os_1 = require("os");
 const path_1 = require("path");
 const path_2 = require("path");
 const parseKnownFiles_1 = require("../aws-sdk/parseKnownFiles");
+async function GetS3ObjectList(Profile, Bucket, Key) {
+    let result = new MethodResult_1.MethodResult();
+    result.result = [];
+    try {
+        const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+        const s3 = new AWS.S3({ credentials: credentials });
+        let param = {
+            Bucket: Bucket,
+            Prefix: Key
+        };
+        let response = await s3.listObjectsV2(param).promise();
+        result.isSuccessful = true;
+        result.result = response.Contents;
+        return result;
+    }
+    catch (error) {
+        result.isSuccessful = false;
+        result.error = error;
+        ui.showErrorMessage('api.GetS3ObjectList Error !!!', error);
+        ui.logToOutput("api.GetS3ObjectList Error !!!", error);
+        return result;
+    }
+}
+exports.GetS3ObjectList = GetS3ObjectList;
+async function DownloadS3Object(Profile, Bucket, Key) {
+    let result = new MethodResult_1.MethodResult();
+    try {
+        const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+        const s3 = new AWS.S3({ credentials: credentials });
+        const param = {
+            Bucket: Bucket,
+            Key: Key
+        };
+        result.isSuccessful = true;
+        return result;
+    }
+    catch (error) {
+        result.isSuccessful = false;
+        result.error = error;
+        ui.showErrorMessage('api.GetS3ObjectList Error !!!', error);
+        ui.logToOutput("api.GetS3ObjectList Error !!!", error);
+        return result;
+    }
+}
+exports.DownloadS3Object = DownloadS3Object;
+async function GetBucketList(Profile, BucketName) {
+    let result = new MethodResult_1.MethodResult();
+    result.result = [];
+    try {
+        const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+        const s3 = new AWS.S3({ credentials: credentials });
+        let response = await s3.listBuckets().promise();
+        result.isSuccessful = true;
+        if (response.Buckets) {
+            for (var bucket of response.Buckets) {
+                if (bucket.Name && (BucketName === undefined || BucketName === "" || bucket.Name.includes(BucketName))) {
+                    result.result.push(bucket.Name);
+                }
+            }
+        }
+        return result;
+    }
+    catch (error) {
+        result.isSuccessful = false;
+        result.error = error;
+        ui.showErrorMessage('api.GetBucketList Error !!!', error);
+        ui.logToOutput("api.GetBucketList Error !!!", error);
+        return result;
+    }
+}
+exports.GetBucketList = GetBucketList;
+async function TestAwsConnection(Profile) {
+    let result = new MethodResult_1.MethodResult();
+    try {
+        const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+        const iam = new AWS.IAM({ credentials: credentials });
+        let response = await iam.getUser().promise();
+        result.isSuccessful = true;
+        result.result = true;
+        return result;
+    }
+    catch (error) {
+        result.isSuccessful = false;
+        result.error = error;
+        ui.showErrorMessage('api.TestAwsConnection Error !!!', error);
+        ui.logToOutput("api.TestAwsConnection Error !!!", error);
+        return result;
+    }
+}
+exports.TestAwsConnection = TestAwsConnection;
 async function GetRegionList(Profile) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];

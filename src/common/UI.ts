@@ -166,3 +166,11 @@ export function isValidDate(dateString: string): boolean {
   }
   return d.toISOString().slice(0, 10) === dateString;
 }
+
+export function bytesToText(bytes: number | undefined): string {
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  if (bytes === undefined) return '';
+  if (bytes === 0) return '';
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+}

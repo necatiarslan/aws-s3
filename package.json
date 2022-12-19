@@ -53,38 +53,21 @@
         "title": "UnFav"
       },
       {
-        "command": "S3TreeView.AddLogGroup",
-        "title": "Add Log Group (From List)",
-        "icon": "$(new-folder)"
+        "command": "S3TreeView.AddBucket",
+        "title": "Add Bucket",
+        "icon": "$(add)"
       },
       {
-        "command": "S3TreeView.AddLogGroupByName",
-        "title": "Add Log Group (By Name)",
-        "icon": "$(root-folder)"
+        "command": "S3TreeView.RemoveBucket",
+        "title": "Remove Bucket"
       },
       {
-        "command": "S3TreeView.RemoveLogGroup",
-        "title": "Remove Log Group"
+        "command": "S3TreeView.RemoveShortcut",
+        "title": "Remove Folder Shortcut"
       },
       {
-        "command": "S3TreeView.AddLogStream",
-        "title": "Add Log Stream"
-      },
-      {
-        "command": "S3TreeView.RemoveLogStream",
-        "title": "Remove Log Stream"
-      },
-      {
-        "command": "S3TreeView.AddAllLogStreams",
-        "title": "Add All Log Streams"
-      },
-      {
-        "command": "S3TreeView.RemoveAllLogStreams",
-        "title": "Remove All Log Streams"
-      },
-      {
-        "command": "S3TreeView.ShowS3LogView",
-        "title": "Show Logs",
+        "command": "S3TreeView.ShowS3Explorer",
+        "title": "Open",
         "icon": "$(open-preview)"
       },
       {
@@ -111,29 +94,24 @@
           "group": "navigation@2"
         },
         {
-          "command": "S3TreeView.AddLogGroup",
+          "command": "S3TreeView.AddBucket",
           "when": "view == S3TreeView",
           "group": "navigation@3"
         },
         {
-          "command": "S3TreeView.AddLogGroupByName",
+          "command": "S3TreeView.ChangeView",
           "when": "view == S3TreeView",
           "group": "navigation@4"
         },
         {
-          "command": "S3TreeView.ChangeView",
+          "command": "S3TreeView.SelectAwsProfile",
           "when": "view == S3TreeView",
           "group": "navigation@5"
         },
         {
-          "command": "S3TreeView.SelectAwsProfile",
-          "when": "view == S3TreeView",
-          "group": "navigation@6"
-        },
-        {
           "command": "S3TreeView.Refresh",
           "when": "view == S3TreeView",
-          "group": "navigation@7"
+          "group": "navigation@6"
         }
       ],
       "view/item/context": [
@@ -148,32 +126,17 @@
           "group": "Fav"
         },
         {
-          "command": "S3TreeView.RemoveLogGroup",
+          "command": "S3TreeView.RemoveBucket",
           "when": "view == S3TreeView",
-          "group": "LogGroup"
+          "group": "Bucket"
         },
         {
-          "command": "S3TreeView.AddLogStream",
+          "command": "S3TreeView.RemoveShortcut",
           "when": "view == S3TreeView",
-          "group": "LogGroup"
+          "group": "Shortcut"
         },
         {
-          "command": "S3TreeView.RemoveLogStream",
-          "when": "view == S3TreeView",
-          "group": "LogStream"
-        },
-        {
-          "command": "S3TreeView.AddAllLogStreams",
-          "when": "view == S3TreeView",
-          "group": "LogGroup"
-        },
-        {
-          "command": "S3TreeView.RemoveAllLogStreams",
-          "when": "view == S3TreeView",
-          "group": "LogGroup"
-        },
-        {
-          "command": "S3TreeView.ShowS3LogView",
+          "command": "S3TreeView.ShowS3Explorer",
           "when": "view == S3TreeView",
           "group": "inline"
         }

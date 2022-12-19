@@ -13,14 +13,11 @@ class S3TreeItem extends vscode.TreeItem {
         this.refreshUI();
     }
     refreshUI() {
-        if (this.TreeItemType === TreeItemType.Region) {
-            this.iconPath = new vscode.ThemeIcon('globe');
+        if (this.TreeItemType === TreeItemType.Bucket) {
+            this.iconPath = new vscode.ThemeIcon('package');
         }
-        else if (this.TreeItemType === TreeItemType.LogGroup) {
-            this.iconPath = new vscode.ThemeIcon('folder');
-        }
-        else if (this.TreeItemType === TreeItemType.LogStream) {
-            this.iconPath = new vscode.ThemeIcon('output');
+        else if (this.TreeItemType === TreeItemType.Shortcut) {
+            this.iconPath = new vscode.ThemeIcon('file-symlink-directory');
         }
         else {
             this.iconPath = new vscode.ThemeIcon('circle-outline');
@@ -64,8 +61,7 @@ class S3TreeItem extends vscode.TreeItem {
 exports.S3TreeItem = S3TreeItem;
 var TreeItemType;
 (function (TreeItemType) {
-    TreeItemType[TreeItemType["Region"] = 1] = "Region";
-    TreeItemType[TreeItemType["LogGroup"] = 2] = "LogGroup";
-    TreeItemType[TreeItemType["LogStream"] = 3] = "LogStream";
+    TreeItemType[TreeItemType["Bucket"] = 1] = "Bucket";
+    TreeItemType[TreeItemType["Shortcut"] = 2] = "Shortcut";
 })(TreeItemType = exports.TreeItemType || (exports.TreeItemType = {}));
 //# sourceMappingURL=S3TreeItem.js.map

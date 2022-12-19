@@ -5,7 +5,7 @@ import { S3TreeDataProvider } from './S3TreeDataProvider';
 import * as ui from '../common/UI';
 import * as api from '../common/API';
 import { APIGateway } from 'aws-sdk';
-import { S3LogView } from './S3LogView';
+import { S3Explorer } from './S3Explorer';
 
 export class S3TreeView {
 
@@ -15,9 +15,7 @@ export class S3TreeView {
 	public context: vscode.ExtensionContext;
 	public FilterString: string = "";
 	public isShowOnlyFavorite: boolean = false;
-	public AwsProfile: string = "default";
-	public LastUsedRegion: string = "us-east-1";
-	
+	public AwsProfile: string = "default";	
 
 	constructor(context: vscode.ExtensionContext) {
 		ui.logToOutput('TreeView.constructor Started');
@@ -49,10 +47,10 @@ export class S3TreeView {
 	LoadTreeItems(){
 		ui.logToOutput('S3TreeView.loadTreeItems Started');
 
-		this.treeDataProvider.LoadRegionNodeList();
-		this.treeDataProvider.LoadLogGroupNodeList();
-		this.treeDataProvider.LoadLogStreamNodeList();
-		this.treeDataProvider.Refresh();
+		//this.treeDataProvider.LoadRegionNodeList();
+		//this.treeDataProvider.LoadLogGroupNodeList();
+		//this.treeDataProvider.LoadLogStreamNodeList();
+		//this.treeDataProvider.Refresh();
 		this.SetViewTitle();
 	}
 
@@ -117,8 +115,8 @@ export class S3TreeView {
 			this.context.globalState.update('AwsProfile', this.AwsProfile);
 			this.context.globalState.update('FilterString', this.FilterString);
 			this.context.globalState.update('ShowOnlyFavorite', this.ShowOnlyFavorite);
-			this.context.globalState.update('LogGroupList', this.treeDataProvider.LogGroupList);
-			this.context.globalState.update('LogStreamList', this.treeDataProvider.LogStreamList);
+			this.context.globalState.update('BucketList', this.treeDataProvider.GetBucketList());
+			this.context.globalState.update('ShortcutList', this.treeDataProvider.GetShortcutList());
 			this.context.globalState.update('ViewType', this.treeDataProvider.ViewType);
 
 			ui.logToOutput("S3TreeView.saveState Successfull");
@@ -144,16 +142,16 @@ export class S3TreeView {
 			let ShowOnlyFavoriteTemp: boolean | undefined = this.context.globalState.get('ShowOnlyFavorite');
 			if (ShowOnlyFavoriteTemp) { this.isShowOnlyFavorite = ShowOnlyFavoriteTemp; }
 
-			let LogGroupListTemp:[[string,string]] | undefined  = this.context.globalState.get('LogGroupList');
-			if(LogGroupListTemp)
+			let BucketListTemp:string[] | undefined  = this.context.globalState.get('BucketList');
+			if(BucketListTemp)
 			{
-				this.treeDataProvider.LogGroupList = LogGroupListTemp;
+				this.treeDataProvider.SetBucketList(BucketListTemp);
 			}
 
-			let LogStreamListTemp:[[string,string,string]] | undefined  = this.context.globalState.get('LogStreamList');
-			if(LogStreamListTemp)
+			let ShortcutListTemp:[[string,string]] | undefined  = this.context.globalState.get('ShortcutList');
+			if(ShortcutListTemp)
 			{
-				this.treeDataProvider.LogStreamList = LogStreamListTemp;
+				this.treeDataProvider.SetShortcutList(ShortcutListTemp);
 			}
 
 			let ViewTypeTemp:number | undefined = this.context.globalState.get('ViewType');
@@ -179,52 +177,52 @@ export class S3TreeView {
 		return variable ? "✓" : "𐄂";
 	}
 
-	async AddLogGroup(){
-		ui.logToOutput('S3TreeView.AddLogGroup Started');
+	async AddBucket(){
+		ui.logToOutput('S3TreeView.AddBucket Started');
 
+		let selectedBucketName = await vscode.window.showInputBox({ placeHolder: 'Enter Bucket Name / Search Text' });
+		if(selectedBucketName===undefined){ return; }
 
-	}
+		var resultBucket = await api.GetBucketList(this.AwsProfile, selectedBucketName);
+		if(!resultBucket.isSuccessful){ return; }
 
-	async AddLogGroupByName(){
-		ui.logToOutput('S3TreeView.AddLogGroupByName Started');
+		let selectedBucketList = await vscode.window.showQuickPick(resultBucket.result, {canPickMany:true, placeHolder: 'Select Bucket(s)'});
+		if(!selectedBucketList || selectedBucketList.length===0){ return; }
 
-
-	}
-
-	async RemoveLogGroup(node: S3TreeItem) {
-		ui.logToOutput('S3TreeView.RemoveLogGroup Started');
-		
-		if(node.TreeItemType !== TreeItemType.LogGroup) { return;}
-		if(!node.Region || !node.LogGroup) { return; }
-		
-		this.treeDataProvider.RemoveLogGroup(node.Region, node.LogGroup);
+		for(var selectedBucket of selectedBucketList)
+		{
+			this.treeDataProvider.AddBucket(selectedBucket);
+		}
 		this.SaveState();
 	}
 
-	async AddLogStream(node: S3TreeItem) {
-		ui.logToOutput('S3TreeView.AddLogStream Started');
-
-	}
-
-	async AddAllLogStreams(node: S3TreeItem) {
-		ui.logToOutput('S3TreeView.AddLogStream Started');
-
-	}
-
-	async RemoveLogStream(node: S3TreeItem) {
-		ui.logToOutput('S3TreeView.RemoveLogStream Started');
-
-
-	}
-
-	async RemoveAllLogStreams(node: S3TreeItem) {
-		ui.logToOutput('S3TreeView.RemoveAllLogStreams Started');
+	async RemoveBucket(node: S3TreeItem) {
+		ui.logToOutput('S3TreeView.RemoveBucket Started');
 		
+		if(node.TreeItemType !== TreeItemType.Bucket) { return;}
+		if(!node.Bucket) { return; }
+
+		this.treeDataProvider.RemoveBucket(node.Bucket);		
+		this.SaveState();
 	}
 
-	async ShowS3LogView(node: S3TreeItem) {
-		ui.logToOutput('S3TreeView.ShowS3LogView Started');
+	async AddShortcut(Bucket:string, Key:string) {
+		ui.logToOutput('S3TreeView.AddShortcut Started');
+		this.treeDataProvider.AddShortcut(Bucket, Key);
+		this.SaveState();
+	}
+
+	async RemoveShortcut(node: S3TreeItem) {
+		ui.logToOutput('S3TreeView.RemoveShortcut Started');
+		if(node.TreeItemType !== TreeItemType.Shortcut) { return;}
+
+	}
+
+	async ShowS3Explorer(node: S3TreeItem) {
+		ui.logToOutput('S3TreeView.ShowS3Explorer Started');
 		
+
+		S3Explorer.Render(this.context.extensionUri, node);
 	}
 
 	async SelectAwsProfile(node: S3TreeItem) {

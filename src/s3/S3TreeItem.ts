@@ -5,9 +5,8 @@ export class S3TreeItem extends vscode.TreeItem {
 	public IsFav: boolean = false;
 	public TreeItemType:TreeItemType;
 	public Text:string;
-	public Region:string | undefined;
-	public LogGroup:string | undefined;
-	public LogStream:string | undefined;
+	public Bucket:string | undefined;
+	public Shortcut:string | undefined;
 	public Parent:S3TreeItem | undefined;
 	public Children:S3TreeItem[] = [];
 
@@ -20,17 +19,13 @@ export class S3TreeItem extends vscode.TreeItem {
 
 	public refreshUI() {
 
-		if(this.TreeItemType === TreeItemType.Region)
+		if(this.TreeItemType === TreeItemType.Bucket)
 		{
-			this.iconPath = new vscode.ThemeIcon('globe');
+			this.iconPath = new vscode.ThemeIcon('package');
 		}
-		else if(this.TreeItemType === TreeItemType.LogGroup)
+		else if(this.TreeItemType === TreeItemType.Shortcut)
 		{
-			this.iconPath = new vscode.ThemeIcon('folder');
-		}
-		else if(this.TreeItemType === TreeItemType.LogStream)
-		{
-			this.iconPath = new vscode.ThemeIcon('output');
+			this.iconPath = new vscode.ThemeIcon('file-symlink-directory');
 		}
 		else
 		{
@@ -90,7 +85,6 @@ export class S3TreeItem extends vscode.TreeItem {
 }
 
 export enum TreeItemType{
-	Region = 1,
-	LogGroup = 2,
-	LogStream = 3,
+	Bucket = 1,
+	Shortcut = 2,
 }
