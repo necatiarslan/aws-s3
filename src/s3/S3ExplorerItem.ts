@@ -18,7 +18,7 @@ export class S3ExplorerItem {
 
 	public IsFile():boolean
 	{
-		return this.Key.includes(".");
+		return !this.IsFolder();
 	}
 
 	public IsFolder():boolean

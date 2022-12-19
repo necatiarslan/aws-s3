@@ -181,6 +181,11 @@ class S3TreeView {
         if (node.TreeItemType !== S3TreeItem_1.TreeItemType.Shortcut) {
             return;
         }
+        if (!node.Bucket || !node.Shortcut) {
+            return;
+        }
+        this.treeDataProvider.RemoveShortcut(node.Bucket, node.Shortcut);
+        this.SaveState();
     }
     async ShowS3Explorer(node) {
         ui.logToOutput('S3TreeView.ShowS3Explorer Started');

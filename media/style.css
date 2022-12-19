@@ -9,6 +9,8 @@ table {
     background-color: #2a2d2e;
   }
   
+  tr:hover {background-color: #3c3c3c;}
+
   th {
     background-color: #3c3c3c;
     color: white;

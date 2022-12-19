@@ -100,7 +100,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 		this.Refresh();
 	}
 
-	RemoveShortcut(Region:string, Bucket:string, Shortcut:string){
+	RemoveShortcut(Bucket:string, Shortcut:string){
 		for(let i = 0; i < this.ShortcutList.length; i++)
 		{
 			if(this.ShortcutList[i][0] === Bucket && this.ShortcutList[i][1] === Shortcut)

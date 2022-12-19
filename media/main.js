@@ -19,6 +19,12 @@ function main() {
     GoUpLink.addEventListener("click", GoUpLinkClicked);
   }
 
+  const GoHomeLink = document.getElementById("go_home");
+  if(GoHomeLink)
+  {
+    GoHomeLink.addEventListener("click", GoHomeLinkClicked);
+  }
+
   const OpenLinkList = document.querySelectorAll("[id^='open_']");
   for (let i = 0; i < OpenLinkList.length; i++) {
     OpenLinkList[i].addEventListener("click", OpenLinkClicked);
@@ -63,6 +69,11 @@ function main() {
   for (let i = 0; i < AddShortcutLinkList.length; i++) {
     AddShortcutLinkList[i].addEventListener("click", AddShortcutLinkClicked);
   }
+
+  const GoKeyLinkList = document.querySelectorAll("[id^='go_key']");
+  for (let i = 0; i < GoKeyLinkList.length; i++) {
+    GoKeyLinkList[i].addEventListener("click", GoKeyLinkClicked);
+  }
 }
 
 
@@ -94,6 +105,12 @@ function OpenLinkClicked(e) {
 function GoUpLinkClicked() {
   vscode.postMessage({
     command: "go_up"
+  });
+}
+
+function GoHomeLinkClicked() {
+  vscode.postMessage({
+    command: "go_home"
   });
 }
 
@@ -142,6 +159,13 @@ function CopyS3UriLinkClicked(e) {
 function AddShortcutLinkClicked(e) {
   vscode.postMessage({
     command: "add_shortcut",
+    id: e.target.id
+  });
+}
+
+function GoKeyLinkClicked(e) {
+  vscode.postMessage({
+    command: "go_key",
     id: e.target.id
   });
 }

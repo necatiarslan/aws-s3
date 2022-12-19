@@ -78,7 +78,7 @@ class S3TreeDataProvider {
         this.LoadShortcutNodeList();
         this.Refresh();
     }
-    RemoveShortcut(Region, Bucket, Shortcut) {
+    RemoveShortcut(Bucket, Shortcut) {
         for (let i = 0; i < this.ShortcutList.length; i++) {
             if (this.ShortcutList[i][0] === Bucket && this.ShortcutList[i][1] === Shortcut) {
                 this.ShortcutList.splice(i, 1);

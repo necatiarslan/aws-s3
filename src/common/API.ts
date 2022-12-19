@@ -9,10 +9,9 @@ import { join } from "path";
 import { parseKnownFiles, SourceProfileInit } from "../aws-sdk/parseKnownFiles";
 import { ParsedIniData } from "@aws-sdk/types";
 
-export async function GetS3ObjectList(Profile:string, Bucket:string, Key:string): Promise<MethodResult<AWS.S3.ObjectList | undefined>> {
-  let result:MethodResult<AWS.S3.ObjectList | undefined> = new MethodResult<AWS.S3.ObjectList | undefined>();
-  result.result = [];
-
+export async function GetS3ObjectList(Profile:string, Bucket:string, Key:string): Promise<MethodResult<AWS.S3.ListObjectsV2Output | undefined>> {
+  let result:MethodResult<AWS.S3.ListObjectsV2Output | undefined> = new MethodResult<AWS.S3.ListObjectsV2Output | undefined>();
+  
   try 
   {
     const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
@@ -20,12 +19,13 @@ export async function GetS3ObjectList(Profile:string, Bucket:string, Key:string)
 
     let param = {
       Bucket:Bucket,
-      Prefix:Key
+      Prefix:Key,
+      Delimiter: "/",
     }
 
     let response = await s3.listObjectsV2(param).promise();
     result.isSuccessful = true;
-    result.result = response.Contents;
+    result.result = response;
     return result;
   } 
   catch (error:any) 

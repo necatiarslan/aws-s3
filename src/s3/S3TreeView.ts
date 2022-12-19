@@ -215,7 +215,10 @@ export class S3TreeView {
 	async RemoveShortcut(node: S3TreeItem) {
 		ui.logToOutput('S3TreeView.RemoveShortcut Started');
 		if(node.TreeItemType !== TreeItemType.Shortcut) { return;}
-
+		if(!node.Bucket || !node.Shortcut) { return; }
+		
+		this.treeDataProvider.RemoveShortcut(node.Bucket, node.Shortcut);
+		this.SaveState();
 	}
 
 	async ShowS3Explorer(node: S3TreeItem) {

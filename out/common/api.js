@@ -11,17 +11,17 @@ const path_2 = require("path");
 const parseKnownFiles_1 = require("../aws-sdk/parseKnownFiles");
 async function GetS3ObjectList(Profile, Bucket, Key) {
     let result = new MethodResult_1.MethodResult();
-    result.result = [];
     try {
         const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
         const s3 = new AWS.S3({ credentials: credentials });
         let param = {
             Bucket: Bucket,
-            Prefix: Key
+            Prefix: Key,
+            Delimiter: "/",
         };
         let response = await s3.listObjectsV2(param).promise();
         result.isSuccessful = true;
-        result.result = response.Contents;
+        result.result = response;
         return result;
     }
     catch (error) {

@@ -14,13 +14,13 @@ export class S3Explorer {
     private extensionUri: vscode.Uri;
 
     public S3ExplorerItem: S3ExplorerItem = new S3ExplorerItem("undefined", "");
-    public S3ObjectList: AWS.S3.ObjectList | undefined;
+    public S3ObjectList: AWS.S3.ListObjectsV2Output | undefined;
+    public HomeKey:string | undefined;
 
     private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, node:S3TreeItem) {
         ui.logToOutput('S3Explorer.constructor Started');
 
         this.SetS3ExplorerItem(node);
-
         this.extensionUri = extensionUri;
 
         this._panel = panel;
@@ -43,6 +43,7 @@ export class S3Explorer {
         {
             this.S3ExplorerItem = new S3ExplorerItem("undefined", "");
         }
+        this.HomeKey = node.Shortcut;
     }
 
     public async RenderHtml() {
@@ -90,7 +91,46 @@ export class S3Explorer {
     {
         if(!Key) { return ""; }
         if(Key.endsWith("/")) { return "Folder";}
+        if(!Key.includes("."))
+        {
+            return "File";
+        }
         return Key.split('.').pop() || "";
+    }
+
+    public GetFileName(Key:string | undefined)
+    {
+        if(!Key) { return ""; }
+        if(Key.endsWith("/")) { return Key; }
+        if(!Key.includes("/")){ return Key; }
+        return Key.split('/').pop() || "";
+    }
+
+    public GetNavigationPath(Key:string | undefined):[[string, string]]
+    {
+        let result:[[string, string]] = [["/",""]];
+
+        if(Key)
+        {
+            var paths = Key?.split("/");
+            let full_path:string = "";
+            for(var p of paths)
+            {
+                if(!p) { continue; }
+                if(Key.includes(p+"/"))
+                {
+                    full_path += p + "/";
+                    p = p + "/";
+                }
+                else
+                {
+                    full_path += p;
+                }
+                result.push([p, full_path]);
+            }
+        }
+
+        return result;
     }
 
     private _getWebviewContent(webview: vscode.Webview, extensionUri: vscode.Uri) {
@@ -112,44 +152,107 @@ export class S3Explorer {
         const copyUri = ui.getUri(webview, extensionUri, ["media", "edit-copy.png"]);
         const deleteUri = ui.getUri(webview, extensionUri, ["media", "edit-delete.png"]);
         const renameUri = ui.getUri(webview, extensionUri, ["media", "edit-rename.png"]);
-        const addShortcutUri = ui.getUri(webview, extensionUri, ["media", "edit-addshortcut.png"]);
+        const addShortcutUri = ui.getUri(webview, extensionUri, ["media", "bookmarks.png"]);
         const moveUri = ui.getUri(webview, extensionUri, ["media", "edit-move.png"]);
         const copyUriUri = ui.getUri(webview, extensionUri, ["media", "edit-copy-uri.png"]);
         const copyUrlUri = ui.getUri(webview, extensionUri, ["media", "edit-copy-url.png"]);
+        const upArrowUri = ui.getUri(webview, extensionUri, ["media", "arrow-up.png"]);
+        const goHomeUri = ui.getUri(webview, extensionUri, ["media", "go-home.png"]);
 
 
-        let GoFolderUpRowHtml:string="";
+        let NavigationRowHtml:string="";
+        let PathNavigationHtml:string="";
         if(!this.S3ExplorerItem.IsRoot())
         {
-            GoFolderUpRowHtml += `<tr><td colspan="5"><vscode-link id="go_up">Go Up</vscode-link></td></tr>`
+            for(var item of this.GetNavigationPath(this.S3ExplorerItem.Key))
+            {
+                PathNavigationHtml += `&nbsp;<vscode-link id="go_key_${item[1]}">${item[0]}</vscode-link>`
+            }
+
+            NavigationRowHtml += `
+            <tr>
+            <td colspan="4">
+                <vscode-link id="go_home"><img src="${goHomeUri}" alt="Go Home"></vscode-link>
+                &nbsp;
+                <vscode-link id="go_up"><img src="${upArrowUri}" alt="Go Up"></vscode-link>
+                &nbsp;
+                ${PathNavigationHtml}
+            </td>
+            <td style="text-align:right">
+                <vscode-link id="add_shortcut_${this.S3ExplorerItem.Key}">[+]</vscode-link>
+                <vscode-link id="download_${this.S3ExplorerItem.Key}"><img src="${downloadUri}" alt="Download"></vscode-link>
+                <vscode-link id="delete_${this.S3ExplorerItem.Key}"><img src="${deleteUri}" alt="Delete"></vscode-link>
+                <vscode-link id="copy_${this.S3ExplorerItem.Key}"><img src="${copyUri}" alt="Copy"></vscode-link>
+                <vscode-link id="move_${this.S3ExplorerItem.Key}"><img src="${moveUri}" alt="Move"></vscode-link>
+                <vscode-link id="rename_${this.S3ExplorerItem.Key}"><img src="${renameUri}" alt="Rename"></vscode-link>
+                <vscode-link id="copy_url_${this.S3ExplorerItem.Key}"><img src="${copyUrlUri}" alt="Copy URL"></vscode-link>
+                <vscode-link id="copy_s3_uri_${this.S3ExplorerItem.Key}"><img src="${copyUriUri}" alt="Copy S3 URI"></vscode-link>
+                
+            </td>
+            </tr>`
         }
 
 
         let S3RowHtml:string="";
         if(this.S3ObjectList)
         {
-            for(var object of this.S3ObjectList)
+            if(this.S3ObjectList.CommonPrefixes)
             {
-                S3RowHtml += `
-                <tr>
-                    <td>
-                    <vscode-link id="download_${object.Key}"><img src="${downloadUri}" alt="Download"></vscode-link>
-                    <vscode-link id="delete_${object.Key}"><img src="${deleteUri}" alt="Delete"></vscode-link>
-                    <vscode-link id="copy_${object.Key}"><img src="${copyUri}" alt="Copy"></vscode-link>
-                    <vscode-link id="move_${object.Key}"><img src="${moveUri}" alt="Move"></vscode-link>
-                    <vscode-link id="rename_${object.Key}"><img src="${renameUri}" alt="Rename"></vscode-link>
-                    <vscode-link id="copy_url_${object.Key}"><img src="${copyUrlUri}" alt="Copy URL"></vscode-link>
-                    <vscode-link id="copy_s3_uri_${object.Key}"><img src="${copyUriUri}" alt="Copy S3 URI"></vscode-link>
-                    <vscode-link id="add_shortcut_${object.Key}"><img src="${addShortcutUri}" alt="Add Shortcut"> [+]</vscode-link>
-                    </td>
-                    <td>
-                    <vscode-link id="open_${object.Key}">${object.Key}</vscode-link>
-                    </td>
-                    <td>${this.s3KeyType(object.Key)}</td>
-                    <td>${object.LastModified ? object.LastModified.toLocaleDateString() : ""}</td>
-                    <td>${ui.bytesToText(object.Size)}</td>
-                </tr>
-                `;
+                for(var folder of this.S3ObjectList.CommonPrefixes)
+                {
+                    if(folder.Prefix === this.S3ExplorerItem.Key){ continue; }
+
+                    S3RowHtml += `
+                    <tr>
+                        <td>
+                        <vscode-link id="open_${folder.Prefix}">${folder.Prefix}</vscode-link>
+                        </td>
+                        <td>Folder</td>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align:right">
+                            <vscode-link id="add_shortcut_${folder.Prefix}">[+]</vscode-link>
+                            <vscode-link id="download_${folder.Prefix}"><img src="${downloadUri}" alt="Download"></vscode-link>
+                            <vscode-link id="delete_${folder.Prefix}"><img src="${deleteUri}" alt="Delete"></vscode-link>
+                            <vscode-link id="copy_${folder.Prefix}"><img src="${copyUri}" alt="Copy"></vscode-link>
+                            <vscode-link id="move_${folder.Prefix}"><img src="${moveUri}" alt="Move"></vscode-link>
+                            <vscode-link id="rename_${folder.Prefix}"><img src="${renameUri}" alt="Rename"></vscode-link>
+                            <vscode-link id="copy_url_${folder.Prefix}"><img src="${copyUrlUri}" alt="Copy URL"></vscode-link>
+                            <vscode-link id="copy_s3_uri_${folder.Prefix}"><img src="${copyUriUri}" alt="Copy S3 URI"></vscode-link>
+                            
+                        </td>
+                    </tr>
+                    `;
+                }
+            }
+
+            if(this.S3ObjectList.Contents)
+            {
+                for(var file of this.S3ObjectList.Contents)
+                {
+                    if(file.Key === this.S3ExplorerItem.Key){ continue; }
+
+                    S3RowHtml += `
+                    <tr>
+                        <td>
+                        <vscode-link id="open_${file.Key}">${this.GetFileName(file.Key)}</vscode-link>
+                        </td>
+                        <td>${this.s3KeyType(file.Key)}</td>
+                        <td>${file.LastModified ? file.LastModified.toLocaleDateString() : ""}</td>
+                        <td>${ui.bytesToText(file.Size)}</td>
+                        <td style="text-align:right">
+                            <vscode-link id="add_shortcut_${file.Key}">[+]</vscode-link>
+                            <vscode-link id="download_${file.Key}"><img src="${downloadUri}" alt="Download"></vscode-link>
+                            <vscode-link id="delete_${file.Key}"><img src="${deleteUri}" alt="Delete"></vscode-link>
+                            <vscode-link id="copy_${file.Key}"><img src="${copyUri}" alt="Copy"></vscode-link>
+                            <vscode-link id="move_${file.Key}"><img src="${moveUri}" alt="Move"></vscode-link>
+                            <vscode-link id="rename_${file.Key}"><img src="${renameUri}" alt="Rename"></vscode-link>
+                            <vscode-link id="copy_url_${file.Key}"><img src="${copyUrlUri}" alt="Copy URL"></vscode-link>
+                            <vscode-link id="copy_s3_uri_${file.Key}"><img src="${copyUriUri}" alt="Copy S3 URI"></vscode-link>
+                        </td>
+                    </tr>
+                    `;
+                }
             }
         }
         else
@@ -192,14 +295,14 @@ export class S3Explorer {
                 <td style="text-align:right"><vscode-text-field id="search_text" placeholder="Search" disabled></vscode-text-field></td>
             </tr>
             <tr>
-                <th>#</th>
                 <th>Name</th>
-                <th>Type</th>
-                <th>Last Modified</th>
-                <th>Size</th>
+                <th style="width:100px">Type</th>
+                <th style="width:100px">Last Modified</th>
+                <th style="width:100px">Size</th>
+                <th>#</th>
             </tr>
 
-            ${GoFolderUpRowHtml}
+            ${NavigationRowHtml}
 
             ${S3RowHtml}
 
@@ -295,6 +398,26 @@ export class S3Explorer {
 
                     case "go_up":
                         this.S3ExplorerItem.Key = this.S3ExplorerItem.GetParentFolder();
+                        this.Load();
+                        return;
+                    
+                    case "go_home":
+                        if(this.HomeKey)
+                        {
+                            this.S3ExplorerItem.Key = this.HomeKey;
+                        }
+                        else
+                        {
+                            this.S3ExplorerItem.Key = "";
+                        }
+                        
+                        this.Load();
+                        return;
+                    
+                    case "go_key":
+                        id = message.id;
+                        id = id.replace("go_key_", "");
+                        this.S3ExplorerItem.Key = id;
                         this.Load();
                         return;
 

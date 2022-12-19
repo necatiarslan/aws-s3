@@ -12,7 +12,7 @@ class S3ExplorerItem {
         return this.Key === "";
     }
     IsFile() {
-        return this.Key.includes(".");
+        return !this.IsFolder();
     }
     IsFolder() {
         return this.IsRoot() || this.Key.endsWith("/");
