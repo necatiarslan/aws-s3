@@ -89,6 +89,17 @@ class S3Explorer {
         }
         return Key.split('/').pop() || "";
     }
+    GetFolderName(Key) {
+        if (!Key) {
+            return "";
+        }
+        if (!Key.endsWith("/")) {
+            return Key;
+        }
+        var path = Key.split('/');
+        path.pop();
+        return path.pop() || "";
+    }
     GetNavigationPath(Key) {
         let result = [["/", ""]];
         if (Key) {
@@ -140,7 +151,7 @@ class S3Explorer {
                 PathNavigationHtml += `&nbsp;<vscode-link id="go_key_${item[1]}">${item[0]}</vscode-link>`;
             }
             NavigationRowHtml += `
-            <tr>
+            <tr style="background-color: #315562; font-weight: bold;">
             <td colspan="4">
                 <vscode-link id="go_home"><img src="${goHomeUri}" alt="Go Home"></vscode-link>
                 &nbsp;
@@ -171,7 +182,7 @@ class S3Explorer {
                     S3RowHtml += `
                     <tr>
                         <td>
-                        <vscode-link id="open_${folder.Prefix}">${folder.Prefix}</vscode-link>
+                        <vscode-link id="open_${folder.Prefix}">${this.GetFolderName(folder.Prefix)}</vscode-link>
                         </td>
                         <td>Folder</td>
                         <td></td>

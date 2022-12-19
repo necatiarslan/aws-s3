@@ -9,7 +9,7 @@ table {
     background-color: #2a2d2e;
   }
   
-  tr:hover {background-color: #3c3c3c;}
+  tr:hover {background-color: #505050;}
 
   th {
     background-color: #3c3c3c;
@@ -33,7 +33,7 @@ table {
   
   vscode-text-field {
     border: 1px;
-    border-color: #2a2d2e;
+    border-color: #315562;
     font-size: 12px;
   }
   

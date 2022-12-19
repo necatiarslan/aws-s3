@@ -2,7 +2,7 @@
   "name": "aws-s3-vscode-extension",
   "displayName": "Aws S3",
   "description": "Browse Your AWS S3 Buckets",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "publisher": "Necati ARSLAN",
   "repository": {
     "type": "git",
@@ -63,7 +63,7 @@
       },
       {
         "command": "S3TreeView.RemoveShortcut",
-        "title": "Remove Folder Shortcut"
+        "title": "Remove Shortcut"
       },
       {
         "command": "S3TreeView.ShowS3Explorer",
