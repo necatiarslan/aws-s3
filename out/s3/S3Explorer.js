@@ -8,6 +8,7 @@ const api = require("../common/API");
 const S3TreeView_1 = require("./S3TreeView");
 const S3TreeItem_1 = require("./S3TreeItem");
 const S3ExplorerItem_1 = require("./S3ExplorerItem");
+const s3_helper = require("./S3Helper");
 class S3Explorer {
     constructor(panel, extensionUri, node) {
         this._disposables = [];
@@ -77,18 +78,6 @@ class S3Explorer {
         }
         return Key.split('.').pop() || "";
     }
-    GetFileName(Key) {
-        if (!Key) {
-            return "";
-        }
-        if (Key.endsWith("/")) {
-            return Key;
-        }
-        if (!Key.includes("/")) {
-            return Key;
-        }
-        return Key.split('/').pop() || "";
-    }
     GetFolderName(Key) {
         if (!Key) {
             return "";
@@ -133,15 +122,7 @@ class S3Explorer {
         ]);
         const mainUri = ui.getUri(webview, extensionUri, ["media", "main.js"]);
         const styleUri = ui.getUri(webview, extensionUri, ["media", "style.css"]);
-        const bucketUri = ui.getUri(webview, extensionUri, ["media", "aws-s3-logo-activitybar.png"]);
-        const downloadUri = ui.getUri(webview, extensionUri, ["media", "download.png"]);
-        const copyUri = ui.getUri(webview, extensionUri, ["media", "edit-copy.png"]);
-        const deleteUri = ui.getUri(webview, extensionUri, ["media", "edit-delete.png"]);
-        const renameUri = ui.getUri(webview, extensionUri, ["media", "edit-rename.png"]);
         const addShortcutUri = ui.getUri(webview, extensionUri, ["media", "bookmarks.png"]);
-        const moveUri = ui.getUri(webview, extensionUri, ["media", "edit-move.png"]);
-        const copyUriUri = ui.getUri(webview, extensionUri, ["media", "edit-copy-uri.png"]);
-        const copyUrlUri = ui.getUri(webview, extensionUri, ["media", "edit-copy-url.png"]);
         const upArrowUri = ui.getUri(webview, extensionUri, ["media", "arrow-up.png"]);
         const goHomeUri = ui.getUri(webview, extensionUri, ["media", "go-home.png"]);
         let NavigationRowHtml = "";
@@ -152,23 +133,12 @@ class S3Explorer {
             }
             NavigationRowHtml += `
             <tr style="background-color: #315562; font-weight: bold;">
-            <td colspan="4">
+            <td colspan="6">
                 <vscode-link id="go_home"><img src="${goHomeUri}" alt="Go Home"></vscode-link>
                 &nbsp;
                 <vscode-link id="go_up"><img src="${upArrowUri}" alt="Go Up"></vscode-link>
                 &nbsp;
                 ${PathNavigationHtml}
-            </td>
-            <td style="text-align:right">
-                <vscode-link id="add_shortcut_${this.S3ExplorerItem.Key}">[+]</vscode-link>
-                <vscode-link id="download_${this.S3ExplorerItem.Key}"><img src="${downloadUri}" alt="Download"></vscode-link>
-                <vscode-link id="delete_${this.S3ExplorerItem.Key}"><img src="${deleteUri}" alt="Delete"></vscode-link>
-                <vscode-link id="copy_${this.S3ExplorerItem.Key}"><img src="${copyUri}" alt="Copy"></vscode-link>
-                <vscode-link id="move_${this.S3ExplorerItem.Key}"><img src="${moveUri}" alt="Move"></vscode-link>
-                <vscode-link id="rename_${this.S3ExplorerItem.Key}"><img src="${renameUri}" alt="Rename"></vscode-link>
-                <vscode-link id="copy_url_${this.S3ExplorerItem.Key}"><img src="${copyUrlUri}" alt="Copy URL"></vscode-link>
-                <vscode-link id="copy_s3_uri_${this.S3ExplorerItem.Key}"><img src="${copyUriUri}" alt="Copy S3 URI"></vscode-link>
-                
             </td>
             </tr>`;
         }
@@ -182,22 +152,17 @@ class S3Explorer {
                     S3RowHtml += `
                     <tr>
                         <td>
-                        <vscode-link id="open_${folder.Prefix}">${this.GetFolderName(folder.Prefix)}</vscode-link>
+                            <vscode-checkbox id="checkbox_${folder.Prefix}"></vscode-checkbox>
                         </td>
+                        <td>
+                            <vscode-button appearance="icon" id="add_shortcut_${folder.Prefix}">
+                                <span><img src="${addShortcutUri}"></img></span>
+                            </vscode-button>
+                        </td>
+                        <td><vscode-link id="open_${folder.Prefix}">${this.GetFolderName(folder.Prefix)}</vscode-link></td>
                         <td>Folder</td>
                         <td></td>
                         <td></td>
-                        <td style="text-align:right">
-                            <vscode-link id="add_shortcut_${folder.Prefix}">[+]</vscode-link>
-                            <vscode-link id="download_${folder.Prefix}"><img src="${downloadUri}" alt="Download"></vscode-link>
-                            <vscode-link id="delete_${folder.Prefix}"><img src="${deleteUri}" alt="Delete"></vscode-link>
-                            <vscode-link id="copy_${folder.Prefix}"><img src="${copyUri}" alt="Copy"></vscode-link>
-                            <vscode-link id="move_${folder.Prefix}"><img src="${moveUri}" alt="Move"></vscode-link>
-                            <vscode-link id="rename_${folder.Prefix}"><img src="${renameUri}" alt="Rename"></vscode-link>
-                            <vscode-link id="copy_url_${folder.Prefix}"><img src="${copyUrlUri}" alt="Copy URL"></vscode-link>
-                            <vscode-link id="copy_s3_uri_${folder.Prefix}"><img src="${copyUriUri}" alt="Copy S3 URI"></vscode-link>
-                            
-                        </td>
                     </tr>
                     `;
                 }
@@ -210,21 +175,17 @@ class S3Explorer {
                     S3RowHtml += `
                     <tr>
                         <td>
-                        <vscode-link id="open_${file.Key}">${this.GetFileName(file.Key)}</vscode-link>
+                            <vscode-checkbox id="checkbox_${file.Key}"></vscode-checkbox>
                         </td>
+                        <td>
+                            <vscode-button appearance="icon" id="add_shortcut_${file.Key}">
+                                <span><img src="${addShortcutUri}"></img></span>
+                            </vscode-button>
+                        </td>
+                        <td><vscode-link id="open_${file.Key}">${s3_helper.GetFileNameWithExtension(file.Key)}</vscode-link></td>
                         <td>${this.s3KeyType(file.Key)}</td>
                         <td>${file.LastModified ? file.LastModified.toLocaleDateString() : ""}</td>
                         <td>${ui.bytesToText(file.Size)}</td>
-                        <td style="text-align:right">
-                            <vscode-link id="add_shortcut_${file.Key}">[+]</vscode-link>
-                            <vscode-link id="download_${file.Key}"><img src="${downloadUri}" alt="Download"></vscode-link>
-                            <vscode-link id="delete_${file.Key}"><img src="${deleteUri}" alt="Delete"></vscode-link>
-                            <vscode-link id="copy_${file.Key}"><img src="${copyUri}" alt="Copy"></vscode-link>
-                            <vscode-link id="move_${file.Key}"><img src="${moveUri}" alt="Move"></vscode-link>
-                            <vscode-link id="rename_${file.Key}"><img src="${renameUri}" alt="Rename"></vscode-link>
-                            <vscode-link id="copy_url_${file.Key}"><img src="${copyUrlUri}" alt="Copy URL"></vscode-link>
-                            <vscode-link id="copy_s3_uri_${file.Key}"><img src="${copyUriUri}" alt="Copy S3 URI"></vscode-link>
-                        </td>
                     </tr>
                     `;
                 }
@@ -233,6 +194,7 @@ class S3Explorer {
         else {
             S3RowHtml = `
             <tr>
+            <th></th>
             <th></th>
             <th>No Objects !!!</th>
             <th></th>
@@ -260,19 +222,37 @@ class S3Explorer {
 
         <table>
             <tr>
-                <td colspan="4" style="text-align:left">
+                <td colspan="5" style="text-align:left">
                 <vscode-button appearance="primary" id="refresh">Refresh</vscode-button>
-                <vscode-button appearance="primary" id="create_folder" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Create Folder</vscode-button>
+                <vscode-button appearance="primary" id="download">Download</vscode-button>
                 <vscode-button appearance="primary" id="upload" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Upload</vscode-button>
+                <vscode-button appearance="primary" id="create_folder" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Create Folder</vscode-button>
+                <vscode-dropdown id="edit_dropdown">
+                    <vscode-option>Edit</vscode-option>
+                    <vscode-option>Delete</vscode-option>
+                    <vscode-option>Rename</vscode-option>
+                    <vscode-option>Copy</vscode-option>
+                    <vscode-option>Move</vscode-option>
+                </vscode-dropdown>
+                <vscode-dropdown id="copy_dropdown">
+                    <vscode-option>Copy</vscode-option>
+                    <vscode-option>File Name(s) Without Extesion</vscode-option>
+                    <vscode-option>File Name(s) With Extesion</vscode-option>
+                    <vscode-option>Key(s)</vscode-option>
+                    <vscode-option>ARN(s)</vscode-option>
+                    <vscode-option>S3 URI(s)</vscode-option>
+                    <vscode-option>URL(s)</vscode-option>
+                </vscode-dropdown>
                 </td>
                 <td style="text-align:right"><vscode-text-field id="search_text" placeholder="Search" disabled></vscode-text-field></td>
             </tr>
             <tr>
+                <th></th>
+                <th></th>
                 <th>Name</th>
-                <th style="width:100px">Type</th>
-                <th style="width:100px">Last Modified</th>
-                <th style="width:100px">Size</th>
-                <th>#</th>
+                <th>Type</th>
+                <th>Last Modified</th>
+                <th>Size</th>
             </tr>
 
             ${NavigationRowHtml}
@@ -311,8 +291,10 @@ class S3Explorer {
                     this.RenderHtml();
                     return;
                 case "create_folder":
+                    this.CreateFolder();
                     return;
                 case "upload":
+                    this.UploadFile();
                     return;
                 case "open":
                     id = message.id;
@@ -321,34 +303,51 @@ class S3Explorer {
                     this.Load();
                     return;
                 case "download":
-                    id = message.id;
-                    id = id.replace("download_", "");
-                    this.DownloadFile(id);
+                    this.DownloadFile(message.keys);
                     return;
-                case "delete":
-                    id = message.id;
-                    id = id.replace("delete_", "");
-                    this.DeleteFile(id);
+                case "edit":
+                    if (message.keys.length == 0) {
+                        return;
+                    }
+                    switch (message.action) {
+                        case "Delete":
+                            this.DeleteFile(message.keys);
+                            return;
+                        case "Rename":
+                            this.RenameFile(message.keys);
+                            return;
+                        case "Copy":
+                            this.CopyFile(message.keys);
+                            return;
+                        case "Move":
+                            this.MoveFile(message.keys);
+                            return;
+                    }
                     return;
                 case "copy":
-                    id = message.id;
-                    id = id.replace("copy_", "");
-                    this.CopyFile(id);
-                    return;
-                case "move":
-                    id = message.id;
-                    id = id.replace("move_", "");
-                    this.MoveFile(id);
-                    return;
-                case "copy_url":
-                    id = message.id;
-                    id = id.replace("copy_url_", "");
-                    this.CopyFileUrl(id);
-                    return;
-                case "copy_s3_uri":
-                    id = message.id;
-                    id = id.replace("copy_s3_uri_", "");
-                    this.CopyFileS3Uri(id);
+                    if (message.keys.length == 0) {
+                        return;
+                    }
+                    switch (message.action) {
+                        case "File Name(s) Without Extesion":
+                            this.CopyFileNameWithoutExtension(message.keys);
+                            return;
+                        case "File Name(s) With Extesion":
+                            this.CopyFileNameWithExtension(message.keys);
+                            return;
+                        case "Key(s)":
+                            this.CopyKeys(message.keys);
+                            return;
+                        case "ARN(s)":
+                            this.CopyFileARNs(message.keys);
+                            return;
+                        case "S3 URI(s)":
+                            this.CopyS3URI(message.keys);
+                            return;
+                        case "URL(s)":
+                            this.CopyURLs(message.keys);
+                            return;
+                    }
                     return;
                 case "add_shortcut":
                     id = message.id;
@@ -380,23 +379,116 @@ class S3Explorer {
     AddShortcut(key) {
         S3TreeView_1.S3TreeView.Current?.AddShortcut(this.S3ExplorerItem.Bucket, key);
     }
-    CopyFileS3Uri(key) {
-        ui.showInfoMessage("Stay Tuned ... key=" + key);
+    CopyS3URI(keys) {
+        if (keys.length === 0 || !keys.includes("|")) {
+            return;
+        }
+        var keyList = keys.split("|");
+        var listToCopy = [];
+        for (var key of keyList) {
+            if (key) {
+                listToCopy.push(s3_helper.GetURI(this.S3ExplorerItem.Bucket, key));
+            }
+        }
+        let result = ui.CopyListToClipboard(listToCopy);
+        if (result.isSuccessful) {
+            ui.showInfoMessage("Key(s) are copied to clipboard");
+        }
     }
-    CopyFileUrl(key) {
-        ui.showInfoMessage("Stay Tuned ... key=" + key);
+    CopyURLs(keys) {
+        if (keys.length === 0 || !keys.includes("|")) {
+            return;
+        }
+        var keyList = keys.split("|");
+        var listToCopy = [];
+        for (var key of keyList) {
+            if (key) {
+                listToCopy.push(s3_helper.GetURL(this.S3ExplorerItem.Bucket, key));
+            }
+        }
+        let result = ui.CopyListToClipboard(listToCopy);
+        if (result.isSuccessful) {
+            ui.showInfoMessage("URL(s) are copied to clipboard");
+        }
+    }
+    CopyFileNameWithExtension(keys) {
+        if (keys.length === 0 || !keys.includes("|")) {
+            return;
+        }
+        var keyList = keys.split("|");
+        var listToCopy = [];
+        for (var key of keyList) {
+            if (key) {
+                listToCopy.push(s3_helper.GetFileNameWithExtension(key));
+            }
+        }
+        let result = ui.CopyListToClipboard(listToCopy);
+        if (result.isSuccessful) {
+            ui.showInfoMessage("File Name(s) with extension are copied to clipboard");
+        }
+    }
+    CopyFileNameWithoutExtension(keys) {
+        if (keys.length === 0 || !keys.includes("|")) {
+            return;
+        }
+        var keyList = keys.split("|");
+        var listToCopy = [];
+        for (var key of keyList) {
+            if (key) {
+                listToCopy.push(s3_helper.GetFileNameWithoutExtension(key));
+            }
+        }
+        let result = ui.CopyListToClipboard(listToCopy);
+        if (result.isSuccessful) {
+            ui.showInfoMessage("File Name(s) with extension are copied to clipboard");
+        }
+    }
+    CopyKeys(keys) {
+        if (keys.length === 0 || !keys.includes("|")) {
+            return;
+        }
+        var keyList = keys.split("|");
+        let result = ui.CopyListToClipboard(keyList);
+        if (result.isSuccessful) {
+            ui.showInfoMessage("Key(s) are copied to clipboard");
+        }
+    }
+    CopyFileARNs(keys) {
+        if (keys.length === 0 || !keys.includes("|")) {
+            return;
+        }
+        var keyList = keys.split("|");
+        var listToCopy = [];
+        for (var key of keyList) {
+            if (key) {
+                listToCopy.push(s3_helper.GetARN(this.S3ExplorerItem.Bucket, key));
+            }
+        }
+        let result = ui.CopyListToClipboard(listToCopy);
+        if (result.isSuccessful) {
+            ui.showInfoMessage("URL(s) are copied to clipboard");
+        }
     }
     MoveFile(key) {
-        ui.showInfoMessage("Stay Tuned ... key=" + key);
+        ui.showInfoMessage("Stay Tuned ... MoveFile key=" + key);
     }
     CopyFile(key) {
-        ui.showInfoMessage("Stay Tuned ... key=" + key);
+        ui.showInfoMessage("Stay Tuned ... CopyFile key=" + key);
     }
     DeleteFile(key) {
-        ui.showInfoMessage("Stay Tuned ... key=" + key);
+        ui.showInfoMessage("Stay Tuned ... DeleteFile key=" + key);
+    }
+    RenameFile(key) {
+        ui.showInfoMessage("Stay Tuned ... RenameFile key=" + key);
     }
     DownloadFile(key) {
-        ui.showInfoMessage("Stay Tuned ... key=" + key);
+        ui.showInfoMessage("Stay Tuned ... DownloadFile key=" + key);
+    }
+    UploadFile() {
+        ui.showInfoMessage("Stay Tuned ... UploadFile Target=" + this.S3ExplorerItem.Key);
+    }
+    CreateFolder() {
+        ui.showInfoMessage("Stay Tuned ... CreateFolder Target=" + this.S3ExplorerItem.Key);
     }
     dispose() {
         ui.logToOutput('S3Explorer.dispose Started');

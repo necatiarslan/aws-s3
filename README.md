@@ -25,6 +25,19 @@ To report your bugs or request new features, use link below\
 https://github.com/necatiarslan/aws-s3/issues/new
 
 
+## Todo
+- S3.getBucketAcl to get permissions and enable/disable command links
+- Global Search View
+- S3 Explorer Search
+- Copy Texts using npm clipboard package
+- Create Folder button
+- Upload button
+- Copy File Name, FileName With Extesion, Key, Folder Key
+- Fix Column Widths
+- Add/Remove Shortcut and use different icons respectively
+- Sort By Name / Type
+- Directory and File icons
+
 Follow me on linkedin to get latest news \
 https://www.linkedin.com/in/necati-arslan/
 

@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.bytesToText = exports.isValidDate = exports.isJsonString = exports.convertMsToTime = exports.getDuration = exports.getSeconds = exports.getMilliSeconds = exports.openFile = exports.getExtensionVersion = exports.showErrorMessage = exports.showWarningMessage = exports.showInfoMessage = exports.logToOutput = exports.showOutputMessage = exports.getUri = void 0;
+exports.CopyListToClipboard = exports.CopyToClipboard = exports.bytesToText = exports.isValidDate = exports.isJsonString = exports.convertMsToTime = exports.getDuration = exports.getSeconds = exports.getMilliSeconds = exports.openFile = exports.getExtensionVersion = exports.showErrorMessage = exports.showWarningMessage = exports.showInfoMessage = exports.logToOutput = exports.showOutputMessage = exports.getUri = void 0;
 const vscode = require("vscode");
 const fs_1 = require("fs");
 const path_1 = require("path");
+const MethodResult_1 = require("./MethodResult");
 var outputChannel;
 var logsOutputChannel;
 var NEW_LINE = "\n\n";
@@ -150,4 +151,27 @@ function bytesToText(bytes) {
     return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
 }
 exports.bytesToText = bytesToText;
+function CopyToClipboard(text) {
+    let result = new MethodResult_1.MethodResult();
+    try {
+        vscode.env.clipboard.writeText(text);
+        result.isSuccessful = true;
+    }
+    catch (error) {
+        result.isSuccessful = false;
+        showErrorMessage('CopyToClipboard Error !!!', error);
+    }
+    return result;
+}
+exports.CopyToClipboard = CopyToClipboard;
+function CopyListToClipboard(textList) {
+    let text = "";
+    for (var t of textList) {
+        if (t) {
+            text += t + "\n";
+        }
+    }
+    return CopyToClipboard(text);
+}
+exports.CopyListToClipboard = CopyListToClipboard;
 //# sourceMappingURL=UI.js.map

@@ -173,6 +173,9 @@ class S3TreeView {
     }
     async AddShortcut(Bucket, Key) {
         ui.logToOutput('S3TreeView.AddShortcut Started');
+        if (!Bucket || !Key) {
+            return;
+        }
         this.treeDataProvider.AddShortcut(Bucket, Key);
         this.SaveState();
     }

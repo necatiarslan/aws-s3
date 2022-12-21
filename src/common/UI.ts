@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { MethodResult } from './MethodResult';
 
 var outputChannel: vscode.OutputChannel;
 var logsOutputChannel: vscode.OutputChannel;
@@ -173,4 +174,34 @@ export function bytesToText(bytes: number | undefined): string {
   if (bytes === 0) return '';
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+}
+
+export function CopyToClipboard(text:string): MethodResult<boolean>
+{
+  let result = new MethodResult<boolean>();
+  try 
+  {
+    vscode.env.clipboard.writeText(text);
+    result.isSuccessful = true;
+  } 
+  catch (error:any) 
+  {
+    result.isSuccessful=false;
+    showErrorMessage('CopyToClipboard Error !!!', error);
+  }
+  return result;
+}
+
+export function CopyListToClipboard(textList:string[]): MethodResult<boolean>
+{
+  let text: string = "";
+  for(var t of textList)
+  {
+    if(t)
+    {
+      text += t + "\n";
+    }
+  }
+  
+  return CopyToClipboard(text);
 }

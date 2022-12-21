@@ -1,40 +1,32 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.S3ExplorerItem = void 0;
-/* eslint-disable @typescript-eslint/naming-convention */
-const path = require("path");
+const s3_helper = require("./S3Helper");
 class S3ExplorerItem {
     constructor(Bucket, Key) {
         this.Bucket = Bucket;
         this.Key = Key;
     }
     IsRoot() {
-        return this.Key === "";
+        return s3_helper.IsRoot(this.Key);
     }
     IsFile() {
-        return !this.IsFolder();
+        return s3_helper.IsFile(this.Key);
     }
     IsFolder() {
-        return this.IsRoot() || this.Key.endsWith("/");
+        return s3_helper.IsFolder(this.Key);
     }
     GetParentFolder() {
-        if (this.IsRoot()) {
-            return "";
-        }
-        var parentDir = path.join(this.Key, "..");
-        if (parentDir = ".") {
-            parentDir = "";
-        }
-        return parentDir;
+        return s3_helper.GetParentFolder(this.Key);
     }
     GetFullPath() {
-        return this.Bucket + "/" + this.Key;
+        return s3_helper.GetFullPath(this.Bucket, this.Key);
     }
-    GetS3Uri() {
-        return "s3://" + this.GetFullPath();
+    GetS3URI() {
+        return s3_helper.GetURI(this.Bucket, this.Key);
     }
-    GetArn() {
-        return "arn:aws:s3:::" + this.GetFullPath();
+    GetARN() {
+        return s3_helper.GetARN(this.Bucket, this.Key);
     }
 }
 exports.S3ExplorerItem = S3ExplorerItem;

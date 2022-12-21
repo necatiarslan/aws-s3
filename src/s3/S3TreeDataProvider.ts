@@ -86,6 +86,8 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 	}
 
 	AddShortcut(Bucket:string, Key:string){
+		if(!Bucket || !Key) { return; }
+		
 		for(var ls of this.ShortcutList)
 		{
 			if(ls[0] === Bucket && ls[1] === Key)

@@ -14,16 +14,16 @@ table {
   th {
     background-color: #3c3c3c;
     color: white;
-    padding: 5px;
+    padding: 1px;
     font-size: 12px;
     font: bold;
   }
   
   td {
     color: white;
-    padding: 5px;
+    padding: 1px;
     font-size: 10px;
-    vertical-align: top;
+    vertical-align: middle;
   }
   
   vscode-panels {

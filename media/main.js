@@ -13,6 +13,15 @@ function main() {
   const UploadButton = document.getElementById("upload");
   UploadButton.addEventListener("click", UploadButtonClicked);
 
+  const DownloadButton = document.getElementById("download");
+  DownloadButton.addEventListener("click", DownloadButtonClicked);
+
+  const CopyDropDown = document.getElementById("copy_dropdown");
+  CopyDropDown.addEventListener("change", CopyDropDownChanged);
+
+  const EditDropDown = document.getElementById("edit_dropdown");
+  EditDropDown.addEventListener("change", EditDropDownChanged);
+
   const GoUpLink = document.getElementById("go_up");
   if(GoUpLink)
   {
@@ -28,41 +37,6 @@ function main() {
   const OpenLinkList = document.querySelectorAll("[id^='open_']");
   for (let i = 0; i < OpenLinkList.length; i++) {
     OpenLinkList[i].addEventListener("click", OpenLinkClicked);
-  }
-
-  const DownloadLinkList = document.querySelectorAll("[id^='download_']");
-  for (let i = 0; i < DownloadLinkList.length; i++) {
-    DownloadLinkList[i].addEventListener("click", DownloadLinkClicked);
-  }
-
-  const DeleteLinkList = document.querySelectorAll("[id^='delete_']");
-  for (let i = 0; i < DeleteLinkList.length; i++) {
-    DeleteLinkList[i].addEventListener("click", DeleteLinkClicked);
-  }
-
-  const CopyLinkList = document.querySelectorAll("[id^='copy_']");
-  for (let i = 0; i < CopyLinkList.length; i++) {
-    CopyLinkList[i].addEventListener("click", CopyLinkClicked);
-  }
-
-  const MoveLinkList = document.querySelectorAll("[id^='move_']");
-  for (let i = 0; i < MoveLinkList.length; i++) {
-    MoveLinkList[i].addEventListener("click", MoveLinkClicked);
-  }
-
-  const RenameLinkList = document.querySelectorAll("[id^='rename_']");
-  for (let i = 0; i < RenameLinkList.length; i++) {
-    RenameLinkList[i].addEventListener("click", RenameLinkList);
-  }
-
-  const CopyUrlLinkList = document.querySelectorAll("[id^='copy_url_']");
-  for (let i = 0; i < CopyUrlLinkList.length; i++) {
-    CopyUrlLinkList[i].addEventListener("click", CopyUrlLinkClicked);
-  }
-
-  const CopyS3UriLinkList = document.querySelectorAll("[id^='copy_s3_uri_']");
-  for (let i = 0; i < CopyS3UriLinkList.length; i++) {
-    CopyS3UriLinkList[i].addEventListener("click", CopyS3UriLinkClicked);
   }
 
   const AddShortcutLinkList = document.querySelectorAll("[id^='add_shortcut_']");
@@ -95,6 +69,63 @@ function UploadButtonClicked() {
   });
 }
 
+function DownloadButtonClicked(e) {
+
+  let CheckedKeys = ""
+  const CheckBoxList = document.querySelectorAll("[id^='checkbox_']");
+  for (let i = 0; i < CheckBoxList.length; i++) {
+    if(CheckBoxList[i]._checked)
+    {
+      CheckedKeys += "|" + CheckBoxList[i].id.replace("checkbox_", "");;
+    }
+  }
+
+  vscode.postMessage({
+    command: "download",
+    keys: CheckedKeys
+  });
+}
+
+function CopyDropDownChanged(e) {
+
+  let CheckedKeys = ""
+  const CheckBoxList = document.querySelectorAll("[id^='checkbox_']");
+  for (let i = 0; i < CheckBoxList.length; i++) {
+    if(CheckBoxList[i]._checked)
+    {
+      CheckedKeys += "|" + CheckBoxList[i].id.replace("checkbox_", "");;
+    }
+  }
+
+  vscode.postMessage({
+    command: "copy",
+    action: e.target._value,
+    keys: CheckedKeys
+  });
+
+  e.target._selectedIndex = 0;
+}
+
+function EditDropDownChanged(e) {
+
+  let CheckedKeys = ""
+  const CheckBoxList = document.querySelectorAll("[id^='checkbox_']");
+  for (let i = 0; i < CheckBoxList.length; i++) {
+    if(CheckBoxList[i]._checked)
+    {
+      CheckedKeys += "|" + CheckBoxList[i].id.replace("checkbox_", "");;
+    }
+  }
+
+  vscode.postMessage({
+    command: "edit",
+    action: e.target._value,
+    keys: CheckedKeys
+  });
+
+  e.target._selectedIndex = 0;
+}
+
 function OpenLinkClicked(e) {
   vscode.postMessage({
     command: "open",
@@ -111,48 +142,6 @@ function GoUpLinkClicked() {
 function GoHomeLinkClicked() {
   vscode.postMessage({
     command: "go_home"
-  });
-}
-
-function DownloadLinkClicked(e) {
-  vscode.postMessage({
-    command: "download",
-    id: e.target.id
-  });
-}
-
-function DeleteLinkClicked(e) {
-  vscode.postMessage({
-    command: "delete",
-    id: e.target.id
-  });
-}
-
-function CopyLinkClicked(e) {
-  vscode.postMessage({
-    command: "copy",
-    id: e.target.id
-  });
-}
-
-function MoveLinkClicked(e) {
-  vscode.postMessage({
-    command: "move",
-    id: e.target.id
-  });
-}
-
-function CopyUrlLinkClicked(e) {
-  vscode.postMessage({
-    command: "copy_url",
-    id: e.target.id
-  });
-}
-
-function CopyS3UriLinkClicked(e) {
-  vscode.postMessage({
-    command: "copy_s3_uri",
-    id: e.target.id
   });
 }
 

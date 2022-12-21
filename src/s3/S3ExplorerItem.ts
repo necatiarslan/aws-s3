@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as path from "path";
+import * as s3_helper from './S3Helper';
 
 export class S3ExplorerItem {
 
@@ -13,41 +14,35 @@ export class S3ExplorerItem {
 
 	public IsRoot():boolean
 	{
-		return this.Key === "";
+		return s3_helper.IsRoot(this.Key);
 	}
 
 	public IsFile():boolean
 	{
-		return !this.IsFolder();
+		return s3_helper.IsFile(this.Key);
 	}
 
 	public IsFolder():boolean
 	{
-		return this.IsRoot() || this.Key.endsWith("/");
+		return s3_helper.IsFolder(this.Key);
 	}
 	
-	public GetParentFolder(){
-		if(this.IsRoot())
-		{
-			return "";
-		}
-
-		var parentDir = path.join(this.Key, "..");
-		if(parentDir="."){parentDir="";}
-		return parentDir;
+	public GetParentFolder()
+	{
+		return s3_helper.GetParentFolder(this.Key);
 	}
 
 	public GetFullPath(){
-		return this.Bucket + "/" + this.Key;
+		return s3_helper.GetFullPath(this.Bucket, this.Key);
 	} 
 
-	public GetS3Uri()
+	public GetS3URI()
 	{
-		return "s3://" + this.GetFullPath();
+		return s3_helper.GetURI(this.Bucket, this.Key);
 	}
 
-	public GetArn()
+	public GetARN()
 	{
-		return "arn:aws:s3:::" + this.GetFullPath();
+		return s3_helper.GetARN(this.Bucket, this.Key);
 	}
 }
