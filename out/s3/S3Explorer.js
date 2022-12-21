@@ -475,20 +475,102 @@ class S3Explorer {
     CopyFile(key) {
         ui.showInfoMessage("Stay Tuned ... CopyFile key=" + key);
     }
-    DeleteFile(key) {
-        ui.showInfoMessage("Stay Tuned ... DeleteFile key=" + key);
+    async DeleteFile(keys) {
+        if (keys.length === 0 || !keys.includes("|")) {
+            return;
+        }
+        if (!S3TreeView_1.S3TreeView.Current?.AwsProfile) {
+            return;
+        }
+        var keyList = keys.split("|");
+        let confirm = await vscode.window.showInputBox({ placeHolder: 'print delete to confirm' });
+        if (confirm === undefined || confirm != "delete") {
+            return;
+        }
+        let deleteCounter = 0;
+        for (var key of keyList) {
+            if (key && s3_helper.IsFile(key)) {
+                let response = await api.DeleteS3File(S3TreeView_1.S3TreeView.Current.AwsProfile, this.S3ExplorerItem.Bucket, key);
+                if (response.isSuccessful) {
+                    deleteCounter++;
+                }
+            }
+        }
+        this.Load();
+        this.RenderHtml();
+        ui.showInfoMessage(deleteCounter.toString() + " File(s) are deleted");
     }
     RenameFile(key) {
         ui.showInfoMessage("Stay Tuned ... RenameFile key=" + key);
     }
-    DownloadFile(key) {
-        ui.showInfoMessage("Stay Tuned ... DownloadFile key=" + key);
+    async DownloadFile(keys) {
+        if (keys.length === 0 || !keys.includes("|")) {
+            return;
+        }
+        var keyList = keys.split("|");
+        var listToCopy = [];
+        let param = {
+            canSelectFolders: true,
+            canSelectFiles: false,
+            openLabel: "Select",
+            title: "Select Folder To Save",
+            canSelectMany: false,
+        };
+        let selectedFolder = await vscode.window.showOpenDialog(param);
+        if (!selectedFolder) {
+            return;
+        }
+        let downloadCounter = 0;
+        for (var key of keyList) {
+            if (key && S3TreeView_1.S3TreeView.Current?.AwsProfile && s3_helper.IsFile(key)) {
+                api.DownloadS3File(S3TreeView_1.S3TreeView.Current?.AwsProfile, this.S3ExplorerItem.Bucket, key, selectedFolder[0].path);
+                downloadCounter++;
+            }
+        }
+        ui.showInfoMessage(downloadCounter.toString() + " File(s) are downloaded");
     }
-    UploadFile() {
-        ui.showInfoMessage("Stay Tuned ... UploadFile Target=" + this.S3ExplorerItem.Key);
+    async UploadFile() {
+        if (!this.S3ExplorerItem.IsFolder) {
+            return;
+        }
+        if (!S3TreeView_1.S3TreeView.Current?.AwsProfile) {
+            return;
+        }
+        let param = {
+            canSelectFolders: false,
+            canSelectFiles: true,
+            openLabel: "Select File",
+            title: "Select File To Upload",
+            canSelectMany: false,
+        };
+        let selectedFile = await vscode.window.showOpenDialog(param);
+        if (!selectedFile || selectedFile.length == 0) {
+            return;
+        }
+        let result = await api.UploadS3File(S3TreeView_1.S3TreeView.Current.AwsProfile, this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, selectedFile[0].path);
+        if (result.isSuccessful) {
+            ui.showInfoMessage("File is uploaded");
+            this.Load();
+            this.RenderHtml();
+        }
     }
-    CreateFolder() {
-        ui.showInfoMessage("Stay Tuned ... CreateFolder Target=" + this.S3ExplorerItem.Key);
+    async CreateFolder() {
+        if (!this.S3ExplorerItem.IsFolder) {
+            return;
+        }
+        if (!S3TreeView_1.S3TreeView.Current?.AwsProfile) {
+            return;
+        }
+        let folderName = await vscode.window.showInputBox({ placeHolder: 'Folder Name' });
+        if (folderName === undefined) {
+            return;
+        }
+        let result = await api.CreateS3Folder(S3TreeView_1.S3TreeView.Current.AwsProfile, this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, folderName);
+        if (result.isSuccessful) {
+            ui.showInfoMessage(result.result + " Folder is Created");
+            this.Load();
+            this.RenderHtml();
+        }
     }
     dispose() {
         ui.logToOutput('S3Explorer.dispose Started');

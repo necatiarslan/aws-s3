@@ -8,6 +8,8 @@ import { sep } from "path";
 import { join } from "path";
 import { parseKnownFiles, SourceProfileInit } from "../aws-sdk/parseKnownFiles";
 import { ParsedIniData } from "@aws-sdk/types";
+import * as s3_helper from '../s3/S3Helper'
+import * as fs from 'fs';
 
 export async function GetS3ObjectList(Profile:string, Bucket:string, Key:string): Promise<MethodResult<AWS.S3.ListObjectsV2Output | undefined>> {
   let result:MethodResult<AWS.S3.ListObjectsV2Output | undefined> = new MethodResult<AWS.S3.ListObjectsV2Output | undefined>();
@@ -38,8 +40,106 @@ export async function GetS3ObjectList(Profile:string, Bucket:string, Key:string)
   }
 }
 
-export async function DownloadS3Object(Profile:string, Bucket:string, Key:string): Promise<MethodResult<AWS.S3.GetObjectOutput | undefined>> {
-  let result:MethodResult<AWS.S3.GetObjectOutput | undefined> = new MethodResult<AWS.S3.GetObjectOutput | undefined>();
+export async function CreateS3Folder(Profile:string, Bucket:string, Key:string, FolderName:string): Promise<MethodResult<string>> {
+  let result = new MethodResult<string>();
+  let TargetKey = join(Key, FolderName + "/");
+
+  try 
+  {
+    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+    const s3 = new AWS.S3({credentials:credentials});
+
+    let param = {
+      Bucket:Bucket,
+      Key:TargetKey
+    }
+
+    let response = await s3.putObject(param).promise();
+    result.isSuccessful = true;
+    result.result = TargetKey;
+    return result;
+  } 
+  catch (error:any) 
+  {
+    result.isSuccessful = false;
+    result.error = error;
+    ui.showErrorMessage('api.CreateS3Folder Error !!!', error);
+    ui.logToOutput("api.CreateS3Folder Error !!!", error); 
+    return result;
+  }
+}
+
+export async function DeleteS3File(Profile:string, Bucket:string, Key:string): Promise<MethodResult<boolean>> {
+  let result = new MethodResult<boolean>();
+
+  try 
+  {
+    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+    const s3 = new AWS.S3({credentials:credentials});
+
+    let param = {
+      Bucket:Bucket,
+      Key:Key
+    }
+
+    let response = await s3.deleteObject(param).promise();
+    result.isSuccessful = true;
+    result.result = true;
+    return result;
+  } 
+  catch (error:any) 
+  {
+    result.isSuccessful = false;
+    result.error = error;
+    ui.showErrorMessage('api.DeleteS3File Error !!! File=' + Key, error);
+    ui.logToOutput("api.DeleteS3File Error !!! File=" + Key, error); 
+    return result;
+  }
+}
+
+export async function UploadS3File(Profile:string, Bucket:string, Key:string, SourcePath:string) : Promise<MethodResult<string>>
+{
+  let result = new MethodResult<string>();
+  if(!s3_helper.IsFolder(Key))
+  {
+    result.isSuccessful = false;
+    return result;
+  }
+
+  let TargetKey = join(Key, s3_helper.GetFileNameWithExtension(SourcePath))
+
+  try 
+  {
+    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+    const s3 = new AWS.S3({credentials:credentials});
+
+    const stream = fs.createReadStream(SourcePath);
+    const param = {
+      Bucket: Bucket,
+      Key: TargetKey,
+      Body: stream
+    };
+
+    let response = await s3.upload(param).promise();
+
+    result.result = response.Key;
+    result.isSuccessful = true;
+    return result;
+  } 
+  catch (error:any) 
+  {
+    result.isSuccessful = false;
+    result.error = error;
+    ui.showErrorMessage('api.UploadS3File Error !!! File=' + SourcePath, error);
+    ui.logToOutput("api.UploadS3File Error !!! File=" + SourcePath, error); 
+    return result;
+  }
+} 
+
+export async function DownloadS3File(Profile:string, Bucket:string, Key:string, TargetPath:string) : Promise<MethodResult<string>>
+{
+  let result = new MethodResult<string>();
+  let TargetFilePath = join(TargetPath, s3_helper.GetFileNameWithExtension(Key))
 
   try 
   {
@@ -51,6 +151,11 @@ export async function DownloadS3Object(Profile:string, Bucket:string, Key:string
       Key: Key
     };
 
+    let readStream = s3.getObject(param).createReadStream();
+    let writeStream = fs.createWriteStream(TargetFilePath);
+    readStream.pipe(writeStream);
+
+    result.result = TargetFilePath;
     result.isSuccessful = true;
     return result;
   } 
@@ -58,11 +163,11 @@ export async function DownloadS3Object(Profile:string, Bucket:string, Key:string
   {
     result.isSuccessful = false;
     result.error = error;
-    ui.showErrorMessage('api.GetS3ObjectList Error !!!', error);
-    ui.logToOutput("api.GetS3ObjectList Error !!!", error); 
+    ui.showErrorMessage('api.DownloadS3File Error !!! File=' + Key, error);
+    ui.logToOutput("api.DownloadS3File Error !!! File=" + Key, error); 
     return result;
   }
-}
+} 
 
 export async function GetBucketList(Profile:string, BucketName?:string): Promise<MethodResult<string[]>> {
   let result:MethodResult<string[]> = new MethodResult<string[]>();

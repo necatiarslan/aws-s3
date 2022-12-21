@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadS3Object = exports.GetS3ObjectList = void 0;
+exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadS3File = exports.UploadS3File = exports.DeleteS3File = exports.CreateS3Folder = exports.GetS3ObjectList = void 0;
 /* eslint-disable @typescript-eslint/naming-convention */
 const AWS = require("aws-sdk");
 const ui = require("./UI");
@@ -9,6 +9,8 @@ const os_1 = require("os");
 const path_1 = require("path");
 const path_2 = require("path");
 const parseKnownFiles_1 = require("../aws-sdk/parseKnownFiles");
+const s3_helper = require("../s3/S3Helper");
+const fs = require("fs");
 async function GetS3ObjectList(Profile, Bucket, Key) {
     let result = new MethodResult_1.MethodResult();
     try {
@@ -33,8 +35,86 @@ async function GetS3ObjectList(Profile, Bucket, Key) {
     }
 }
 exports.GetS3ObjectList = GetS3ObjectList;
-async function DownloadS3Object(Profile, Bucket, Key) {
+async function CreateS3Folder(Profile, Bucket, Key, FolderName) {
     let result = new MethodResult_1.MethodResult();
+    let TargetKey = (0, path_2.join)(Key, FolderName + "/");
+    try {
+        const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+        const s3 = new AWS.S3({ credentials: credentials });
+        let param = {
+            Bucket: Bucket,
+            Key: TargetKey
+        };
+        let response = await s3.putObject(param).promise();
+        result.isSuccessful = true;
+        result.result = TargetKey;
+        return result;
+    }
+    catch (error) {
+        result.isSuccessful = false;
+        result.error = error;
+        ui.showErrorMessage('api.CreateS3Folder Error !!!', error);
+        ui.logToOutput("api.CreateS3Folder Error !!!", error);
+        return result;
+    }
+}
+exports.CreateS3Folder = CreateS3Folder;
+async function DeleteS3File(Profile, Bucket, Key) {
+    let result = new MethodResult_1.MethodResult();
+    try {
+        const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+        const s3 = new AWS.S3({ credentials: credentials });
+        let param = {
+            Bucket: Bucket,
+            Key: Key
+        };
+        let response = await s3.deleteObject(param).promise();
+        result.isSuccessful = true;
+        result.result = true;
+        return result;
+    }
+    catch (error) {
+        result.isSuccessful = false;
+        result.error = error;
+        ui.showErrorMessage('api.DeleteS3File Error !!! File=' + Key, error);
+        ui.logToOutput("api.DeleteS3File Error !!! File=" + Key, error);
+        return result;
+    }
+}
+exports.DeleteS3File = DeleteS3File;
+async function UploadS3File(Profile, Bucket, Key, SourcePath) {
+    let result = new MethodResult_1.MethodResult();
+    if (!s3_helper.IsFolder(Key)) {
+        result.isSuccessful = false;
+        return result;
+    }
+    let TargetKey = (0, path_2.join)(Key, s3_helper.GetFileNameWithExtension(SourcePath));
+    try {
+        const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+        const s3 = new AWS.S3({ credentials: credentials });
+        const stream = fs.createReadStream(SourcePath);
+        const param = {
+            Bucket: Bucket,
+            Key: TargetKey,
+            Body: stream
+        };
+        let response = await s3.upload(param).promise();
+        result.result = response.Key;
+        result.isSuccessful = true;
+        return result;
+    }
+    catch (error) {
+        result.isSuccessful = false;
+        result.error = error;
+        ui.showErrorMessage('api.UploadS3File Error !!! File=' + SourcePath, error);
+        ui.logToOutput("api.UploadS3File Error !!! File=" + SourcePath, error);
+        return result;
+    }
+}
+exports.UploadS3File = UploadS3File;
+async function DownloadS3File(Profile, Bucket, Key, TargetPath) {
+    let result = new MethodResult_1.MethodResult();
+    let TargetFilePath = (0, path_2.join)(TargetPath, s3_helper.GetFileNameWithExtension(Key));
     try {
         const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
         const s3 = new AWS.S3({ credentials: credentials });
@@ -42,18 +122,22 @@ async function DownloadS3Object(Profile, Bucket, Key) {
             Bucket: Bucket,
             Key: Key
         };
+        let readStream = s3.getObject(param).createReadStream();
+        let writeStream = fs.createWriteStream(TargetFilePath);
+        readStream.pipe(writeStream);
+        result.result = TargetFilePath;
         result.isSuccessful = true;
         return result;
     }
     catch (error) {
         result.isSuccessful = false;
         result.error = error;
-        ui.showErrorMessage('api.GetS3ObjectList Error !!!', error);
-        ui.logToOutput("api.GetS3ObjectList Error !!!", error);
+        ui.showErrorMessage('api.DownloadS3File Error !!! File=' + Key, error);
+        ui.logToOutput("api.DownloadS3File Error !!! File=" + Key, error);
         return result;
     }
 }
-exports.DownloadS3Object = DownloadS3Object;
+exports.DownloadS3File = DownloadS3File;
 async function GetBucketList(Profile, BucketName) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
