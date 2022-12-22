@@ -13,6 +13,7 @@ class S3Explorer {
     constructor(panel, extensionUri, node) {
         this._disposables = [];
         this.S3ExplorerItem = new S3ExplorerItem_1.S3ExplorerItem("undefined", "");
+        this.isSelectAll = false;
         ui.logToOutput('S3Explorer.constructor Started');
         this.SetS3ExplorerItem(node);
         this.extensionUri = extensionUri;
@@ -153,7 +154,7 @@ class S3Explorer {
                     S3RowHtml += `
                     <tr>
                         <td>
-                            <vscode-checkbox id="checkbox_${folder.Prefix}"></vscode-checkbox>
+                            <vscode-checkbox id="checkbox_${folder.Prefix}" ${this.isSelectAll ? " checked " : ""}></vscode-checkbox>
                         </td>
                         <td>
                             <vscode-button appearance="icon" id="add_shortcut_${folder.Prefix}">
@@ -176,7 +177,7 @@ class S3Explorer {
                     S3RowHtml += `
                     <tr>
                         <td>
-                            <vscode-checkbox id="checkbox_${file.Key}"></vscode-checkbox>
+                            <vscode-checkbox id="checkbox_${file.Key}" ${this.isSelectAll ? " checked " : ""}></vscode-checkbox>
                         </td>
                         <td>
                             <vscode-button appearance="icon" id="add_shortcut_${file.Key}">
@@ -260,6 +261,12 @@ class S3Explorer {
 
             ${S3RowHtml}
 
+            <tr>
+            <th colspan="6" style="text-align:left">
+            <vscode-button appearance="secondary" id="select_all">Select All</vscode-button>
+            </th>
+            </tr>
+
         </table>
         
         <br>        
@@ -290,6 +297,9 @@ class S3Explorer {
                 case "refresh":
                     this.Load();
                     this.RenderHtml();
+                    return;
+                case "select_all":
+                    this.SelectAll();
                     return;
                 case "create_folder":
                     this.CreateFolder();
@@ -376,6 +386,11 @@ class S3Explorer {
                     return;
             }
         }, undefined, this._disposables);
+    }
+    SelectAll() {
+        this.isSelectAll = true;
+        this.RenderHtml();
+        this.isSelectAll = false;
     }
     AddShortcut(key) {
         S3TreeView_1.S3TreeView.Current?.AddOrRemoveShortcut(this.S3ExplorerItem.Bucket, key);

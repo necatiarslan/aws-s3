@@ -8,6 +8,7 @@ import { S3TreeItem, TreeItemType } from "./S3TreeItem";
 import { S3ExplorerItem } from "./S3ExplorerItem";
 import * as s3_helper from "./S3Helper";
 import { S3TreeDataProvider } from "./S3TreeDataProvider";
+import { threadId } from "worker_threads";
 
 export class S3Explorer {
     public static Current: S3Explorer | undefined;
@@ -18,6 +19,8 @@ export class S3Explorer {
     public S3ExplorerItem: S3ExplorerItem = new S3ExplorerItem("undefined", "");
     public S3ObjectList: AWS.S3.ListObjectsV2Output | undefined;
     public HomeKey:string | undefined;
+
+    private isSelectAll:boolean = false;
 
     private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, node:S3TreeItem) {
         ui.logToOutput('S3Explorer.constructor Started');
@@ -190,7 +193,7 @@ export class S3Explorer {
                     S3RowHtml += `
                     <tr>
                         <td>
-                            <vscode-checkbox id="checkbox_${folder.Prefix}"></vscode-checkbox>
+                            <vscode-checkbox id="checkbox_${folder.Prefix}" ${this.isSelectAll?" checked ":""}></vscode-checkbox>
                         </td>
                         <td>
                             <vscode-button appearance="icon" id="add_shortcut_${folder.Prefix}">
@@ -215,7 +218,7 @@ export class S3Explorer {
                     S3RowHtml += `
                     <tr>
                         <td>
-                            <vscode-checkbox id="checkbox_${file.Key}"></vscode-checkbox>
+                            <vscode-checkbox id="checkbox_${file.Key}" ${this.isSelectAll?" checked ":""}></vscode-checkbox>
                         </td>
                         <td>
                             <vscode-button appearance="icon" id="add_shortcut_${file.Key}">
@@ -301,6 +304,12 @@ export class S3Explorer {
 
             ${S3RowHtml}
 
+            <tr>
+            <th colspan="6" style="text-align:left">
+            <vscode-button appearance="secondary" id="select_all">Select All</vscode-button>
+            </th>
+            </tr>
+
         </table>
         
         <br>        
@@ -334,6 +343,10 @@ export class S3Explorer {
                     case "refresh":
                         this.Load();
                         this.RenderHtml();
+                        return;
+                    
+                    case "select_all":
+                        this.SelectAll();
                         return;
                     
                     case "create_folder":
@@ -436,6 +449,12 @@ export class S3Explorer {
             undefined,
             this._disposables
         );
+    }
+    SelectAll()
+    {
+        this.isSelectAll = true;
+        this.RenderHtml();
+        this.isSelectAll = false;
     }
     AddShortcut(key: string) {
         S3TreeView.Current?.AddOrRemoveShortcut(this.S3ExplorerItem.Bucket, key);

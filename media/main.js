@@ -7,6 +7,9 @@ function main() {
   const RefreshButton = document.getElementById("refresh");
   RefreshButton.addEventListener("click", RefreshButtonClicked);
 
+  const SelectAllButton = document.getElementById("select_all");
+  SelectAllButton.addEventListener("click", SelectAllButtonClicked);
+
   const CreateFolderButton = document.getElementById("create_folder");
   CreateFolderButton.addEventListener("click", CreateFolderButtonClicked);
 
@@ -54,6 +57,12 @@ function main() {
 function RefreshButtonClicked() {
   vscode.postMessage({
     command: "refresh"
+  });
+}
+
+function SelectAllButtonClicked() {
+  vscode.postMessage({
+    command: "select_all"
   });
 }
 

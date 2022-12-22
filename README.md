@@ -29,6 +29,10 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - S3 Explorer Search
 - Sort By Name / Type
 - Directory and File icons
+- When remove a shortcut from tree, refresh explorer if needed
+- Delete Folder
+- Write  File and Folder count to the bottom
+- Write Selected File and Folder count to the bottom
 
 Follow me on linkedin to get latest news \
 https://www.linkedin.com/in/necati-arslan/
