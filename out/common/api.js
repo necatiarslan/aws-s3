@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadS3File = exports.UploadS3File = exports.DeleteS3File = exports.CreateS3Folder = exports.GetS3ObjectList = void 0;
+exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadS3File = exports.UploadS3File = exports.DeleteObject = exports.CreateS3Folder = exports.GetS3ObjectList = void 0;
 /* eslint-disable @typescript-eslint/naming-convention */
 const AWS = require("aws-sdk");
 const ui = require("./UI");
@@ -59,11 +59,20 @@ async function CreateS3Folder(Profile, Bucket, Key, FolderName) {
     }
 }
 exports.CreateS3Folder = CreateS3Folder;
-async function DeleteS3File(Profile, Bucket, Key) {
+async function DeleteObject(Profile, Bucket, Key) {
     let result = new MethodResult_1.MethodResult();
     try {
         const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
         const s3 = new AWS.S3({ credentials: credentials });
+        if (s3_helper.IsFolder(Key)) {
+            const objects = await s3.listObjects({
+                Bucket: Bucket,
+                Prefix: Key
+            }).promise();
+            if (objects.Contents && objects.Contents.length > 1) {
+                throw new Error(Key + " folder contains " + objects.Contents.length + " files");
+            }
+        }
         let param = {
             Bucket: Bucket,
             Key: Key
@@ -76,12 +85,39 @@ async function DeleteS3File(Profile, Bucket, Key) {
     catch (error) {
         result.isSuccessful = false;
         result.error = error;
-        ui.showErrorMessage('api.DeleteS3File Error !!! File=' + Key, error);
-        ui.logToOutput("api.DeleteS3File Error !!! File=" + Key, error);
+        ui.showErrorMessage('api.DeleteObject Error !!! File=' + Key, error);
+        ui.logToOutput("api.DeleteObject Error !!! File=" + Key, error);
         return result;
     }
 }
-exports.DeleteS3File = DeleteS3File;
+exports.DeleteObject = DeleteObject;
+async function DeleteS3Folder(Profile, Bucket, Key) {
+    // List all the objects in the folder
+    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+    const s3 = new AWS.S3({ credentials: credentials });
+    // const objects = await s3.listObjects({
+    //   Bucket: Bucket,
+    //   Prefix: Key
+    // }).promise();
+    // if(objects.Contents)
+    // {
+    //   // Create an array of "Delete" objects for each object in the folder
+    //   const deleteObjects = objects.Contents.map(object => ({ Key: object.Key }));
+    //   if(deleteObjects)
+    //   {
+    //     // Delete all the objects in the folder
+    //     await s3.deleteObjects({
+    //       Bucket: Bucket,
+    //       Delete: { Objects: deleteObjects }
+    //     }).promise();
+    //   }
+    // }
+    // Delete the folder itself
+    await s3.deleteObject({
+        Bucket: Bucket,
+        Key: Key
+    }).promise();
+}
 async function UploadS3File(Profile, Bucket, Key, SourcePath) {
     let result = new MethodResult_1.MethodResult();
     if (!s3_helper.IsFolder(Key)) {

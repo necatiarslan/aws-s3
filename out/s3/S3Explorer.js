@@ -125,8 +125,12 @@ class S3Explorer {
         const styleUri = ui.getUri(webview, extensionUri, ["media", "style.css"]);
         const bookmark_yesUri = ui.getUri(webview, extensionUri, ["media", "bookmark_yes.png"]);
         const bookmark_noUri = ui.getUri(webview, extensionUri, ["media", "bookmark_no.png"]);
-        const upArrowUri = ui.getUri(webview, extensionUri, ["media", "arrow-up.png"]);
+        const goUpUri = ui.getUri(webview, extensionUri, ["media", "go-up.png"]);
         const goHomeUri = ui.getUri(webview, extensionUri, ["media", "go-home.png"]);
+        const fileUri = ui.getUri(webview, extensionUri, ["media", "file.png"]);
+        const folderUri = ui.getUri(webview, extensionUri, ["media", "folder.png"]);
+        let fileCounter = 0;
+        let folderCounter = 0;
         let NavigationRowHtml = "";
         let PathNavigationHtml = "";
         if (!this.S3ExplorerItem.IsRoot()) {
@@ -138,7 +142,7 @@ class S3Explorer {
             <td colspan="6">
                 <vscode-link id="go_home"><img src="${goHomeUri}" alt="Go Home"></vscode-link>
                 &nbsp;
-                <vscode-link id="go_up"><img src="${upArrowUri}" alt="Go Up"></vscode-link>
+                <vscode-link id="go_up"><img src="${goUpUri}" alt="Go Up"></vscode-link>
                 &nbsp;
                 ${PathNavigationHtml}
             </td>
@@ -151,6 +155,7 @@ class S3Explorer {
                     if (folder.Prefix === this.S3ExplorerItem.Key) {
                         continue;
                     }
+                    folderCounter++;
                     S3RowHtml += `
                     <tr>
                         <td>
@@ -161,7 +166,10 @@ class S3Explorer {
                                 <span><img src="${S3TreeView_1.S3TreeView.Current?.DoesShortcutExists(this.S3ExplorerItem.Bucket, folder.Prefix) ? bookmark_yesUri : bookmark_noUri}"></img></span>
                             </vscode-button>
                         </td>
-                        <td><vscode-link id="open_${folder.Prefix}">${this.GetFolderName(folder.Prefix)}</vscode-link></td>
+                        <td>
+                            <img src="${folderUri}"></img>
+                            <vscode-link id="open_${folder.Prefix}">${this.GetFolderName(folder.Prefix)}</vscode-link>
+                        </td>
                         <td style="text-align:right">Folder</td>
                         <td style="text-align:right"><!--modified column--></td>
                         <td style="text-align:right"><!--size column--></td>
@@ -174,6 +182,7 @@ class S3Explorer {
                     if (file.Key === this.S3ExplorerItem.Key) {
                         continue;
                     }
+                    fileCounter++;
                     S3RowHtml += `
                     <tr>
                         <td>
@@ -184,7 +193,10 @@ class S3Explorer {
                                 <span><img src="${S3TreeView_1.S3TreeView.Current?.DoesShortcutExists(this.S3ExplorerItem.Bucket, file.Key) ? bookmark_yesUri : bookmark_noUri}"></img></span>
                             </vscode-button>
                         </td>
-                        <td><vscode-link id="open_${file.Key}">${s3_helper.GetFileNameWithExtension(file.Key)}</vscode-link></td>
+                        <td>
+                            <img src="${fileUri}"></img>
+                            <vscode-link id="open_${file.Key}">${s3_helper.GetFileNameWithExtension(file.Key)}</vscode-link>
+                        </td>
                         <td style="text-align:right">${this.s3KeyType(file.Key)}</td>
                         <td style="text-align:right">${file.LastModified ? file.LastModified.toLocaleDateString() : ""}</td>
                         <td style="text-align:right">${ui.bytesToText(file.Size)}</td>
@@ -262,8 +274,11 @@ class S3Explorer {
             ${S3RowHtml}
 
             <tr>
-            <th colspan="6" style="text-align:left">
+            <th colspan="3" style="text-align:left">
             <vscode-button appearance="secondary" id="select_all">Select All</vscode-button>
+            </th>
+            <th colspan="3" style="text-align:right">
+            ${fileCounter} File(s), ${folderCounter} Folder(s)
             </th>
             </tr>
 
@@ -506,8 +521,8 @@ class S3Explorer {
         }
         let deleteCounter = 0;
         for (var key of keyList) {
-            if (key && s3_helper.IsFile(key)) {
-                let response = await api.DeleteS3File(S3TreeView_1.S3TreeView.Current.AwsProfile, this.S3ExplorerItem.Bucket, key);
+            if (key) {
+                let response = await api.DeleteObject(S3TreeView_1.S3TreeView.Current.AwsProfile, this.S3ExplorerItem.Bucket, key);
                 if (response.isSuccessful) {
                     deleteCounter++;
                 }
@@ -515,7 +530,7 @@ class S3Explorer {
         }
         this.Load();
         this.RenderHtml();
-        ui.showInfoMessage(deleteCounter.toString() + " File(s) are deleted");
+        ui.showInfoMessage(deleteCounter.toString() + " File(s)/Folder(s) are deleted");
     }
     async RenameFile(key) {
         ui.showInfoMessage("Stay Tuned ... RenameFile key=" + key);

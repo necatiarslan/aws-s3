@@ -199,6 +199,7 @@ class S3TreeView {
             return;
         }
         this.treeDataProvider.RemoveShortcut(node.Bucket, node.Shortcut);
+        S3Explorer_1.S3Explorer.Current?.RenderHtml(); //to update shortcut icon
         this.SaveState();
     }
     async ShowS3Explorer(node) {

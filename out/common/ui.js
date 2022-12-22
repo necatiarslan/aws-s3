@@ -7,7 +7,7 @@ const path_1 = require("path");
 const MethodResult_1 = require("./MethodResult");
 var outputChannel;
 var logsOutputChannel;
-var NEW_LINE = "\n\n";
+var NEW_LINE = " | ";
 function getUri(webview, extensionUri, pathList) {
     return webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, ...pathList));
 }

@@ -6,7 +6,7 @@ import { MethodResult } from './MethodResult';
 var outputChannel: vscode.OutputChannel;
 var logsOutputChannel: vscode.OutputChannel;
 
-var NEW_LINE:string = "\n\n";
+var NEW_LINE:string = " | ";
 
 export function getUri(webview: vscode.Webview, extensionUri: vscode.Uri, pathList: string[]) {
   return webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, ...pathList));

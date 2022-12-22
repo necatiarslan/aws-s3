@@ -69,13 +69,26 @@ export async function CreateS3Folder(Profile:string, Bucket:string, Key:string, 
   }
 }
 
-export async function DeleteS3File(Profile:string, Bucket:string, Key:string): Promise<MethodResult<boolean>> {
+export async function DeleteObject(Profile:string, Bucket:string, Key:string): Promise<MethodResult<boolean>> {
   let result = new MethodResult<boolean>();
 
   try 
   {
     const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
     const s3 = new AWS.S3({credentials:credentials});
+
+    if(s3_helper.IsFolder(Key))
+    {
+      const objects = await s3.listObjects({
+        Bucket: Bucket,
+        Prefix: Key
+      }).promise();
+      
+      if(objects.Contents && objects.Contents.length > 1)
+      {
+        throw new Error(Key + " folder contains " + objects.Contents.length + " files");
+      }
+    }
 
     let param = {
       Bucket:Bucket,
@@ -91,10 +104,42 @@ export async function DeleteS3File(Profile:string, Bucket:string, Key:string): P
   {
     result.isSuccessful = false;
     result.error = error;
-    ui.showErrorMessage('api.DeleteS3File Error !!! File=' + Key, error);
-    ui.logToOutput("api.DeleteS3File Error !!! File=" + Key, error); 
+    ui.showErrorMessage('api.DeleteObject Error !!! File=' + Key, error);
+    ui.logToOutput("api.DeleteObject Error !!! File=" + Key, error); 
     return result;
   }
+}
+
+async function DeleteS3Folder(Profile:string, Bucket:string, Key:string) {
+  // List all the objects in the folder
+  
+  const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+  const s3 = new AWS.S3({credentials:credentials});
+
+  // const objects = await s3.listObjects({
+  //   Bucket: Bucket,
+  //   Prefix: Key
+  // }).promise();
+
+  // if(objects.Contents)
+  // {
+  //   // Create an array of "Delete" objects for each object in the folder
+  //   const deleteObjects = objects.Contents.map(object => ({ Key: object.Key }));
+  //   if(deleteObjects)
+  //   {
+  //     // Delete all the objects in the folder
+  //     await s3.deleteObjects({
+  //       Bucket: Bucket,
+  //       Delete: { Objects: deleteObjects }
+  //     }).promise();
+  //   }
+  // }
+
+  // Delete the folder itself
+  await s3.deleteObject({
+    Bucket: Bucket,
+    Key: Key
+  }).promise();
 }
 
 export async function UploadS3File(Profile:string, Bucket:string, Key:string, SourcePath:string) : Promise<MethodResult<string>>
