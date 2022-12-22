@@ -17,6 +17,7 @@ table {
     padding: 1px;
     font-size: 12px;
     font: bold;
+    height: 25px;
   }
   
   td {
@@ -24,27 +25,4 @@ table {
     padding: 1px;
     font-size: 10px;
     vertical-align: middle;
-  }
-  
-  vscode-panels {
-    border: 0px;
-    border-radius: 1px;
-  }
-  
-  vscode-text-field {
-    border: 1px;
-    border-color: #315562;
-    font-size: 12px;
-  }
-  
-  vscode-text-area {
-    border: 1px;
-    border-color: #2a2d2e;
-    font-size: 12px;
-  }
-  
-  section {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
   }

@@ -1,8 +1,8 @@
 {
   "name": "aws-s3-vscode-extension",
   "displayName": "Aws S3",
-  "description": "Browse Your AWS S3 Buckets",
-  "version": "1.0.4",
+  "description": "Browse Your AWS S3 Buckets, Edit File/Folders",
+  "version": "1.0.5",
   "publisher": "Necati ARSLAN",
   "repository": {
     "type": "git",

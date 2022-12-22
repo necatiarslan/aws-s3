@@ -29,8 +29,6 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - S3.getBucketAcl to get permissions and enable/disable command links
 - Global Search View
 - S3 Explorer Search
-- Fix Column Widths
-- Add/Remove Shortcut and use different icons respectively
 - Sort By Name / Type
 - Directory and File icons
 

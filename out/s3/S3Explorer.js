@@ -118,11 +118,12 @@ class S3Explorer {
             "@vscode",
             "webview-ui-toolkit",
             "dist",
-            "toolkit.js", // A toolkit.min.js file is also available
+            "toolkit.js",
         ]);
         const mainUri = ui.getUri(webview, extensionUri, ["media", "main.js"]);
         const styleUri = ui.getUri(webview, extensionUri, ["media", "style.css"]);
-        const addShortcutUri = ui.getUri(webview, extensionUri, ["media", "bookmarks.png"]);
+        const bookmark_yesUri = ui.getUri(webview, extensionUri, ["media", "bookmark_yes.png"]);
+        const bookmark_noUri = ui.getUri(webview, extensionUri, ["media", "bookmark_no.png"]);
         const upArrowUri = ui.getUri(webview, extensionUri, ["media", "arrow-up.png"]);
         const goHomeUri = ui.getUri(webview, extensionUri, ["media", "go-home.png"]);
         let NavigationRowHtml = "";
@@ -156,13 +157,13 @@ class S3Explorer {
                         </td>
                         <td>
                             <vscode-button appearance="icon" id="add_shortcut_${folder.Prefix}">
-                                <span><img src="${addShortcutUri}"></img></span>
+                                <span><img src="${S3TreeView_1.S3TreeView.Current?.DoesShortcutExists(this.S3ExplorerItem.Bucket, folder.Prefix) ? bookmark_yesUri : bookmark_noUri}"></img></span>
                             </vscode-button>
                         </td>
                         <td><vscode-link id="open_${folder.Prefix}">${this.GetFolderName(folder.Prefix)}</vscode-link></td>
-                        <td>Folder</td>
-                        <td></td>
-                        <td></td>
+                        <td style="text-align:right">Folder</td>
+                        <td style="text-align:right"><!--modified column--></td>
+                        <td style="text-align:right"><!--size column--></td>
                     </tr>
                     `;
                 }
@@ -179,13 +180,13 @@ class S3Explorer {
                         </td>
                         <td>
                             <vscode-button appearance="icon" id="add_shortcut_${file.Key}">
-                                <span><img src="${addShortcutUri}"></img></span>
+                                <span><img src="${S3TreeView_1.S3TreeView.Current?.DoesShortcutExists(this.S3ExplorerItem.Bucket, file.Key) ? bookmark_yesUri : bookmark_noUri}"></img></span>
                             </vscode-button>
                         </td>
                         <td><vscode-link id="open_${file.Key}">${s3_helper.GetFileNameWithExtension(file.Key)}</vscode-link></td>
-                        <td>${this.s3KeyType(file.Key)}</td>
-                        <td>${file.LastModified ? file.LastModified.toLocaleDateString() : ""}</td>
-                        <td>${ui.bytesToText(file.Size)}</td>
+                        <td style="text-align:right">${this.s3KeyType(file.Key)}</td>
+                        <td style="text-align:right">${file.LastModified ? file.LastModified.toLocaleDateString() : ""}</td>
+                        <td style="text-align:right">${ui.bytesToText(file.Size)}</td>
                     </tr>
                     `;
                 }
@@ -212,7 +213,7 @@ class S3Explorer {
         <script type="module" src="${toolkitUri}"></script>
         <script type="module" src="${mainUri}"></script>
         <link rel="stylesheet" href="${styleUri}">
-        <title>Logs</title>
+        <title></title>
       </head>
       <body>  
         
@@ -222,7 +223,7 @@ class S3Explorer {
 
         <table>
             <tr>
-                <td colspan="5" style="text-align:left">
+                <td colspan="4" style="text-align:left">
                 <vscode-button appearance="primary" id="refresh">Refresh</vscode-button>
                 <vscode-button appearance="primary" id="download">Download</vscode-button>
                 <vscode-button appearance="primary" id="upload" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Upload</vscode-button>
@@ -244,15 +245,15 @@ class S3Explorer {
                     <vscode-option>URL(s)</vscode-option>
                 </vscode-dropdown>
                 </td>
-                <td style="text-align:right"><vscode-text-field id="search_text" placeholder="Search" disabled></vscode-text-field></td>
+                <td colspan="2" style="text-align:right"><vscode-text-field id="search_text" placeholder="Search" disabled></vscode-text-field></td>
             </tr>
             <tr>
-                <th></th>
-                <th></th>
+                <th style="width:20px; text-align:center"><!--checkbox column--></th>
+                <th style="width:20px; text-align:center"><!--add to shortcut column--></th>
                 <th>Name</th>
-                <th>Type</th>
-                <th>Last Modified</th>
-                <th>Size</th>
+                <th style="width:100px; text-align:center">Type</th>
+                <th style="width:100px; text-align:center">Modified</th>
+                <th style="width:100px; text-align:center">Size</th>
             </tr>
 
             ${NavigationRowHtml}
@@ -268,7 +269,7 @@ class S3Explorer {
                     
         <table>
             <tr>
-                <td colspan="3">
+                <td>
                     <vscode-link href="https://github.com/necatiarslan/aws-s3/issues/new">Bug Report & Feature Request</vscode-link>
                 </td>
             </tr>
@@ -377,7 +378,8 @@ class S3Explorer {
         }, undefined, this._disposables);
     }
     AddShortcut(key) {
-        S3TreeView_1.S3TreeView.Current?.AddShortcut(this.S3ExplorerItem.Bucket, key);
+        S3TreeView_1.S3TreeView.Current?.AddOrRemoveShortcut(this.S3ExplorerItem.Bucket, key);
+        this.RenderHtml();
     }
     CopyS3URI(keys) {
         if (keys.length === 0 || !keys.includes("|")) {
@@ -469,10 +471,10 @@ class S3Explorer {
             ui.showInfoMessage("URL(s) are copied to clipboard");
         }
     }
-    MoveFile(key) {
+    async MoveFile(key) {
         ui.showInfoMessage("Stay Tuned ... MoveFile key=" + key);
     }
-    CopyFile(key) {
+    async CopyFile(key) {
         ui.showInfoMessage("Stay Tuned ... CopyFile key=" + key);
     }
     async DeleteFile(keys) {
@@ -500,7 +502,7 @@ class S3Explorer {
         this.RenderHtml();
         ui.showInfoMessage(deleteCounter.toString() + " File(s) are deleted");
     }
-    RenameFile(key) {
+    async RenameFile(key) {
         ui.showInfoMessage("Stay Tuned ... RenameFile key=" + key);
     }
     async DownloadFile(keys) {

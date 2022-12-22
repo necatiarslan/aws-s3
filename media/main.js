@@ -148,7 +148,7 @@ function GoHomeLinkClicked() {
 function AddShortcutLinkClicked(e) {
   vscode.postMessage({
     command: "add_shortcut",
-    id: e.target.id
+    id: this.id
   });
 }
 

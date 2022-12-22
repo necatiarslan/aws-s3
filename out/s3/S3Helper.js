@@ -34,7 +34,7 @@ function GetURI(Bucket, Key) {
 }
 exports.GetURI = GetURI;
 function GetURL(Bucket, Key) {
-    return "http://" + GetFullPath(Bucket, Key);
+    return "https://" + Bucket + ".s3.amazonaws.com/" + Key;
 }
 exports.GetURL = GetURL;
 function GetARN(Bucket, Key) {

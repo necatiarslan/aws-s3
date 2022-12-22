@@ -171,13 +171,24 @@ class S3TreeView {
         this.treeDataProvider.RemoveBucket(node.Bucket);
         this.SaveState();
     }
-    async AddShortcut(Bucket, Key) {
+    async AddOrRemoveShortcut(Bucket, Key) {
         ui.logToOutput('S3TreeView.AddShortcut Started');
         if (!Bucket || !Key) {
             return;
         }
-        this.treeDataProvider.AddShortcut(Bucket, Key);
+        if (this.treeDataProvider.DoesShortcutExists(Bucket, Key)) {
+            this.treeDataProvider.RemoveShortcut(Bucket, Key);
+        }
+        else {
+            this.treeDataProvider.AddShortcut(Bucket, Key);
+        }
         this.SaveState();
+    }
+    DoesShortcutExists(Bucket, Key) {
+        if (!Key) {
+            return false;
+        }
+        return this.treeDataProvider.DoesShortcutExists(Bucket, Key);
     }
     async RemoveShortcut(node) {
         ui.logToOutput('S3TreeView.RemoveShortcut Started');

@@ -68,14 +68,23 @@ class S3TreeDataProvider {
         this.LoadShortcutNodeList();
         this.Refresh();
     }
+    DoesShortcutExists(Bucket, Key) {
+        if (!Bucket || !Key) {
+            return false;
+        }
+        for (var ls of this.ShortcutList) {
+            if (ls[0] === Bucket && ls[1] === Key) {
+                return true;
+            }
+        }
+        return false;
+    }
     AddShortcut(Bucket, Key) {
         if (!Bucket || !Key) {
             return;
         }
-        for (var ls of this.ShortcutList) {
-            if (ls[0] === Bucket && ls[1] === Key) {
-                return;
-            }
+        if (this.DoesShortcutExists(Bucket, Key)) {
+            return;
         }
         this.ShortcutList.push([Bucket, Key]);
         this.LoadShortcutNodeList();

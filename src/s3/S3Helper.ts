@@ -39,7 +39,7 @@ export function GetURI(Bucket:string, Key:string):string
 
 export function GetURL(Bucket:string, Key:string):string
 {
-    return "http://" + GetFullPath(Bucket, Key);
+    return "https://" + Bucket + ".s3.amazonaws.com/" + Key;
 }
 
 export function GetARN(Bucket:string, Key:string)
