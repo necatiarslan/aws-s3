@@ -133,7 +133,7 @@ class S3Explorer {
                 PathNavigationHtml += `&nbsp;<vscode-link id="go_key_${item[1]}">${item[0]}</vscode-link>`;
             }
             NavigationRowHtml += `
-            <tr style="background-color: #315562; font-weight: bold;">
+            <tr style="background-color: #315562; height:30px">
             <td colspan="6">
                 <vscode-link id="go_home"><img src="${goHomeUri}" alt="Go Home"></vscode-link>
                 &nbsp;

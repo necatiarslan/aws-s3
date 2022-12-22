@@ -166,7 +166,7 @@ export class S3Explorer {
             }
 
             NavigationRowHtml += `
-            <tr style="background-color: #315562; font-weight: bold;">
+            <tr style="background-color: #315562; height:30px">
             <td colspan="6">
                 <vscode-link id="go_home"><img src="${goHomeUri}" alt="Go Home"></vscode-link>
                 &nbsp;
