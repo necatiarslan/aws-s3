@@ -13,7 +13,7 @@ class S3Explorer {
     constructor(panel, extensionUri, node) {
         this._disposables = [];
         this.S3ExplorerItem = new S3ExplorerItem_1.S3ExplorerItem("undefined", "");
-        this.isSelectAll = false;
+        this.SearchText = "";
         ui.logToOutput('S3Explorer.constructor Started');
         this.SetS3ExplorerItem(node);
         this.extensionUri = extensionUri;
@@ -67,17 +67,14 @@ class S3Explorer {
             S3Explorer.Current = new S3Explorer(panel, extensionUri, node);
         }
     }
-    s3KeyType(Key) {
+    GetFileExtension(Key) {
         if (!Key) {
             return "";
         }
         if (Key.endsWith("/")) {
             return "Folder";
         }
-        if (!Key.includes(".")) {
-            return "File";
-        }
-        return Key.split('.').pop() || "";
+        return s3_helper.GetFileExtension(s3_helper.GetFileNameWithExtension(Key));
     }
     GetFolderName(Key) {
         if (!Key) {
@@ -123,6 +120,7 @@ class S3Explorer {
         ]);
         const mainUri = ui.getUri(webview, extensionUri, ["media", "main.js"]);
         const styleUri = ui.getUri(webview, extensionUri, ["media", "style.css"]);
+        const codiconsUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'node_modules', '@vscode/codicons', 'dist', 'codicon.css'));
         const bookmark_yesUri = ui.getUri(webview, extensionUri, ["media", "bookmark_yes.png"]);
         const bookmark_noUri = ui.getUri(webview, extensionUri, ["media", "bookmark_no.png"]);
         const goUpUri = ui.getUri(webview, extensionUri, ["media", "go-up.png"]);
@@ -154,12 +152,16 @@ class S3Explorer {
                 for (var folder of this.S3ObjectList.CommonPrefixes) {
                     if (folder.Prefix === this.S3ExplorerItem.Key) {
                         continue;
+                    } //do not list object itself
+                    let folderName = this.GetFolderName(folder.Prefix);
+                    if (this.SearchText.length > 0 && !folderName.includes(this.SearchText)) {
+                        continue;
                     }
                     folderCounter++;
                     S3RowHtml += `
                     <tr>
                         <td>
-                            <vscode-checkbox id="checkbox_${folder.Prefix}" ${this.isSelectAll ? " checked " : ""}></vscode-checkbox>
+                            <vscode-checkbox id="checkbox_${folder.Prefix}" ></vscode-checkbox>
                         </td>
                         <td>
                             <vscode-button appearance="icon" id="add_shortcut_${folder.Prefix}">
@@ -168,7 +170,7 @@ class S3Explorer {
                         </td>
                         <td>
                             <img src="${folderUri}"></img>
-                            <vscode-link id="open_${folder.Prefix}">${this.GetFolderName(folder.Prefix)}</vscode-link>
+                            <vscode-link id="open_${folder.Prefix}">${folderName}</vscode-link>
                         </td>
                         <td style="text-align:right">Folder</td>
                         <td style="text-align:right"><!--modified column--></td>
@@ -181,12 +183,16 @@ class S3Explorer {
                 for (var file of this.S3ObjectList.Contents) {
                     if (file.Key === this.S3ExplorerItem.Key) {
                         continue;
+                    } //do not list object itself
+                    let fileName = s3_helper.GetFileNameWithExtension(file.Key);
+                    if (this.SearchText.length > 0 && !fileName.includes(this.SearchText)) {
+                        continue;
                     }
                     fileCounter++;
                     S3RowHtml += `
                     <tr>
                         <td>
-                            <vscode-checkbox id="checkbox_${file.Key}" ${this.isSelectAll ? " checked " : ""}></vscode-checkbox>
+                            <vscode-checkbox id="checkbox_${file.Key}" ></vscode-checkbox>
                         </td>
                         <td>
                             <vscode-button appearance="icon" id="add_shortcut_${file.Key}">
@@ -195,9 +201,9 @@ class S3Explorer {
                         </td>
                         <td>
                             <img src="${fileUri}"></img>
-                            <vscode-link id="open_${file.Key}">${s3_helper.GetFileNameWithExtension(file.Key)}</vscode-link>
+                            <vscode-link id="open_${file.Key}">${fileName}</vscode-link>
                         </td>
-                        <td style="text-align:right">${this.s3KeyType(file.Key)}</td>
+                        <td style="text-align:right">${this.GetFileExtension(file.Key)}</td>
                         <td style="text-align:right">${file.LastModified ? file.LastModified.toLocaleDateString() : ""}</td>
                         <td style="text-align:right">${ui.bytesToText(file.Size)}</td>
                     </tr>
@@ -225,6 +231,7 @@ class S3Explorer {
         <meta name="viewport" content="width=device-width,initial-scale=1.0">
         <script type="module" src="${toolkitUri}"></script>
         <script type="module" src="${mainUri}"></script>
+        <link href="${codiconsUri}" rel="stylesheet" />
         <link rel="stylesheet" href="${styleUri}">
         <title></title>
       </head>
@@ -258,7 +265,11 @@ class S3Explorer {
                     <vscode-option>URL(s)</vscode-option>
                 </vscode-dropdown>
                 </td>
-                <td colspan="2" style="text-align:right"><vscode-text-field id="search_text" placeholder="Search" disabled></vscode-text-field></td>
+                <td colspan="2" style="text-align:right">
+                    <vscode-text-field id="search_text" placeholder="Search" value="${this.SearchText}">
+                        <span slot="start" class="codicon codicon-search"></span>
+                    </vscode-text-field>
+                </td>
             </tr>
             <tr>
                 <th style="width:20px; text-align:center"><!--checkbox column--></th>
@@ -310,11 +321,9 @@ class S3Explorer {
             ui.logToOutput('S3Explorer._setWebviewMessageListener Message Received ' + message.command);
             switch (command) {
                 case "refresh":
+                    this.SearchText = message.search_text;
                     this.Load();
                     this.RenderHtml();
-                    return;
-                case "select_all":
-                    this.SelectAll();
                     return;
                 case "create_folder":
                     this.CreateFolder();
@@ -401,11 +410,6 @@ class S3Explorer {
                     return;
             }
         }, undefined, this._disposables);
-    }
-    SelectAll() {
-        this.isSelectAll = true;
-        this.RenderHtml();
-        this.isSelectAll = false;
     }
     AddShortcut(key) {
         S3TreeView_1.S3TreeView.Current?.AddOrRemoveShortcut(this.S3ExplorerItem.Bucket, key);
@@ -530,7 +534,7 @@ class S3Explorer {
         }
         this.Load();
         this.RenderHtml();
-        ui.showInfoMessage(deleteCounter.toString() + " File(s)/Folder(s) are deleted");
+        ui.showInfoMessage(deleteCounter.toString() + " object(s) are deleted");
     }
     async RenameFile(key) {
         ui.showInfoMessage("Stay Tuned ... RenameFile key=" + key);

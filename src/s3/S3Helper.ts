@@ -64,6 +64,14 @@ export function RemoveExtesionFromFileName(FileName:string):string
 {
     if(!FileName) { return ""; }
     if(!FileName.includes(".")) { return FileName; }
-    let extension = FileName.split(".").pop();
+    let extension = GetFileExtension(FileName);
     return FileName.replace("." + extension, "");
+}
+
+export function GetFileExtension(FileName:string):string
+{
+    if(!FileName) { return ""; }
+    if(!FileName.includes(".")) { return ""; }
+    let extension = FileName.split(".").pop();
+    return extension?extension:"";
 }

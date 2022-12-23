@@ -2,8 +2,11 @@
 const vscode = acquireVsCodeApi();
 
 window.addEventListener("load", main);
+const SearchTextBox = document.getElementById("search_text");
 
 function main() {
+  SearchTextBox.addEventListener("keydown", SearchTextBoxKeyDown);
+
   const RefreshButton = document.getElementById("refresh");
   RefreshButton.addEventListener("click", RefreshButtonClicked);
 
@@ -53,17 +56,24 @@ function main() {
   }
 }
 
+function SearchTextBoxKeyDown(e){
+  if (e.key === "Enter") {
+    RefreshButtonClicked();
+  }
+}
 
 function RefreshButtonClicked() {
   vscode.postMessage({
-    command: "refresh"
+    command: "refresh",
+    search_text: SearchTextBox._value
   });
 }
 
 function SelectAllButtonClicked() {
-  vscode.postMessage({
-    command: "select_all"
-  });
+  const CheckBoxList = document.querySelectorAll("[id^='checkbox_']");
+  for (let i = 0; i < CheckBoxList.length; i++) {
+    CheckBoxList[i].checked = true;
+  }
 }
 
 function CreateFolderButtonClicked() {

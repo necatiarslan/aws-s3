@@ -1,8 +1,8 @@
 {
   "name": "aws-s3-vscode-extension",
   "displayName": "Aws S3",
-  "description": "Browse Your AWS S3 Buckets, Upload, Download, Edit File/Folders",
-  "version": "1.0.8",
+  "description": "Browse Your AWS S3 Buckets, Upload, Download, Edit Files",
+  "version": "1.0.9",
   "publisher": "NecatiARSLAN",
   "repository": {
     "type": "git",
@@ -68,7 +68,7 @@
       {
         "command": "S3TreeView.ShowS3Explorer",
         "title": "Open",
-        "icon": "$(open-preview)"
+        "icon": "$(search)"
       },
       {
         "command": "S3TreeView.SelectAwsProfile",
@@ -190,6 +190,7 @@
   },
   "dependencies": {
     "@aws-sdk/credential-provider-node": "^3.181.0",
+    "@vscode/codicons": "^0.0.32",
     "@vscode/webview-ui-toolkit": "^1.2.0",
     "aws-sdk": "^2.1271.0",
     "clipboard": "^2.0.11",

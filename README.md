@@ -26,10 +26,11 @@ https://github.com/necatiarslan/aws-s3/issues/new
 ## Todo
 - S3.getBucketAcl to get permissions and enable/disable command links
 - Global Search View
-- S3 Explorer Search
 - Sort By Name / Type
 - Delete Folder with files in it
 - Write Selected File and Folder count to the bottom
+- Paging (now max 1000)
+- Move, Copy, Rename files
 
 Follow me on linkedin to get latest news \
 https://www.linkedin.com/in/necati-arslan/

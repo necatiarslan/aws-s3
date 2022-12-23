@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RemoveExtesionFromFileName = exports.GetFileNameWithoutExtension = exports.GetFileNameWithExtension = exports.GetARN = exports.GetURL = exports.GetURI = exports.GetFullPath = exports.GetParentFolder = exports.IsFile = exports.IsFolder = exports.IsRoot = void 0;
+exports.GetFileExtension = exports.RemoveExtesionFromFileName = exports.GetFileNameWithoutExtension = exports.GetFileNameWithExtension = exports.GetARN = exports.GetURL = exports.GetURI = exports.GetFullPath = exports.GetParentFolder = exports.IsFile = exports.IsFolder = exports.IsRoot = void 0;
 const path = require("path");
 function IsRoot(Key) {
     return Key === "";
@@ -65,8 +65,19 @@ function RemoveExtesionFromFileName(FileName) {
     if (!FileName.includes(".")) {
         return FileName;
     }
-    let extension = FileName.split(".").pop();
+    let extension = GetFileExtension(FileName);
     return FileName.replace("." + extension, "");
 }
 exports.RemoveExtesionFromFileName = RemoveExtesionFromFileName;
+function GetFileExtension(FileName) {
+    if (!FileName) {
+        return "";
+    }
+    if (!FileName.includes(".")) {
+        return "";
+    }
+    let extension = FileName.split(".").pop();
+    return extension ? extension : "";
+}
+exports.GetFileExtension = GetFileExtension;
 //# sourceMappingURL=S3Helper.js.map
