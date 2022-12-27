@@ -493,7 +493,7 @@ export class S3Explorer {
         let result = ui.CopyListToClipboard(listToCopy);
         if(result.isSuccessful)
         {
-            ui.showInfoMessage("Key(s) are copied to clipboard");
+            ui.showInfoMessage("S3 URI(s) are copied to clipboard");
         }
     }
     CopyURLs(keys: string) 
@@ -550,7 +550,7 @@ export class S3Explorer {
         let result = ui.CopyListToClipboard(listToCopy);
         if(result.isSuccessful)
         {
-            ui.showInfoMessage("File Name(s) with extension are copied to clipboard");
+            ui.showInfoMessage("File Name(s) without extension are copied to clipboard");
         }
     }
     CopyKeys(keys: string) 
@@ -579,7 +579,7 @@ export class S3Explorer {
         let result = ui.CopyListToClipboard(listToCopy);
         if(result.isSuccessful)
         {
-            ui.showInfoMessage("URL(s) are copied to clipboard");
+            ui.showInfoMessage("ARN(s) are copied to clipboard");
         }
     }
     async MoveFile(key: string) {
@@ -650,20 +650,24 @@ export class S3Explorer {
         let param = {
             canSelectFolders:false,
             canSelectFiles:true,
-            openLabel:"Select File",
-            title:"Select File To Upload",
-            canSelectMany: false,
+            openLabel:"Select File(s)",
+            title:"Select File(s) To Upload",
+            canSelectMany: true,
         }
-        let selectedFile = await vscode.window.showOpenDialog(param);
-        if(!selectedFile || selectedFile.length == 0){ return; }
+        let selectedFileList = await vscode.window.showOpenDialog(param);
+        if(!selectedFileList || selectedFileList.length == 0){ return; }
 
-        let result = await api.UploadS3File(S3TreeView.Current.AwsProfile, this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, selectedFile[0].path);
-        if(result.isSuccessful)
+        for(var file of selectedFileList)
         {
-            ui.showInfoMessage("File is uploaded");
-            this.Load();
-            this.RenderHtml();
+            let result = await api.UploadS3File(S3TreeView.Current.AwsProfile, this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, file.path);
+            if(result.isSuccessful)
+            {
+                ui.showInfoMessage(file.path + "File is uploaded");
+            }
         }
+
+        this.Load();
+        this.RenderHtml();
     }
     async CreateFolder() 
     {

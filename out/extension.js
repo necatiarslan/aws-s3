@@ -7,9 +7,6 @@ const S3TreeView_1 = require("./s3/S3TreeView");
 function activate(context) {
     ui.logToOutput('Aws S3 Extension activation started');
     let treeView = new S3TreeView_1.S3TreeView(context);
-    vscode.commands.registerCommand('S3TreeView.CheckAccessibility', () => {
-        ui.showInfoMessage("CheckAccessibility DONE");
-    });
     vscode.commands.registerCommand('S3TreeView.Refresh', () => {
         treeView.Refresh();
     });

@@ -8,10 +8,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let treeView:S3TreeView = new S3TreeView(context);
 
-	vscode.commands.registerCommand('S3TreeView.CheckAccessibility', () => {
-		ui.showInfoMessage("CheckAccessibility DONE");
-	});
-
 	vscode.commands.registerCommand('S3TreeView.Refresh', () => {
 		treeView.Refresh();
 	});

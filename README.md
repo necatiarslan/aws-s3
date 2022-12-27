@@ -1,7 +1,7 @@
 ![screenshoot](media/main-screen.png)
 
 # Aws S3 
-The AWS S3 Browser extension for Visual Studio Code allows users to easily browse and manage their Amazon S3 buckets and files from within the code editor. \
+The AWS S3 Browser extension for Visual Studio Code allows users to easily browse and manage their Amazon S3 buckets and files from within the code editor.
 
 With this extension, users can perform a variety of tasks such as 
 - Uploading, downloading and deleting files
@@ -31,6 +31,8 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Write Selected File and Folder count to the bottom
 - Paging (now max 1000)
 - Move, Copy, Rename files
+- Fix: Cannot read properties of null (reading '_panel')
+
 
 Follow me on linkedin to get latest news \
 https://www.linkedin.com/in/necati-arslan/
