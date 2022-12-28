@@ -2,7 +2,7 @@
   "name": "aws-s3-vscode-extension",
   "displayName": "Aws S3",
   "description": "Browse Your AWS S3 Buckets, Upload, Download, Edit Files",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "publisher": "NecatiARSLAN",
   "repository": {
     "type": "git",
@@ -64,7 +64,7 @@
       {
         "command": "S3TreeView.ShowS3Explorer",
         "title": "Open",
-        "icon": "$(search)"
+        "icon": "$(preview)"
       },
       {
         "command": "S3TreeView.SelectAwsProfile",

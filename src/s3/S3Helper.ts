@@ -23,7 +23,7 @@ export function GetParentFolderKey(Key:string):string
     }
 
     var parentDir = path.join(Key, "..");
-    if(parentDir==="."){parentDir="";}
+    if(parentDir==="."){return "";}
     return parentDir + "/";
 }
 

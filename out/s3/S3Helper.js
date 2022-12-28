@@ -20,7 +20,7 @@ function GetParentFolderKey(Key) {
     }
     var parentDir = path.join(Key, "..");
     if (parentDir === ".") {
-        parentDir = "";
+        return "";
     }
     return parentDir + "/";
 }

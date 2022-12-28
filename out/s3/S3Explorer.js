@@ -130,6 +130,7 @@ class S3Explorer {
         let folderCounter = 0;
         let NavigationRowHtml = "";
         let PathNavigationHtml = "";
+        let FolderIsEmpty = true;
         for (var item of this.GetNavigationPath(this.S3ExplorerItem.Key)) {
             PathNavigationHtml += `&nbsp;<vscode-link style="font-size: 16px; font-weight: bold;" id="go_key_${item[1]}">${item[0]}</vscode-link>`;
         }
@@ -154,6 +155,7 @@ class S3Explorer {
                     if (folder.Prefix === this.S3ExplorerItem.Key) {
                         continue;
                     } //do not list object itself
+                    FolderIsEmpty = false;
                     let folderName = this.GetFolderName(folder.Prefix);
                     if (this.SearchText.length > 0 && !folderName.includes(this.SearchText)) {
                         continue;
@@ -185,6 +187,7 @@ class S3Explorer {
                     if (file.Key === this.S3ExplorerItem.Key) {
                         continue;
                     } //do not list object itself
+                    FolderIsEmpty = false;
                     let fileName = s3_helper.GetFileNameWithExtension(file.Key);
                     if (this.SearchText.length > 0 && !fileName.includes(this.SearchText)) {
                         continue;
@@ -212,63 +215,61 @@ class S3Explorer {
                 }
             }
         }
-        if (fileCounter === 0) {
-            if (this.S3ExplorerItem.IsFolder()) {
-                S3RowHtml = `
-                <tr>
-                <td style="height:50px; text-align:center;" colspan="6">Folder Is Empty</td>
-                </tr>
-                <tr style="height:50px; text-align:center;">
-                <td colspan="6"><vscode-button appearance="primary" id="upload_empty_folder">Upload</vscode-button></td>
-                </tr>
-                `;
-            }
-            if (this.S3ExplorerItem.IsFile()) {
-                S3RowHtml = `
-                <tr style="height:50px; text-align:center;">
-                <td colspan="6">
-                    <vscode-button appearance="primary" id="download_current_file">Download</vscode-button>
-                    &nbsp;
-                    <vscode-button appearance="primary" id="replace_file">Replace</vscode-button>
-                </td>
-                </tr>
-                <tr>
-                    <td>File Name</td>
-                    <td>:</td>
-                    <td colspan="4">${s3_helper.GetFileNameWithExtension(this.S3ExplorerItem.Key)}</td>
-                </tr>
-                <tr>
-                    <td>Extension</td>
-                    <td>:</td>
-                    <td colspan="4">${this.GetFileExtension(this.S3ExplorerItem.Key)}</td>
-                </tr>  
-                <tr>
-                    <td>Folder</td>
-                    <td>:</td>
-                    <td colspan="4">${s3_helper.GetParentFolderKey(this.S3ExplorerItem.Key)}</td>
-                </tr>                
-                <tr>
-                    <td>Key</td>
-                    <td>:</td>
-                    <td colspan="4">${this.S3ExplorerItem.Key}</td>
-                </tr>
-                <tr>
-                    <td>ARN</td>
-                    <td>:</td>
-                    <td colspan="4">${s3_helper.GetARN(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key)}</td>
-                </tr>
-                <tr>
-                    <td>S3 URL</td>
-                    <td>:</td>
-                    <td colspan="4">${s3_helper.GetURI(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key)}</td>
-                </tr>
-                <tr>
-                    <td>URL</td>
-                    <td>:</td>
-                    <td colspan="4">${s3_helper.GetURL(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key)}</td>
-                </tr>
-                `;
-            }
+        if (this.S3ExplorerItem.IsFolder() && FolderIsEmpty) {
+            S3RowHtml = `
+            <tr>
+            <td style="height:50px; text-align:center;" colspan="6">Folder Is Empty</td>
+            </tr>
+            <tr style="height:50px; text-align:center;">
+            <td colspan="6"><vscode-button appearance="primary" id="upload_empty_folder">Upload</vscode-button></td>
+            </tr>
+            `;
+        }
+        if (this.S3ExplorerItem.IsFile()) {
+            S3RowHtml = `
+            <tr style="height:50px; text-align:center;">
+            <td colspan="6">
+                <vscode-button appearance="primary" id="download_current_file">Download</vscode-button>
+                &nbsp;
+                <vscode-button appearance="primary" id="replace_file">Replace</vscode-button>
+            </td>
+            </tr>
+            <tr>
+                <td>File Name</td>
+                <td>:</td>
+                <td colspan="4">${s3_helper.GetFileNameWithExtension(this.S3ExplorerItem.Key)}</td>
+            </tr>
+            <tr>
+                <td>Extension</td>
+                <td>:</td>
+                <td colspan="4">${this.GetFileExtension(this.S3ExplorerItem.Key)}</td>
+            </tr>  
+            <tr>
+                <td>Folder</td>
+                <td>:</td>
+                <td colspan="4">${s3_helper.GetParentFolderKey(this.S3ExplorerItem.Key)}</td>
+            </tr>                
+            <tr>
+                <td>Key</td>
+                <td>:</td>
+                <td colspan="4">${this.S3ExplorerItem.Key}</td>
+            </tr>
+            <tr>
+                <td>ARN</td>
+                <td>:</td>
+                <td colspan="4">${s3_helper.GetARN(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key)}</td>
+            </tr>
+            <tr>
+                <td>S3 URL</td>
+                <td>:</td>
+                <td colspan="4">${s3_helper.GetURI(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key)}</td>
+            </tr>
+            <tr>
+                <td>URL</td>
+                <td>:</td>
+                <td colspan="4">${s3_helper.GetURL(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key)}</td>
+            </tr>
+            `;
         }
         let result = /*html*/ `
     <!DOCTYPE html>
