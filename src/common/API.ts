@@ -142,16 +142,34 @@ async function DeleteS3Folder(Profile:string, Bucket:string, Key:string) {
   }).promise();
 }
 
-export async function UploadS3File(Profile:string, Bucket:string, Key:string, SourcePath:string) : Promise<MethodResult<string>>
+export async function UploadFileToFolder(Profile:string, Bucket:string, FolderKey:string, SourcePath:string) : Promise<MethodResult<string>>
 {
   let result = new MethodResult<string>();
-  if(!s3_helper.IsFolder(Key))
+  if(!s3_helper.IsFolder(FolderKey))
   {
     result.isSuccessful = false;
     return result;
   }
 
-  let TargetKey = join(Key, s3_helper.GetFileNameWithExtension(SourcePath))
+  let TargetKey = join(FolderKey, s3_helper.GetFileNameWithExtension(SourcePath));
+
+  return UploadFile(Profile, Bucket, TargetKey, SourcePath);
+}
+
+export async function UploadFile(Profile:string, Bucket:string, TargetKey:string, SourcePath:string) : Promise<MethodResult<string>>
+{
+  let result = new MethodResult<string>();
+  if(!s3_helper.IsFile(TargetKey))
+  {
+    result.isSuccessful = false;
+    return result;
+  }
+
+  if(s3_helper.GetFileExtension(TargetKey) !== s3_helper.GetFileExtension(SourcePath))
+  {
+    result.isSuccessful = false;
+    return result;
+  }
 
   try 
   {

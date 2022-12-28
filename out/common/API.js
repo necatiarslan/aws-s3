@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadS3File = exports.UploadS3File = exports.DeleteObject = exports.CreateS3Folder = exports.GetS3ObjectList = void 0;
+exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadS3File = exports.UploadFile = exports.UploadFileToFolder = exports.DeleteObject = exports.CreateS3Folder = exports.GetS3ObjectList = void 0;
 /* eslint-disable @typescript-eslint/naming-convention */
 const AWS = require("aws-sdk");
 const ui = require("./UI");
@@ -118,13 +118,26 @@ async function DeleteS3Folder(Profile, Bucket, Key) {
         Key: Key
     }).promise();
 }
-async function UploadS3File(Profile, Bucket, Key, SourcePath) {
+async function UploadFileToFolder(Profile, Bucket, FolderKey, SourcePath) {
     let result = new MethodResult_1.MethodResult();
-    if (!s3_helper.IsFolder(Key)) {
+    if (!s3_helper.IsFolder(FolderKey)) {
         result.isSuccessful = false;
         return result;
     }
-    let TargetKey = (0, path_2.join)(Key, s3_helper.GetFileNameWithExtension(SourcePath));
+    let TargetKey = (0, path_2.join)(FolderKey, s3_helper.GetFileNameWithExtension(SourcePath));
+    return UploadFile(Profile, Bucket, TargetKey, SourcePath);
+}
+exports.UploadFileToFolder = UploadFileToFolder;
+async function UploadFile(Profile, Bucket, TargetKey, SourcePath) {
+    let result = new MethodResult_1.MethodResult();
+    if (!s3_helper.IsFile(TargetKey)) {
+        result.isSuccessful = false;
+        return result;
+    }
+    if (s3_helper.GetFileExtension(TargetKey) !== s3_helper.GetFileExtension(SourcePath)) {
+        result.isSuccessful = false;
+        return result;
+    }
     try {
         const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
         const s3 = new AWS.S3({ credentials: credentials });
@@ -147,7 +160,7 @@ async function UploadS3File(Profile, Bucket, Key, SourcePath) {
         return result;
     }
 }
-exports.UploadS3File = UploadS3File;
+exports.UploadFile = UploadFile;
 async function DownloadS3File(Profile, Bucket, Key, TargetPath) {
     let result = new MethodResult_1.MethodResult();
     let TargetFilePath = (0, path_2.join)(TargetPath, s3_helper.GetFileNameWithExtension(Key));

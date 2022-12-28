@@ -15,7 +15,7 @@ export function IsFile(Key:string):boolean
     return !IsFolder(Key);
 }
 
-export function GetParentFolder(Key:string):string
+export function GetParentFolderKey(Key:string):string
 {
     if(IsRoot(Key))
     {
@@ -23,8 +23,8 @@ export function GetParentFolder(Key:string):string
     }
 
     var parentDir = path.join(Key, "..");
-    if(parentDir="."){parentDir="";}
-    return parentDir;
+    if(parentDir==="."){parentDir="";}
+    return parentDir + "/";
 }
 
 export function GetFullPath(Bucket:string, Key:string):string

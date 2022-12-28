@@ -13,14 +13,36 @@ function main() {
   const SelectAllButton = document.getElementById("select_all");
   SelectAllButton.addEventListener("click", SelectAllButtonClicked);
 
+  const SelectNoneButton = document.getElementById("select_none");
+  SelectNoneButton.addEventListener("click", SelectNoneButtonClicked);
+
   const CreateFolderButton = document.getElementById("create_folder");
   CreateFolderButton.addEventListener("click", CreateFolderButtonClicked);
 
   const UploadButton = document.getElementById("upload");
   UploadButton.addEventListener("click", UploadButtonClicked);
 
+  const UploadEmptyFolderButton = document.getElementById("upload_empty_folder");
+  if(UploadEmptyFolderButton)
+  {
+    UploadEmptyFolderButton.addEventListener("click", UploadEmptyFolderButtonClicked);
+  }
+
+
   const DownloadButton = document.getElementById("download");
   DownloadButton.addEventListener("click", DownloadButtonClicked);
+
+  const DownloadCurrentFileButton = document.getElementById("download_current_file");
+  if(DownloadCurrentFileButton)
+  {
+    DownloadCurrentFileButton.addEventListener("click", DownloadCurrentFileButtonClicked);
+  }
+
+  const ReplaceFileButton = document.getElementById("replace_file");
+  if(ReplaceFileButton)
+  {
+    ReplaceFileButton.addEventListener("click", ReplaceFileButtonClicked);
+  }
 
   const CopyDropDown = document.getElementById("copy_dropdown");
   CopyDropDown.addEventListener("change", CopyDropDownChanged);
@@ -76,6 +98,13 @@ function SelectAllButtonClicked() {
   }
 }
 
+function SelectNoneButtonClicked() {
+  const CheckBoxList = document.querySelectorAll("[id^='checkbox_']");
+  for (let i = 0; i < CheckBoxList.length; i++) {
+    CheckBoxList[i].checked = false;
+  }
+}
+
 function CreateFolderButtonClicked() {
   vscode.postMessage({
     command: "create_folder"
@@ -83,6 +112,12 @@ function CreateFolderButtonClicked() {
 }
 
 function UploadButtonClicked() {
+  vscode.postMessage({
+    command: "upload"
+  });
+}
+
+function UploadEmptyFolderButtonClicked() {
   vscode.postMessage({
     command: "upload"
   });
@@ -102,6 +137,18 @@ function DownloadButtonClicked(e) {
   vscode.postMessage({
     command: "download",
     keys: CheckedKeys
+  });
+}
+
+function ReplaceFileButtonClicked(e) {
+  vscode.postMessage({
+    command: "replace_file"
+  });
+}
+
+function DownloadCurrentFileButtonClicked(e) {
+  vscode.postMessage({
+    command: "download_current_file"
   });
 }
 

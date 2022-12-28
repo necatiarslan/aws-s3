@@ -33,7 +33,6 @@ class S3Explorer {
         else {
             this.S3ExplorerItem = new S3ExplorerItem_1.S3ExplorerItem("undefined", "");
         }
-        this.HomeKey = node.Shortcut;
     }
     async RenderHtml() {
         ui.logToOutput('S3Explorer.RenderHmtl Started');
@@ -131,21 +130,23 @@ class S3Explorer {
         let folderCounter = 0;
         let NavigationRowHtml = "";
         let PathNavigationHtml = "";
-        if (!this.S3ExplorerItem.IsRoot()) {
-            for (var item of this.GetNavigationPath(this.S3ExplorerItem.Key)) {
-                PathNavigationHtml += `&nbsp;<vscode-link id="go_key_${item[1]}">${item[0]}</vscode-link>`;
-            }
-            NavigationRowHtml += `
-            <tr style="background-color: #315562; height:30px">
-            <td colspan="6">
-                <vscode-link id="go_home"><img src="${goHomeUri}" alt="Go Home"></vscode-link>
-                &nbsp;
-                <vscode-link id="go_up"><img src="${goUpUri}" alt="Go Up"></vscode-link>
-                &nbsp;
-                ${PathNavigationHtml}
-            </td>
-            </tr>`;
+        for (var item of this.GetNavigationPath(this.S3ExplorerItem.Key)) {
+            PathNavigationHtml += `&nbsp;<vscode-link style="font-size: 16px; font-weight: bold;" id="go_key_${item[1]}">${item[0]}</vscode-link>`;
         }
+        NavigationRowHtml += `
+        <tr style="background-color: #315562; height:30px">
+            <td style="width:20px">
+                <vscode-checkbox id="checkbox_${this.S3ExplorerItem.Key}" ></vscode-checkbox>
+            </td>
+            <td style="width:20px">
+                <vscode-button appearance="icon" id="add_shortcut_${this.S3ExplorerItem.Key}">
+                    <span><img src="${S3TreeView_1.S3TreeView.Current?.DoesShortcutExists(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key) ? bookmark_yesUri : bookmark_noUri}"></img></span>
+                </vscode-button>
+            </td>
+            <td colspan="4">
+            ${PathNavigationHtml}
+            </td>
+        </tr>`;
         let S3RowHtml = "";
         if (this.S3ObjectList) {
             if (this.S3ObjectList.CommonPrefixes) {
@@ -160,10 +161,10 @@ class S3Explorer {
                     folderCounter++;
                     S3RowHtml += `
                     <tr>
-                        <td>
+                        <td style="width:20px">
                             <vscode-checkbox id="checkbox_${folder.Prefix}" ></vscode-checkbox>
                         </td>
-                        <td>
+                        <td style="width:20px">
                             <vscode-button appearance="icon" id="add_shortcut_${folder.Prefix}">
                                 <span><img src="${S3TreeView_1.S3TreeView.Current?.DoesShortcutExists(this.S3ExplorerItem.Bucket, folder.Prefix) ? bookmark_yesUri : bookmark_noUri}"></img></span>
                             </vscode-button>
@@ -172,9 +173,9 @@ class S3Explorer {
                             <img src="${folderUri}"></img>
                             <vscode-link id="open_${folder.Prefix}">${folderName}</vscode-link>
                         </td>
-                        <td style="text-align:right">Folder</td>
-                        <td style="text-align:right"><!--modified column--></td>
-                        <td style="text-align:right"><!--size column--></td>
+                        <td style="text-align:right; width:100px">Folder</td>
+                        <td style="text-align:right; width:100px"><!--modified column--></td>
+                        <td style="text-align:right; width:100px"><!--size column--></td>
                     </tr>
                     `;
                 }
@@ -191,10 +192,10 @@ class S3Explorer {
                     fileCounter++;
                     S3RowHtml += `
                     <tr>
-                        <td>
+                        <td style="width:20px">
                             <vscode-checkbox id="checkbox_${file.Key}" ></vscode-checkbox>
                         </td>
-                        <td>
+                        <td style="width:20px">
                             <vscode-button appearance="icon" id="add_shortcut_${file.Key}">
                                 <span><img src="${S3TreeView_1.S3TreeView.Current?.DoesShortcutExists(this.S3ExplorerItem.Bucket, file.Key) ? bookmark_yesUri : bookmark_noUri}"></img></span>
                             </vscode-button>
@@ -203,25 +204,71 @@ class S3Explorer {
                             <img src="${fileUri}"></img>
                             <vscode-link id="open_${file.Key}">${fileName}</vscode-link>
                         </td>
-                        <td style="text-align:right">${this.GetFileExtension(file.Key)}</td>
-                        <td style="text-align:right">${file.LastModified ? file.LastModified.toLocaleDateString() : ""}</td>
-                        <td style="text-align:right">${ui.bytesToText(file.Size)}</td>
+                        <td style="text-align:right; width:100px">${this.GetFileExtension(file.Key)}</td>
+                        <td style="text-align:right; width:100px">${file.LastModified ? file.LastModified.toLocaleDateString() : ""}</td>
+                        <td style="text-align:right; width:100px">${ui.bytesToText(file.Size)}</td>
                     </tr>
                     `;
                 }
             }
         }
-        else {
-            S3RowHtml = `
-            <tr>
-            <th></th>
-            <th></th>
-            <th>No Objects !!!</th>
-            <th></th>
-            <th></th>
-            <th></th>
-            </tr>
-            `;
+        if (fileCounter === 0) {
+            if (this.S3ExplorerItem.IsFolder()) {
+                S3RowHtml = `
+                <tr>
+                <td style="height:50px; text-align:center;" colspan="6">Folder Is Empty</td>
+                </tr>
+                <tr style="height:50px; text-align:center;">
+                <td colspan="6"><vscode-button appearance="primary" id="upload_empty_folder">Upload</vscode-button></td>
+                </tr>
+                `;
+            }
+            if (this.S3ExplorerItem.IsFile()) {
+                S3RowHtml = `
+                <tr style="height:50px; text-align:center;">
+                <td colspan="6">
+                    <vscode-button appearance="primary" id="download_current_file">Download</vscode-button>
+                    &nbsp;
+                    <vscode-button appearance="primary" id="replace_file">Replace</vscode-button>
+                </td>
+                </tr>
+                <tr>
+                    <td>File Name</td>
+                    <td>:</td>
+                    <td colspan="4">${s3_helper.GetFileNameWithExtension(this.S3ExplorerItem.Key)}</td>
+                </tr>
+                <tr>
+                    <td>Extension</td>
+                    <td>:</td>
+                    <td colspan="4">${this.GetFileExtension(this.S3ExplorerItem.Key)}</td>
+                </tr>  
+                <tr>
+                    <td>Folder</td>
+                    <td>:</td>
+                    <td colspan="4">${s3_helper.GetParentFolderKey(this.S3ExplorerItem.Key)}</td>
+                </tr>                
+                <tr>
+                    <td>Key</td>
+                    <td>:</td>
+                    <td colspan="4">${this.S3ExplorerItem.Key}</td>
+                </tr>
+                <tr>
+                    <td>ARN</td>
+                    <td>:</td>
+                    <td colspan="4">${s3_helper.GetARN(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key)}</td>
+                </tr>
+                <tr>
+                    <td>S3 URL</td>
+                    <td>:</td>
+                    <td colspan="4">${s3_helper.GetURI(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key)}</td>
+                </tr>
+                <tr>
+                    <td>URL</td>
+                    <td>:</td>
+                    <td colspan="4">${s3_helper.GetURL(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key)}</td>
+                </tr>
+                `;
+            }
         }
         let result = /*html*/ `
     <!DOCTYPE html>
@@ -255,7 +302,7 @@ class S3Explorer {
                     <vscode-option>Copy</vscode-option>
                     <vscode-option>Move</vscode-option>
                 </vscode-dropdown>
-                <vscode-dropdown id="copy_dropdown">
+                <vscode-dropdown style="width: 200px" id="copy_dropdown">
                     <vscode-option>Copy</vscode-option>
                     <vscode-option>File Name(s) Without Extesion</vscode-option>
                     <vscode-option>File Name(s) With Extesion</vscode-option>
@@ -271,26 +318,43 @@ class S3Explorer {
                     </vscode-text-field>
                 </td>
             </tr>
+            </table>
+
+            <table>
             <tr>
-                <th style="width:20px; text-align:center"><!--checkbox column--></th>
-                <th style="width:20px; text-align:center"><!--add to shortcut column--></th>
+                <th style="width:20px; text-align:center">
+                    <vscode-link id="go_home"><img src="${goHomeUri}" alt="Go Home"></vscode-link>
+                </th>
+                <th style="width:20px; text-align:center">
+                    <vscode-link id="go_up"><img src="${goUpUri}" alt="Go Up"></vscode-link>
+                </th>
                 <th>Name</th>
                 <th style="width:100px; text-align:center">Type</th>
                 <th style="width:100px; text-align:center">Modified</th>
                 <th style="width:100px; text-align:center">Size</th>
             </tr>
+            </table>
 
+            <table>
             ${NavigationRowHtml}
+            </table>
 
+            <table>
             ${S3RowHtml}
+            </table>
 
+            <table>
             <tr>
-            <th colspan="3" style="text-align:left">
-            <vscode-button appearance="secondary" id="select_all">Select All</vscode-button>
-            </th>
-            <th colspan="3" style="text-align:right">
-            ${fileCounter} File(s), ${folderCounter} Folder(s)
-            </th>
+                <th style="width:50px;">
+                    Select
+                </th>
+                <th colspan="2" style="text-align:left">
+                    <vscode-button appearance="secondary" id="select_all">All</vscode-button>
+                    <vscode-button appearance="secondary" id="select_none">None</vscode-button>
+                </th>
+                <th colspan="3" style="text-align:right">
+                    ${fileCounter} File(s), ${folderCounter} Folder(s)
+                </th>
             </tr>
 
         </table>
@@ -331,6 +395,9 @@ class S3Explorer {
                 case "upload":
                     this.UploadFile();
                     return;
+                case "replace_file":
+                    this.ReplaceFile();
+                    return;
                 case "open":
                     id = message.id;
                     id = id.replace("open_", "");
@@ -339,6 +406,9 @@ class S3Explorer {
                     return;
                 case "download":
                     this.DownloadFile(message.keys);
+                    return;
+                case "download_current_file":
+                    this.DownloadFile(this.S3ExplorerItem.Key);
                     return;
                 case "edit":
                     if (message.keys.length == 0) {
@@ -390,16 +460,11 @@ class S3Explorer {
                     this.AddShortcut(id);
                     return;
                 case "go_up":
-                    this.S3ExplorerItem.Key = this.S3ExplorerItem.GetParentFolder();
+                    this.S3ExplorerItem.Key = this.S3ExplorerItem.GetParentFolderKey();
                     this.Load();
                     return;
                 case "go_home":
-                    if (this.HomeKey) {
-                        this.S3ExplorerItem.Key = this.HomeKey;
-                    }
-                    else {
-                        this.S3ExplorerItem.Key = "";
-                    }
+                    this.S3ExplorerItem.Key = "";
                     this.Load();
                     return;
                 case "go_key":
@@ -540,7 +605,7 @@ class S3Explorer {
         ui.showInfoMessage("Stay Tuned ... RenameFile key=" + key);
     }
     async DownloadFile(keys) {
-        if (keys.length === 0 || !keys.includes("|")) {
+        if (keys.length === 0) {
             return;
         }
         var keyList = keys.split("|");
@@ -584,13 +649,39 @@ class S3Explorer {
             return;
         }
         for (var file of selectedFileList) {
-            let result = await api.UploadS3File(S3TreeView_1.S3TreeView.Current.AwsProfile, this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, file.path);
+            let result = await api.UploadFileToFolder(S3TreeView_1.S3TreeView.Current.AwsProfile, this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, file.path);
             if (result.isSuccessful) {
-                ui.showInfoMessage(file.path + "File is uploaded");
+                ui.showInfoMessage(s3_helper.GetFileNameWithExtension(file.path) + " is uploaded");
             }
         }
         this.Load();
         this.RenderHtml();
+    }
+    async ReplaceFile() {
+        if (!this.S3ExplorerItem.IsFile()) {
+            return;
+        }
+        if (!S3TreeView_1.S3TreeView.Current?.AwsProfile) {
+            return;
+        }
+        let param = {
+            canSelectFolders: false,
+            canSelectFiles: true,
+            openLabel: "Select File",
+            title: "Select File To Upload",
+            canSelectMany: false,
+        };
+        let selectedFileList = await vscode.window.showOpenDialog(param);
+        if (!selectedFileList || selectedFileList.length == 0) {
+            return;
+        }
+        let file = selectedFileList[0];
+        let result = await api.UploadFile(S3TreeView_1.S3TreeView.Current.AwsProfile, this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, file.path);
+        if (result.isSuccessful) {
+            ui.showInfoMessage(s3_helper.GetFileNameWithExtension(file.path) + " is replaced");
+            this.Load();
+            this.RenderHtml();
+        }
     }
     async CreateFolder() {
         if (!this.S3ExplorerItem.IsFolder) {

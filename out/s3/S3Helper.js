@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetFileExtension = exports.RemoveExtesionFromFileName = exports.GetFileNameWithoutExtension = exports.GetFileNameWithExtension = exports.GetARN = exports.GetURL = exports.GetURI = exports.GetFullPath = exports.GetParentFolder = exports.IsFile = exports.IsFolder = exports.IsRoot = void 0;
+exports.GetFileExtension = exports.RemoveExtesionFromFileName = exports.GetFileNameWithoutExtension = exports.GetFileNameWithExtension = exports.GetARN = exports.GetURL = exports.GetURI = exports.GetFullPath = exports.GetParentFolderKey = exports.IsFile = exports.IsFolder = exports.IsRoot = void 0;
 const path = require("path");
 function IsRoot(Key) {
     return Key === "";
@@ -14,17 +14,17 @@ function IsFile(Key) {
     return !IsFolder(Key);
 }
 exports.IsFile = IsFile;
-function GetParentFolder(Key) {
+function GetParentFolderKey(Key) {
     if (IsRoot(Key)) {
         return "";
     }
     var parentDir = path.join(Key, "..");
-    if (parentDir = ".") {
+    if (parentDir === ".") {
         parentDir = "";
     }
-    return parentDir;
+    return parentDir + "/";
 }
-exports.GetParentFolder = GetParentFolder;
+exports.GetParentFolderKey = GetParentFolderKey;
 function GetFullPath(Bucket, Key) {
     return Bucket + "/" + Key;
 }

@@ -27,9 +27,9 @@ export class S3ExplorerItem {
 		return s3_helper.IsFolder(this.Key);
 	}
 	
-	public GetParentFolder()
+	public GetParentFolderKey()
 	{
-		return s3_helper.GetParentFolder(this.Key);
+		return s3_helper.GetParentFolderKey(this.Key);
 	}
 
 	public GetFullPath(){

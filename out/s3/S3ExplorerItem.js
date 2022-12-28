@@ -16,8 +16,8 @@ class S3ExplorerItem {
     IsFolder() {
         return s3_helper.IsFolder(this.Key);
     }
-    GetParentFolder() {
-        return s3_helper.GetParentFolder(this.Key);
+    GetParentFolderKey() {
+        return s3_helper.GetParentFolderKey(this.Key);
     }
     GetFullPath() {
         return s3_helper.GetFullPath(this.Bucket, this.Key);
