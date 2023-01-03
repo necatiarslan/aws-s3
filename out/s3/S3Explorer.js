@@ -221,7 +221,11 @@ class S3Explorer {
             <td style="height:50px; text-align:center;" colspan="6">Folder Is Empty</td>
             </tr>
             <tr style="height:50px; text-align:center;">
-            <td colspan="6"><vscode-button appearance="primary" id="upload_empty_folder">Upload</vscode-button></td>
+            <td colspan="6">
+                <vscode-button appearance="primary" id="upload_empty_folder">Upload File</vscode-button>
+                &nbsp;
+                <vscode-button appearance="primary" id="delete_folder">Delete Folder</vscode-button>
+            </td>
             </tr>
             `;
         }
@@ -231,7 +235,15 @@ class S3Explorer {
             <td colspan="6">
                 <vscode-button appearance="primary" id="download_current_file">Download</vscode-button>
                 &nbsp;
-                <vscode-button appearance="primary" id="replace_file">Replace</vscode-button>
+                <vscode-button appearance="primary" id="update_file">Update</vscode-button>
+                &nbsp;
+                <vscode-button appearance="primary" id="delete_file">Delete</vscode-button>
+                &nbsp;
+                <vscode-button appearance="primary" id="rename_file">Rename</vscode-button>
+                &nbsp;
+                <vscode-button appearance="primary" id="copy_file">Copy</vscode-button>
+                &nbsp;
+                <vscode-button appearance="primary" id="move_file">Move</vscode-button>
             </td>
             </tr>
             <tr>
@@ -305,8 +317,8 @@ class S3Explorer {
                 </vscode-dropdown>
                 <vscode-dropdown style="width: 200px" id="copy_dropdown">
                     <vscode-option>Copy</vscode-option>
-                    <vscode-option>File Name(s) Without Extesion</vscode-option>
-                    <vscode-option>File Name(s) With Extesion</vscode-option>
+                    <vscode-option>File Name(s) Without Extension</vscode-option>
+                    <vscode-option>File Name(s) With Extension</vscode-option>
                     <vscode-option>Key(s)</vscode-option>
                     <vscode-option>ARN(s)</vscode-option>
                     <vscode-option>S3 URI(s)</vscode-option>
@@ -388,7 +400,6 @@ class S3Explorer {
                 case "refresh":
                     this.SearchText = message.search_text;
                     this.Load();
-                    this.RenderHtml();
                     return;
                 case "create_folder":
                     this.CreateFolder();
@@ -396,8 +407,23 @@ class S3Explorer {
                 case "upload":
                     this.UploadFile();
                     return;
-                case "replace_file":
-                    this.ReplaceFile();
+                case "update_file":
+                    this.UpdateFile();
+                    return;
+                case "delete_file":
+                    this.DeleteFile(this.S3ExplorerItem.Key);
+                    return;
+                case "rename_file":
+                    this.RenameFile(this.S3ExplorerItem.Key);
+                    return;
+                case "move_file":
+                    this.MoveFile(this.S3ExplorerItem.Key);
+                    return;
+                case "copy_file":
+                    this.CopyFile(this.S3ExplorerItem.Key);
+                    return;
+                case "delete_folder":
+                    this.DeleteFile(this.S3ExplorerItem.Key);
                     return;
                 case "open":
                     id = message.id;
@@ -435,10 +461,10 @@ class S3Explorer {
                         return;
                     }
                     switch (message.action) {
-                        case "File Name(s) Without Extesion":
+                        case "File Name(s) Without Extension":
                             this.CopyFileNameWithoutExtension(message.keys);
                             return;
-                        case "File Name(s) With Extesion":
+                        case "File Name(s) With Extension":
                             this.CopyFileNameWithExtension(message.keys);
                             return;
                         case "Key(s)":
@@ -578,7 +604,7 @@ class S3Explorer {
         ui.showInfoMessage("Stay Tuned ... CopyFile key=" + key);
     }
     async DeleteFile(keys) {
-        if (keys.length === 0 || !keys.includes("|")) {
+        if (keys.length === 0) {
             return;
         }
         if (!S3TreeView_1.S3TreeView.Current?.AwsProfile) {
@@ -598,8 +624,11 @@ class S3Explorer {
                 }
             }
         }
+        //go up if current file/folder is deleted
+        if (deleteCounter >= 1 && keys === this.S3ExplorerItem.Key) {
+            this.S3ExplorerItem.Key = this.S3ExplorerItem.GetParentFolderKey();
+        }
         this.Load();
-        this.RenderHtml();
         ui.showInfoMessage(deleteCounter.toString() + " object(s) are deleted");
     }
     async RenameFile(key) {
@@ -656,9 +685,8 @@ class S3Explorer {
             }
         }
         this.Load();
-        this.RenderHtml();
     }
-    async ReplaceFile() {
+    async UpdateFile() {
         if (!this.S3ExplorerItem.IsFile()) {
             return;
         }
@@ -681,7 +709,6 @@ class S3Explorer {
         if (result.isSuccessful) {
             ui.showInfoMessage(s3_helper.GetFileNameWithExtension(file.path) + " is replaced");
             this.Load();
-            this.RenderHtml();
         }
     }
     async CreateFolder() {
@@ -699,7 +726,6 @@ class S3Explorer {
         if (result.isSuccessful) {
             ui.showInfoMessage(result.result + " Folder is Created");
             this.Load();
-            this.RenderHtml();
         }
     }
     dispose() {

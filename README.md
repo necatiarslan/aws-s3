@@ -1,16 +1,36 @@
-![screenshoot](media/main-screen.png)
-
 # Aws S3 
-The AWS S3 Browser extension for Visual Studio Code allows users to easily browse and manage their Amazon S3 buckets and files from within the code editor.
+
+![screenshoot](media/psc-main-screen.png)
+
+The AWS S3 Browser extension for Visual Studio Code allows users to easily browse and manage their Amazon S3 buckets, files and folders within the vscode editor.
 
 With this extension, users can perform a variety of tasks such as 
 - Uploading, downloading and deleting files
 - Creating and deleting folders
 - Copying file names, keys, ARNs, URLs and S3 URIs
-- Adding shortcuts to files and folder for easy to access
+- Adding shortcuts to files and folders for easy to access
 
 The AWS S3 Browser extension is a useful tool for anyone working with S3, whether you are a developer, data scientist, or system administrator. \
 It provides an intuitive and user-friendly interface for managing S3 resources.
+
+
+## Search
+![screenshoot](media/psc-search.png)
+
+## Buckets & Shortcuts
+![screenshoot](media/psc-treeview.png)
+
+## File
+![screenshoot](media/psc-file.png)
+
+## Folder
+![screenshoot](media/psc-empty-folder.png)
+
+## Edit Menu
+![screenshoot](media/psc-edit-combo.png)
+
+## Copy Menu
+![screenshoot](media/psc-copy-combo.png)
 
 ## Aws Credentials Setup
 To Access Aws, you need to configure aws credentials.
@@ -24,7 +44,7 @@ https://github.com/necatiarslan/aws-s3/issues/new
 
 
 ## Todo
-- S3.getBucketAcl to get permissions and enable/disable command links
+- S3.getBucketAcl to get permissions and enable/disable command buttons
 - Global Search View
 - Sort By Name / Type
 - Delete Folder with files in it

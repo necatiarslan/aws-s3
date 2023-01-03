@@ -38,10 +38,40 @@ function main() {
     DownloadCurrentFileButton.addEventListener("click", DownloadCurrentFileButtonClicked);
   }
 
-  const ReplaceFileButton = document.getElementById("replace_file");
-  if(ReplaceFileButton)
+  const UpdateFileButton = document.getElementById("update_file");
+  if(UpdateFileButton)
   {
-    ReplaceFileButton.addEventListener("click", ReplaceFileButtonClicked);
+    UpdateFileButton.addEventListener("click", UpdateFileButtonClicked);
+  }
+
+  const DeleteFileButton = document.getElementById("delete_file");
+  if(DeleteFileButton)
+  {
+    DeleteFileButton.addEventListener("click", DeleteFileButtonClicked);
+  }
+
+  const RenameFileButton = document.getElementById("rename_file");
+  if(RenameFileButton)
+  {
+    RenameFileButton.addEventListener("click", RenameFileButtonClicked);
+  }
+
+  const CopyFileButton = document.getElementById("copy_file");
+  if(CopyFileButton)
+  {
+    CopyFileButton.addEventListener("click", CopyFileButtonClicked);
+  }
+
+  const MoveFileButton = document.getElementById("move_file");
+  if(MoveFileButton)
+  {
+    MoveFileButton.addEventListener("click", MoveFileButtonClicked);
+  }
+
+  const DeleteFolderButton = document.getElementById("delete_folder");
+  if(DeleteFolderButton)
+  {
+    DeleteFolderButton.addEventListener("click", DeleteFolderButtonClicked);
   }
 
   const CopyDropDown = document.getElementById("copy_dropdown");
@@ -140,9 +170,39 @@ function DownloadButtonClicked(e) {
   });
 }
 
-function ReplaceFileButtonClicked(e) {
+function UpdateFileButtonClicked() {
   vscode.postMessage({
-    command: "replace_file"
+    command: "update_file"
+  });
+}
+
+function DeleteFileButtonClicked() {
+  vscode.postMessage({
+    command: "delete_file"
+  });
+}
+
+function RenameFileButtonClicked() {
+  vscode.postMessage({
+    command: "rename_file"
+  });
+}
+
+function CopyFileButtonClicked() {
+  vscode.postMessage({
+    command: "copy_file"
+  });
+}
+
+function MoveFileButtonClicked() {
+  vscode.postMessage({
+    command: "move_file"
+  });
+}
+
+function DeleteFolderButtonClicked() {
+  vscode.postMessage({
+    command: "delete_folder"
   });
 }
 
