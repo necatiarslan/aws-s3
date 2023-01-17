@@ -2,7 +2,6 @@
 import * as AWS from "aws-sdk";
 import * as ui from "./UI";
 import { MethodResult } from './MethodResult';
-import { Credentials } from 'aws-sdk';
 import { homedir } from "os";
 import { sep } from "path";
 import { join } from "path";
@@ -40,7 +39,7 @@ export async function GetS3ObjectList(Profile:string, Bucket:string, Key:string)
   }
 }
 
-export async function SearchS3Object(Profile:string, Bucket: string, PrefixKey:string, FileName: string | undefined, FileExtension: string | undefined, FolderName: string | undefined): Promise<MethodResult<AWS.S3.ObjectList | undefined>> {
+export async function SearchS3Object(Profile:string, Bucket: string, PrefixKey:string, FileName: string | undefined, FileExtension: string | undefined, FolderName: string | undefined, MaxResultCount: number = 100): Promise<MethodResult<AWS.S3.ObjectList | undefined>> {
   let result:MethodResult<AWS.S3.ObjectList | undefined> = new MethodResult<AWS.S3.ObjectList | undefined>();
   result.result = [];
   
@@ -58,7 +57,8 @@ export async function SearchS3Object(Profile:string, Bucket: string, PrefixKey:s
         const params = {
             Bucket: Bucket,
             Prefix:PrefixKey,
-            ContinuationToken: continuationToken
+            ContinuationToken: continuationToken,
+            MaxKeys:100
         };
         const response = await s3.listObjectsV2(params).promise();
         continuationToken = response.NextContinuationToken;
@@ -81,6 +81,7 @@ export async function SearchS3Object(Profile:string, Bucket: string, PrefixKey:s
             }
           }
         }
+        if(MaxResultCount > 0 && result.result.length > MaxResultCount) { break; }
     } while (continuationToken);
     result.isSuccessful = true;
     return result;

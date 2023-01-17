@@ -35,7 +35,7 @@ async function GetS3ObjectList(Profile, Bucket, Key) {
     }
 }
 exports.GetS3ObjectList = GetS3ObjectList;
-async function SearchS3Object(Profile, Bucket, PrefixKey, FileName, FileExtension, FolderName) {
+async function SearchS3Object(Profile, Bucket, PrefixKey, FileName, FileExtension, FolderName, MaxResultCount = 100) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
     FileName = FileName?.toLowerCase();
@@ -49,7 +49,8 @@ async function SearchS3Object(Profile, Bucket, PrefixKey, FileName, FileExtensio
             const params = {
                 Bucket: Bucket,
                 Prefix: PrefixKey,
-                ContinuationToken: continuationToken
+                ContinuationToken: continuationToken,
+                MaxKeys: 100
             };
             const response = await s3.listObjectsV2(params).promise();
             continuationToken = response.NextContinuationToken;
@@ -66,6 +67,9 @@ async function SearchS3Object(Profile, Bucket, PrefixKey, FileName, FileExtensio
                         continue;
                     }
                 }
+            }
+            if (MaxResultCount > 0 && result.result.length > MaxResultCount) {
+                break;
             }
         } while (continuationToken);
         result.isSuccessful = true;

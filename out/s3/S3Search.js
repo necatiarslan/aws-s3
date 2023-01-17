@@ -157,12 +157,12 @@ class S3Search {
                                 <span><img src="${S3TreeView_1.S3TreeView.Current?.DoesShortcutExists(this.S3ExplorerItem.Bucket, file.Key) ? bookmark_yesUri : bookmark_noUri}"></img></span>
                             </vscode-button>
                         </td>
-                        <td>
+                        <td style="white-space:nowrap;">
                             <img src="${isFile ? fileUri : folderUri}"></img>
                             <vscode-link id="open_${file.Key}">${isFile ? fileName : folderName}</vscode-link>
                         </td>
-                        <td>
-                            ${file.Key}
+                        <td style="white-space:nowrap;">
+                            ${s3_helper.GetParentFolderKey(file.Key)}
                         </td>
                         <td style="text-align:right; width:100px">${this.GetFileExtension(file.Key)}</td>
                         <td style="text-align:right; width:100px">${file.LastModified ? file.LastModified.toLocaleDateString() : ""}</td>
@@ -232,7 +232,7 @@ class S3Search {
                 <th style="width:20px"></th>
                 <th style="width:20px"></th>
                 <th>Name</th>
-                <th>Key</th>
+                <th>Folder</th>
                 <th style="width:100px; text-align:center">Type</th>
                 <th style="width:100px; text-align:center">Modified</th>
                 <th style="width:100px; text-align:center">Size</th>
