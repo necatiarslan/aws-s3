@@ -1,3 +1,6 @@
+# v1.1.0
+    -Search All Bucket by File Name, Extension, Folder and Key
+
 # v1.0.10
     -Upload, Download Files
     -Create Folder

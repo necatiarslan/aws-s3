@@ -40,6 +40,60 @@ export async function GetS3ObjectList(Profile:string, Bucket:string, Key:string)
   }
 }
 
+export async function SearchS3Object(Profile:string, Bucket: string, PrefixKey:string, FileName: string | undefined, FileExtension: string | undefined, FolderName: string | undefined): Promise<MethodResult<AWS.S3.ObjectList | undefined>> {
+  let result:MethodResult<AWS.S3.ObjectList | undefined> = new MethodResult<AWS.S3.ObjectList | undefined>();
+  result.result = [];
+  
+  FileName = FileName?.toLowerCase();
+  FileExtension = FileExtension?.toLowerCase();
+  FolderName = FolderName?.toLowerCase();
+
+  try 
+  {
+    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+    const s3 = new AWS.S3({credentials:credentials});
+  
+    let continuationToken: any;
+    do {
+        const params = {
+            Bucket: Bucket,
+            Prefix:PrefixKey,
+            ContinuationToken: continuationToken
+        };
+        const response = await s3.listObjectsV2(params).promise();
+        continuationToken = response.NextContinuationToken;
+        if(response.Contents)
+        {
+          for(var file of response.Contents)
+          {
+            let fileKey = file.Key?.toLowerCase();
+            let currentFileName = s3_helper.GetFileNameWithExtension(fileKey)
+            if(
+                (!FolderName || FolderName.length===0 || (FolderName && FolderName.length>0 && fileKey && fileKey.includes(FolderName)))
+                &&
+                (!FileName || FileName.length===0 || (FileName && FileName.length>0 && currentFileName.includes(FileName)))
+                &&
+                (!FileExtension || FileExtension.length===0 || (FileExtension && FileExtension.length>0 && s3_helper.GetFileExtension(currentFileName) === FileExtension))
+              )
+            {
+              result.result.push(file);
+              continue;
+            }
+          }
+        }
+    } while (continuationToken);
+    result.isSuccessful = true;
+    return result;
+  } 
+  catch (error:any) {
+    result.isSuccessful = false;
+    result.error = error;
+    ui.showErrorMessage('api.GetS3ObjectList Error !!!', error);
+    ui.logToOutput("api.GetS3ObjectList Error !!!", error); 
+    return result;    
+  }
+}
+
 export async function CreateS3Folder(Profile:string, Bucket:string, Key:string, FolderName:string): Promise<MethodResult<string>> {
   let result = new MethodResult<string>();
   let TargetKey = join(Key, FolderName + "/");

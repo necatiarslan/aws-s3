@@ -48,6 +48,10 @@ export function activate(context: vscode.ExtensionContext) {
 		treeView.ShowS3Explorer(node);
 	});
 
+	vscode.commands.registerCommand('S3TreeView.ShowS3Search', (node: S3TreeItem) => {
+		treeView.ShowS3Search(node);
+	});
+
 	vscode.commands.registerCommand('S3TreeView.SelectAwsProfile', (node: S3TreeItem) => {
 		treeView.SelectAwsProfile(node);
 	});

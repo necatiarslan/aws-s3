@@ -9,6 +9,7 @@ With this extension, users can perform a variety of tasks such as
 - Creating and deleting folders
 - Copying file names, keys, ARNs, URLs and S3 URIs
 - Adding shortcuts to files and folders for easy to access
+- Search All Bucket by File Name, Extension, Folder and Key
 
 The AWS S3 Browser extension is a useful tool for anyone working with S3, whether you are a developer, data scientist, or system administrator. \
 It provides an intuitive and user-friendly interface for managing S3 resources.
@@ -44,14 +45,16 @@ https://github.com/necatiarslan/aws-s3/issues/new
 
 
 ## Todo
+- Move, Copy, Rename files
 - S3.getBucketAcl to get permissions and enable/disable command buttons
-- Global Search View
 - Sort By Name / Type
 - Delete Folder with files in it
 - Write Selected File and Folder count to the bottom
 - Paging (now max 1000)
-- Move, Copy, Rename files
 - Fix: Cannot read properties of null (reading '_panel')
+- Drag/Drop files and folders to upload
+- Show progressbar when uploading, downloading, deleting etc
+- 
 
 
 Follow me on linkedin to get latest news \

@@ -6,6 +6,7 @@ import * as ui from '../common/UI';
 import * as api from '../common/API';
 import { APIGateway } from 'aws-sdk';
 import { S3Explorer } from './S3Explorer';
+import { S3Search } from './S3Search';
 
 export class S3TreeView {
 
@@ -242,6 +243,13 @@ export class S3TreeView {
 		
 
 		S3Explorer.Render(this.context.extensionUri, node);
+	}
+
+	async ShowS3Search(node: S3TreeItem) {
+		ui.logToOutput('S3TreeView.ShowS3Search Started');
+		
+
+		S3Search.Render(this.context.extensionUri, node);
 	}
 
 	async SelectAwsProfile(node: S3TreeItem) {

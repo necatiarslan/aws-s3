@@ -9,6 +9,7 @@ const S3TreeView_1 = require("./S3TreeView");
 const S3TreeItem_1 = require("./S3TreeItem");
 const S3ExplorerItem_1 = require("./S3ExplorerItem");
 const s3_helper = require("./S3Helper");
+const S3Search_1 = require("./S3Search");
 class S3Explorer {
     constructor(panel, extensionUri, node) {
         this._disposables = [];
@@ -58,6 +59,7 @@ class S3Explorer {
             S3Explorer.Current.ResetCurrentState();
             S3Explorer.Current.SetS3ExplorerItem(node);
             S3Explorer.Current.Load();
+            S3Explorer.Current._panel.reveal(vscode.ViewColumn.One);
         }
         else {
             const panel = vscode.window.createWebviewPanel("S3Explorer", "S3 Explorer", vscode.ViewColumn.One, {
@@ -74,17 +76,6 @@ class S3Explorer {
             return "Folder";
         }
         return s3_helper.GetFileExtension(s3_helper.GetFileNameWithExtension(Key));
-    }
-    GetFolderName(Key) {
-        if (!Key) {
-            return "";
-        }
-        if (!Key.endsWith("/")) {
-            return Key;
-        }
-        var path = Key.split('/');
-        path.pop();
-        return path.pop() || "";
     }
     GetNavigationPath(Key) {
         let result = [["/", ""]];
@@ -117,7 +108,7 @@ class S3Explorer {
             "dist",
             "toolkit.js",
         ]);
-        const mainUri = ui.getUri(webview, extensionUri, ["media", "main.js"]);
+        const s3ExplorerJSUri = ui.getUri(webview, extensionUri, ["media", "s3ExplorerJS.js"]);
         const styleUri = ui.getUri(webview, extensionUri, ["media", "style.css"]);
         const codiconsUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'node_modules', '@vscode/codicons', 'dist', 'codicon.css'));
         const bookmark_yesUri = ui.getUri(webview, extensionUri, ["media", "bookmark_yes.png"]);
@@ -156,7 +147,7 @@ class S3Explorer {
                         continue;
                     } //do not list object itself
                     FolderIsEmpty = false;
-                    let folderName = this.GetFolderName(folder.Prefix);
+                    let folderName = s3_helper.GetFolderName(folder.Prefix);
                     if (this.SearchText.length > 0 && !folderName.includes(this.SearchText)) {
                         continue;
                     }
@@ -290,7 +281,7 @@ class S3Explorer {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width,initial-scale=1.0">
         <script type="module" src="${toolkitUri}"></script>
-        <script type="module" src="${mainUri}"></script>
+        <script type="module" src="${s3ExplorerJSUri}"></script>
         <link href="${codiconsUri}" rel="stylesheet" />
         <link rel="stylesheet" href="${styleUri}">
         <title></title>
@@ -305,6 +296,7 @@ class S3Explorer {
             <tr>
                 <td colspan="4" style="text-align:left">
                 <vscode-button appearance="primary" id="refresh">Refresh</vscode-button>
+                <vscode-button appearance="primary" id="search" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Search</vscode-button>
                 <vscode-button appearance="primary" id="download">Download</vscode-button>
                 <vscode-button appearance="primary" id="upload" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Upload</vscode-button>
                 <vscode-button appearance="primary" id="create_folder" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Create Folder</vscode-button>
@@ -400,6 +392,19 @@ class S3Explorer {
                 case "refresh":
                     this.SearchText = message.search_text;
                     this.Load();
+                    return;
+                case "search":
+                    let node;
+                    if (this.S3ExplorerItem.IsRoot()) {
+                        node = new S3TreeItem_1.S3TreeItem("", S3TreeItem_1.TreeItemType.Bucket);
+                        node.Bucket = this.S3ExplorerItem.Bucket;
+                    }
+                    else {
+                        node = new S3TreeItem_1.S3TreeItem("", S3TreeItem_1.TreeItemType.Shortcut);
+                        node.Bucket = this.S3ExplorerItem.Bucket;
+                        node.Shortcut = this.S3ExplorerItem.Key;
+                    }
+                    S3Search_1.S3Search.Render(this.extensionUri, node);
                     return;
                 case "create_folder":
                     this.CreateFolder();
@@ -731,7 +736,8 @@ class S3Explorer {
     dispose() {
         ui.logToOutput('S3Explorer.dispose Started');
         S3Explorer.Current = undefined;
-        this._panel.dispose();
+        if (this._panel)
+            this._panel.dispose();
         while (this._disposables.length) {
             const disposable = this._disposables.pop();
             if (disposable) {

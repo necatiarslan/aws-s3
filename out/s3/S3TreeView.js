@@ -8,6 +8,7 @@ const S3TreeDataProvider_1 = require("./S3TreeDataProvider");
 const ui = require("../common/UI");
 const api = require("../common/API");
 const S3Explorer_1 = require("./S3Explorer");
+const S3Search_1 = require("./S3Search");
 class S3TreeView {
     constructor(context) {
         this.FilterString = "";
@@ -205,6 +206,10 @@ class S3TreeView {
     async ShowS3Explorer(node) {
         ui.logToOutput('S3TreeView.ShowS3Explorer Started');
         S3Explorer_1.S3Explorer.Render(this.context.extensionUri, node);
+    }
+    async ShowS3Search(node) {
+        ui.logToOutput('S3TreeView.ShowS3Search Started');
+        S3Search_1.S3Search.Render(this.context.extensionUri, node);
     }
     async SelectAwsProfile(node) {
         ui.logToOutput('S3TreeView.SelectAwsProfile Started');

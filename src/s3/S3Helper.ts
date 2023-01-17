@@ -75,3 +75,12 @@ export function GetFileExtension(FileName:string):string
     let extension = FileName.split(".").pop();
     return extension?extension:"";
 }
+
+export function GetFolderName(Key:string | undefined)
+{
+    if(!Key) { return ""; }
+    if(!Key.endsWith("/")) { return Key; }
+    var path = Key.split('/');
+    path.pop();
+    return path.pop() || "";
+}

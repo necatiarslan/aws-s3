@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadS3File = exports.UploadFile = exports.UploadFileToFolder = exports.DeleteObject = exports.CreateS3Folder = exports.GetS3ObjectList = void 0;
+exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadS3File = exports.UploadFile = exports.UploadFileToFolder = exports.DeleteObject = exports.CreateS3Folder = exports.SearchS3Object = exports.GetS3ObjectList = void 0;
 /* eslint-disable @typescript-eslint/naming-convention */
 const AWS = require("aws-sdk");
 const ui = require("./UI");
@@ -35,6 +35,51 @@ async function GetS3ObjectList(Profile, Bucket, Key) {
     }
 }
 exports.GetS3ObjectList = GetS3ObjectList;
+async function SearchS3Object(Profile, Bucket, PrefixKey, FileName, FileExtension, FolderName) {
+    let result = new MethodResult_1.MethodResult();
+    result.result = [];
+    FileName = FileName?.toLowerCase();
+    FileExtension = FileExtension?.toLowerCase();
+    FolderName = FolderName?.toLowerCase();
+    try {
+        const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+        const s3 = new AWS.S3({ credentials: credentials });
+        let continuationToken;
+        do {
+            const params = {
+                Bucket: Bucket,
+                Prefix: PrefixKey,
+                ContinuationToken: continuationToken
+            };
+            const response = await s3.listObjectsV2(params).promise();
+            continuationToken = response.NextContinuationToken;
+            if (response.Contents) {
+                for (var file of response.Contents) {
+                    let fileKey = file.Key?.toLowerCase();
+                    let currentFileName = s3_helper.GetFileNameWithExtension(fileKey);
+                    if ((!FolderName || FolderName.length === 0 || (FolderName && FolderName.length > 0 && fileKey && fileKey.includes(FolderName)))
+                        &&
+                            (!FileName || FileName.length === 0 || (FileName && FileName.length > 0 && currentFileName.includes(FileName)))
+                        &&
+                            (!FileExtension || FileExtension.length === 0 || (FileExtension && FileExtension.length > 0 && s3_helper.GetFileExtension(currentFileName) === FileExtension))) {
+                        result.result.push(file);
+                        continue;
+                    }
+                }
+            }
+        } while (continuationToken);
+        result.isSuccessful = true;
+        return result;
+    }
+    catch (error) {
+        result.isSuccessful = false;
+        result.error = error;
+        ui.showErrorMessage('api.GetS3ObjectList Error !!!', error);
+        ui.logToOutput("api.GetS3ObjectList Error !!!", error);
+        return result;
+    }
+}
+exports.SearchS3Object = SearchS3Object;
 async function CreateS3Folder(Profile, Bucket, Key, FolderName) {
     let result = new MethodResult_1.MethodResult();
     let TargetKey = (0, path_2.join)(Key, FolderName + "/");

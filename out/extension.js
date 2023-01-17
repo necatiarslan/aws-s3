@@ -37,6 +37,9 @@ function activate(context) {
     vscode.commands.registerCommand('S3TreeView.ShowS3Explorer', (node) => {
         treeView.ShowS3Explorer(node);
     });
+    vscode.commands.registerCommand('S3TreeView.ShowS3Search', (node) => {
+        treeView.ShowS3Search(node);
+    });
     vscode.commands.registerCommand('S3TreeView.SelectAwsProfile', (node) => {
         treeView.SelectAwsProfile(node);
     });
