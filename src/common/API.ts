@@ -81,7 +81,7 @@ export async function SearchS3Object(Profile:string, Bucket: string, PrefixKey:s
             }
           }
         }
-        if(MaxResultCount > 0 && result.result.length > MaxResultCount) { break; }
+        if(MaxResultCount > 0 && result.result.length >= MaxResultCount) { break; }
     } while (continuationToken);
     result.isSuccessful = true;
     return result;

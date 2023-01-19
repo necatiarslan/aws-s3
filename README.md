@@ -27,6 +27,9 @@ It provides an intuitive and user-friendly interface for managing S3 resources.
 ## Folder
 ![screenshoot](media/psc-empty-folder.png)
 
+## Global Search
+![screenshoot](media/psc-global-search.png)
+
 ## Edit Menu
 ![screenshoot](media/psc-edit-combo.png)
 

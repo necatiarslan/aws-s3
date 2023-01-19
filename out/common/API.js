@@ -68,7 +68,7 @@ async function SearchS3Object(Profile, Bucket, PrefixKey, FileName, FileExtensio
                     }
                 }
             }
-            if (MaxResultCount > 0 && result.result.length > MaxResultCount) {
+            if (MaxResultCount > 0 && result.result.length >= MaxResultCount) {
                 break;
             }
         } while (continuationToken);
