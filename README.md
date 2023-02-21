@@ -48,6 +48,7 @@ https://github.com/necatiarslan/aws-s3/issues/new
 
 
 ## Todo
+- Hide shortcuts, add show hidden filter button [H]
 - Move, Copy, Rename files
 - S3.getBucketAcl to get permissions and enable/disable command buttons
 - Sort By Name / Type
