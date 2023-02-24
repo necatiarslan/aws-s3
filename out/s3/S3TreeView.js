@@ -97,6 +97,7 @@ class S3TreeView {
             this.context.globalState.update('BucketList', this.treeDataProvider.GetBucketList());
             this.context.globalState.update('ShortcutList', this.treeDataProvider.GetShortcutList());
             this.context.globalState.update('ViewType', this.treeDataProvider.ViewType);
+            this.context.globalState.update('AwsEndPoint', this.AwsEndPoint);
             ui.logToOutput("S3TreeView.saveState Successfull");
         }
         catch (error) {
@@ -130,6 +131,8 @@ class S3TreeView {
             if (ViewTypeTemp) {
                 this.treeDataProvider.ViewType = ViewTypeTemp;
             }
+            let AwsEndPointTemp = this.context.globalState.get('AwsEndPoint');
+            this.AwsEndPoint = AwsEndPointTemp;
             ui.logToOutput("S3TreeView.loadState Successfull");
         }
         catch (error) {
@@ -224,6 +227,20 @@ class S3TreeView {
         this.AwsProfile = selectedAwsProfile;
         this.SaveState();
         this.SetFilterMessage();
+    }
+    async UpdateAwsEndPoint() {
+        ui.logToOutput('S3TreeView.UpdateAwsEndPoint Started');
+        let awsEndPointUrl = await vscode.window.showInputBox({ placeHolder: 'Enter Aws End Point URL (Leave Empty To Return To Default)' });
+        if (awsEndPointUrl === undefined) {
+            return;
+        }
+        if (awsEndPointUrl.length === 0) {
+            this.AwsEndPoint = undefined;
+        }
+        else {
+            this.AwsEndPoint = awsEndPointUrl;
+        }
+        this.SaveState();
     }
 }
 exports.S3TreeView = S3TreeView;

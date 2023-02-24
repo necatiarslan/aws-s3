@@ -17,6 +17,7 @@ export class S3TreeView {
 	public FilterString: string = "";
 	public isShowOnlyFavorite: boolean = false;
 	public AwsProfile: string = "default";	
+	public AwsEndPoint: string | undefined;
 
 	constructor(context: vscode.ExtensionContext) {
 		ui.logToOutput('TreeView.constructor Started');
@@ -119,6 +120,7 @@ export class S3TreeView {
 			this.context.globalState.update('BucketList', this.treeDataProvider.GetBucketList());
 			this.context.globalState.update('ShortcutList', this.treeDataProvider.GetShortcutList());
 			this.context.globalState.update('ViewType', this.treeDataProvider.ViewType);
+			this.context.globalState.update('AwsEndPoint', this.AwsEndPoint);
 
 			ui.logToOutput("S3TreeView.saveState Successfull");
 		} catch (error) {
@@ -160,6 +162,9 @@ export class S3TreeView {
 			{
 				this.treeDataProvider.ViewType = ViewTypeTemp;
 			}
+
+			let AwsEndPointTemp: string | undefined = this.context.globalState.get('AwsEndPoint');
+			this.AwsEndPoint = AwsEndPointTemp;
 
 			ui.logToOutput("S3TreeView.loadState Successfull");
 
@@ -264,6 +269,19 @@ export class S3TreeView {
 		this.AwsProfile = selectedAwsProfile;
 		this.SaveState();
 		this.SetFilterMessage();
+	}
+
+	async UpdateAwsEndPoint() {
+		ui.logToOutput('S3TreeView.UpdateAwsEndPoint Started');
+
+		let awsEndPointUrl = await vscode.window.showInputBox({ placeHolder: 'Enter Aws End Point URL (Leave Empty To Return To Default)' });
+		if(awsEndPointUrl===undefined){ return; }
+		if(awsEndPointUrl.length===0) { this.AwsEndPoint = undefined; }
+		else
+		{
+			this.AwsEndPoint = awsEndPointUrl;
+		}
+		this.SaveState();
 	}
 
 }

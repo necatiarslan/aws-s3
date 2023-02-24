@@ -43,6 +43,9 @@ function activate(context) {
     vscode.commands.registerCommand('S3TreeView.SelectAwsProfile', (node) => {
         treeView.SelectAwsProfile(node);
     });
+    vscode.commands.registerCommand('S3TreeView.UpdateAwsEndPoint', () => {
+        treeView.UpdateAwsEndPoint();
+    });
     ui.logToOutput('Aws S3 Extension activation completed');
 }
 exports.activate = activate;

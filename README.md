@@ -58,7 +58,7 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Fix: Cannot read properties of null (reading '_panel')
 - Drag/Drop files and folders to upload
 - Show progressbar when uploading, downloading, deleting etc
-- 
+- Custom Endpoint ("endpoint": "http://custom-s3-endpoint.com",)
 
 
 Follow me on linkedin to get latest news \

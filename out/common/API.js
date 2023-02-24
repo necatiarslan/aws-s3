@@ -11,11 +11,16 @@ const path_2 = require("path");
 const parseKnownFiles_1 = require("../aws-sdk/parseKnownFiles");
 const s3_helper = require("../s3/S3Helper");
 const fs = require("fs");
+const S3TreeView = require("../s3/S3TreeView");
+function GetS3Object(Profile) {
+    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+    const s3 = new AWS.S3({ credentials: credentials, endpoint: S3TreeView.S3TreeView.Current?.AwsEndPoint });
+    return s3;
+}
 async function GetS3ObjectList(Profile, Bucket, Key) {
     let result = new MethodResult_1.MethodResult();
     try {
-        const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-        const s3 = new AWS.S3({ credentials: credentials });
+        const s3 = GetS3Object(Profile);
         let param = {
             Bucket: Bucket,
             Prefix: Key,
@@ -42,8 +47,7 @@ async function SearchS3Object(Profile, Bucket, PrefixKey, FileName, FileExtensio
     FileExtension = FileExtension?.toLowerCase();
     FolderName = FolderName?.toLowerCase();
     try {
-        const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-        const s3 = new AWS.S3({ credentials: credentials });
+        const s3 = GetS3Object(Profile);
         let continuationToken;
         do {
             const params = {
@@ -88,8 +92,7 @@ async function CreateS3Folder(Profile, Bucket, Key, FolderName) {
     let result = new MethodResult_1.MethodResult();
     let TargetKey = (0, path_2.join)(Key, FolderName + "/");
     try {
-        const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-        const s3 = new AWS.S3({ credentials: credentials });
+        const s3 = GetS3Object(Profile);
         let param = {
             Bucket: Bucket,
             Key: TargetKey
@@ -111,8 +114,7 @@ exports.CreateS3Folder = CreateS3Folder;
 async function DeleteObject(Profile, Bucket, Key) {
     let result = new MethodResult_1.MethodResult();
     try {
-        const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-        const s3 = new AWS.S3({ credentials: credentials });
+        const s3 = GetS3Object(Profile);
         if (s3_helper.IsFolder(Key)) {
             const objects = await s3.listObjects({
                 Bucket: Bucket,
@@ -142,8 +144,7 @@ async function DeleteObject(Profile, Bucket, Key) {
 exports.DeleteObject = DeleteObject;
 async function DeleteS3Folder(Profile, Bucket, Key) {
     // List all the objects in the folder
-    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-    const s3 = new AWS.S3({ credentials: credentials });
+    const s3 = GetS3Object(Profile);
     // const objects = await s3.listObjects({
     //   Bucket: Bucket,
     //   Prefix: Key
@@ -188,8 +189,7 @@ async function UploadFile(Profile, Bucket, TargetKey, SourcePath) {
         return result;
     }
     try {
-        const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-        const s3 = new AWS.S3({ credentials: credentials });
+        const s3 = GetS3Object(Profile);
         const stream = fs.createReadStream(SourcePath);
         const param = {
             Bucket: Bucket,
@@ -214,8 +214,7 @@ async function DownloadS3File(Profile, Bucket, Key, TargetPath) {
     let result = new MethodResult_1.MethodResult();
     let TargetFilePath = (0, path_2.join)(TargetPath, s3_helper.GetFileNameWithExtension(Key));
     try {
-        const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-        const s3 = new AWS.S3({ credentials: credentials });
+        const s3 = GetS3Object(Profile);
         const param = {
             Bucket: Bucket,
             Key: Key
@@ -240,8 +239,7 @@ async function GetBucketList(Profile, BucketName) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
     try {
-        const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-        const s3 = new AWS.S3({ credentials: credentials });
+        const s3 = GetS3Object(Profile);
         let response = await s3.listBuckets().promise();
         result.isSuccessful = true;
         if (response.Buckets) {

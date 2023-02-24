@@ -9,14 +9,20 @@ import { parseKnownFiles, SourceProfileInit } from "../aws-sdk/parseKnownFiles";
 import { ParsedIniData } from "@aws-sdk/types";
 import * as s3_helper from '../s3/S3Helper'
 import * as fs from 'fs';
+import * as S3TreeView from '../s3/S3TreeView';
+
+function GetS3Object(Profile: string) {
+  const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
+  const s3 = new AWS.S3({ credentials: credentials, endpoint:S3TreeView.S3TreeView.Current?.AwsEndPoint});
+  return s3;
+}
 
 export async function GetS3ObjectList(Profile:string, Bucket:string, Key:string): Promise<MethodResult<AWS.S3.ListObjectsV2Output | undefined>> {
   let result:MethodResult<AWS.S3.ListObjectsV2Output | undefined> = new MethodResult<AWS.S3.ListObjectsV2Output | undefined>();
   
   try 
   {
-    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-    const s3 = new AWS.S3({credentials:credentials});
+    const s3 = GetS3Object(Profile);
 
     let param = {
       Bucket:Bucket,
@@ -49,8 +55,7 @@ export async function SearchS3Object(Profile:string, Bucket: string, PrefixKey:s
 
   try 
   {
-    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-    const s3 = new AWS.S3({credentials:credentials});
+    const s3 = GetS3Object(Profile);
   
     let continuationToken: any;
     do {
@@ -101,8 +106,7 @@ export async function CreateS3Folder(Profile:string, Bucket:string, Key:string, 
 
   try 
   {
-    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-    const s3 = new AWS.S3({credentials:credentials});
+    const s3 = GetS3Object(Profile);
 
     let param = {
       Bucket:Bucket,
@@ -129,8 +133,7 @@ export async function DeleteObject(Profile:string, Bucket:string, Key:string): P
 
   try 
   {
-    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-    const s3 = new AWS.S3({credentials:credentials});
+    const s3 = GetS3Object(Profile);
 
     if(s3_helper.IsFolder(Key))
     {
@@ -168,8 +171,7 @@ export async function DeleteObject(Profile:string, Bucket:string, Key:string): P
 async function DeleteS3Folder(Profile:string, Bucket:string, Key:string) {
   // List all the objects in the folder
   
-  const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-  const s3 = new AWS.S3({credentials:credentials});
+  const s3 = GetS3Object(Profile);
 
   // const objects = await s3.listObjects({
   //   Bucket: Bucket,
@@ -228,8 +230,7 @@ export async function UploadFile(Profile:string, Bucket:string, TargetKey:string
 
   try 
   {
-    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-    const s3 = new AWS.S3({credentials:credentials});
+    const s3 = GetS3Object(Profile);
 
     const stream = fs.createReadStream(SourcePath);
     const param = {
@@ -261,8 +262,7 @@ export async function DownloadS3File(Profile:string, Bucket:string, Key:string, 
 
   try 
   {
-    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-    const s3 = new AWS.S3({credentials:credentials});
+    const s3 = GetS3Object(Profile);
 
     const param = {
       Bucket: Bucket,
@@ -293,8 +293,7 @@ export async function GetBucketList(Profile:string, BucketName?:string): Promise
 
   try 
   {
-    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-    const s3 = new AWS.S3({credentials:credentials});
+    const s3 = GetS3Object(Profile);
 
     let response = await s3.listBuckets().promise();
     result.isSuccessful = true;
