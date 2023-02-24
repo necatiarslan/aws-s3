@@ -9,7 +9,8 @@ With this extension, users can perform a variety of tasks such as
 - Creating and deleting folders
 - Copying file names, keys, ARNs, URLs and S3 URIs
 - Adding shortcuts to files and folders for easy to access
-- Search All Bucket by File Name, Extension, Folder and Key
+- Searching All Bucket by File Name, Extension, Folder and Key
+- Updating AWS EndPoint (to test your S3 functionality in your localstash environment)
 
 The AWS S3 Browser extension is a useful tool for anyone working with S3, whether you are a developer, data scientist, or system administrator. \
 It provides an intuitive and user-friendly interface for managing S3 resources.
@@ -58,8 +59,6 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Fix: Cannot read properties of null (reading '_panel')
 - Drag/Drop files and folders to upload
 - Show progressbar when uploading, downloading, deleting etc
-- Custom Endpoint ("endpoint": "http://custom-s3-endpoint.com",)
-
 
 Follow me on linkedin to get latest news \
 https://www.linkedin.com/in/necati-arslan/

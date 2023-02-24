@@ -1,3 +1,6 @@
+# v1.2.0
+    - Update Aws Endpoint (to connect your localstack)
+
 # v1.1.0
     -Search All Bucket by File Name, Extension, Folder and Key
 
