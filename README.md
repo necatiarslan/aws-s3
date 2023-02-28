@@ -59,6 +59,14 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Fix: Cannot read properties of null (reading '_panel')
 - Drag/Drop files and folders to upload
 - Show progressbar when uploading, downloading, deleting etc
+- Freeze top bar
+- File count in a folder (option)
+- Filter by Date/Size
+- Multiple S3 Explorer
+- Highlight Icons On Hover
+- Copy Shortcut
+- GoTo Key
+- Add Folder Shortcuts With Search Key
 
 Follow me on linkedin to get latest news \
 https://www.linkedin.com/in/necati-arslan/
