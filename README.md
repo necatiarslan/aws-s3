@@ -15,6 +15,9 @@ With this extension, users can perform a variety of tasks such as
 The AWS S3 Browser extension is a useful tool for anyone working with S3, whether you are a developer, data scientist, or system administrator. \
 It provides an intuitive and user-friendly interface for managing S3 resources.
 
+## Survey
+Please take this survey to help me make the extension better.\
+https://bit.ly/s3-extension-survey
 
 ## Search
 ![screenshoot](media/psc-search.png)
@@ -67,6 +70,8 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Copy Shortcut
 - GoTo Key
 - Add Folder Shortcuts With Search Key
+- Add Survey Link to the S3 Explorer and Tree Other Command
+- Add Bug Report to the Tree Other Command
 
 Follow me on linkedin to get latest news \
 https://www.linkedin.com/in/necati-arslan/
