@@ -72,6 +72,7 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Add Folder Shortcuts With Search Key
 - Add Survey Link to the S3 Explorer and Tree Other Command
 - Add Bug Report to the Tree Other Command
+- Remove Search Button from S3 Explorer
 
 Follow me on linkedin to get latest news \
 https://www.linkedin.com/in/necati-arslan/
