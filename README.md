@@ -74,6 +74,7 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Add Bug Report to the Tree Other Command
 - Remove Search Button from S3 Explorer
 - Auto Refresh Checkbox
+- Theme support
 
 Follow me on linkedin to get latest news \
 https://www.linkedin.com/in/necati-arslan/
