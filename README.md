@@ -82,3 +82,10 @@ https://www.linkedin.com/in/necati-arslan/
 Thanks, \
 Necati ARSLAN \
 necatia@gmail.com
+
+
+Other Extensions
+- https://bit.ly/aws-access-vscode-extension
+- https://bit.ly/vscode-aws-s3
+- https://bit.ly/aws-cloudwatch-vscode-extension
+- https://bit.ly/airflow-vscode-extension
