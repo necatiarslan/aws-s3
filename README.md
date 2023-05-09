@@ -75,6 +75,7 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Remove Search Button from S3 Explorer
 - Auto Refresh Checkbox
 - Theme support
+- Show shortcuts when you add the bucket to fav and filter
 
 Follow me on linkedin to get latest news \
 https://www.linkedin.com/in/necati-arslan/
