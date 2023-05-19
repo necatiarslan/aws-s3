@@ -156,7 +156,35 @@ Alternatively, you can also visit the official GitHub repository for the extensi
 # SLIDE 17 - DEMO FOR AWS S3 BROWSER EXTENSION
 In this demo, we will explore the features of this extension that make managing S3 resources easier and more efficient.
 
-# SLIDE 18 - THANKS
+# SLIDE 18 - AWS CLOUD WATCH
+AWS CloudWatch is a fully managed monitoring and observability service provided by Amazon Web Services (AWS). It enables you to collect and monitor log data, system-level metrics, and even set alarms based on predefined thresholds. It's a powerful tool that helps you gain insights into the performance, health, and operational aspects of your AWS resources and applications.
+
+Now, with this extension, it is even easier and more convenient for developers like you to access and review your AWS CloudWatch logs directly within Visual Studio Code, without the need to switch to the AWS Management Console.
+
+First, you'll find a dedicated section within VSCode where you can manage your CloudWatch logs. By clicking the 'Add Log Group' button, you can specify the log group and its associated AWS region. What's great is that you can add multiple log groups from different regions, providing you with a centralized view of all your log data in one place.
+
+Moving on, we explore the process of adding log streams. Within the extension, there's an option to add log streams. By selecting the desired log group and specifying the log stream, you can effortlessly include multiple log streams from different log groups. This flexibility allows you to access and review logs from various sources seamlessly.
+
+By following these simple steps, you can easily add log groups and log streams to our extension, making your CloudWatch log management more streamlined.
+
+# SLIDE 19 - AWS CLOUD WATCH
+
+Once you've added your log groups and log streams, you'll experience the convenience of a centralized view of all your log data. The extension loads logs faster than the AWS console, saving you time and frustration. You can now access and review your logs more efficiently.
+
+One of the standout features of our extension is the search functionality. Within the interface, you'll find a powerful search feature that allows you to quickly find specific logs. It also provided you with options to manage your logs effectively. You can hide specific logs that are not relevant to your current analysis, allowing you to focus on what matters most. 
+
+The extension allows you to export logs. With just a few clicks, you can export logs for further analysis or share them with your team, making collaboration and troubleshooting a breeze.
+
+# SLIDE 20 - DEMO
+
+In this demo, we will explore the features of this extension that makes browsing cloudwatch logs easier and more efficient.
+
+
+# SLIDE 21 - HOW TO INSTALL
+
+You can simply go to the VS Code Extensions Marketplace and search for "AWS Cloudwatch" to find the extension. From there, you can click the "Install" button to add it to your VS Code installation.
+
+# SLIDE 22 - THANKS
 
 In conclusion, we hope that this presentation has given you a good overview of the AWS Access and S3 Browser extensions for Visual Studio Code. These extensions can greatly improve your productivity when working with AWS resources, making it easier to manage your credentials, browse and manage your S3 buckets and files, and perform various operations on your AWS resources.
 
