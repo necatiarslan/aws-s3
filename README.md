@@ -41,7 +41,9 @@ https://bit.ly/s3-extension-survey
 ![screenshoot](media/psc-copy-combo.png)
 
 ## Aws Credentials Setup
-To Access Aws, you need to configure aws credentials.
+To Access Aws, you need to configure aws credentials. \
+The extension now supports only the credentials in the .aws/credentials file, not environment varibles or other methods.
+
 For more detail on aws credentials \
 https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html \
 https://www.youtube.com/watch?v=SON8sY1iOBU
@@ -56,27 +58,29 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Hide shortcuts, add show hidden filter button [H]
 - Move, Copy, Rename files
 - S3.getBucketAcl to get permissions and enable/disable command buttons
-- Sort By Name / Type
-- Delete Folder with files in it
-- Write Selected File and Folder count to the bottom
 - Paging (now max 1000)
 - Fix: Cannot read properties of null (reading '_panel')
-- Drag/Drop files and folders to upload
 - Show progressbar when uploading, downloading, deleting etc
 - Freeze top bar
 - File count in a folder (option)
-- Filter by Date/Size
-- Multiple S3 Explorer
-- Highlight Icons On Hover
 - Copy Shortcut
 - GoTo Key
-- Add Folder Shortcuts With Search Key
+- Add Folder Shortcuts With Key
 - Add Survey Link to the S3 Explorer and Tree Other Command
 - Add Bug Report to the Tree Other Command
 - Remove Search Button from S3 Explorer
 - Auto Refresh Checkbox
-- Theme support
 - Show shortcuts when you add the bucket to fav and filter
+
+## Nice To Have
+- Theme support
+- Sort By Name / Type
+- Delete Folder with files in it
+- Write Selected File and Folder count to the bottom
+- Drag/Drop files and folders to upload
+- Filter by Date/Size
+- Multiple S3 Explorer
+- Highlight Icons On Hover
 
 Follow me on linkedin to get latest news \
 https://www.linkedin.com/in/necati-arslan/
