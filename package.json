@@ -55,6 +55,10 @@
         "title": "Remove Bucket"
       },
       {
+        "command": "S3TreeView.Goto",
+        "title": "Goto File/Folder"
+      },
+      {
         "command": "S3TreeView.RemoveShortcut",
         "title": "Remove Shortcut"
       },
@@ -142,6 +146,11 @@
         },
         {
           "command": "S3TreeView.RemoveBucket",
+          "when": "view == S3TreeView",
+          "group": "Bucket"
+        },
+        {
+          "command": "S3TreeView.Goto",
           "when": "view == S3TreeView",
           "group": "Bucket"
         },

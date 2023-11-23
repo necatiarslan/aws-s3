@@ -60,7 +60,6 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - S3.getBucketAcl to get permissions and enable/disable command buttons
 - Paging (now max 1000)
 - File count in a folder (option)
-- GoTo Key
 - Remove Search Button from S3 Explorer
 - Auto Refresh Checkbox
 - Show shortcuts when you add the bucket to fav and filter

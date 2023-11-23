@@ -212,6 +212,18 @@ export class S3TreeView {
 		this.SaveState();
 	}
 
+	async Goto(node: S3TreeItem) {
+		ui.logToOutput('S3TreeView.Goto Started');
+		
+		if(node.TreeItemType !== TreeItemType.Bucket) { return;}
+		if(!node.Bucket) { return; }
+
+		let shortcut = await vscode.window.showInputBox({ placeHolder: 'Enter a Folder/File Key' });
+		if(shortcut===undefined){ return; }
+		
+		S3Explorer.Render(this.context.extensionUri, node, shortcut);
+	}
+
 	async AddOrRemoveShortcut(Bucket:string, Key:string) {
 		ui.logToOutput('S3TreeView.AddShortcut Started');
 		if(!Bucket || !Key) { return; }

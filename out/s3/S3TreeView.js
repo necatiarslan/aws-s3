@@ -175,6 +175,20 @@ class S3TreeView {
         this.treeDataProvider.RemoveBucket(node.Bucket);
         this.SaveState();
     }
+    async Goto(node) {
+        ui.logToOutput('S3TreeView.Goto Started');
+        if (node.TreeItemType !== S3TreeItem_1.TreeItemType.Bucket) {
+            return;
+        }
+        if (!node.Bucket) {
+            return;
+        }
+        let shortcut = await vscode.window.showInputBox({ placeHolder: 'Enter a Folder/File Key' });
+        if (shortcut === undefined) {
+            return;
+        }
+        S3Explorer_1.S3Explorer.Render(this.context.extensionUri, node, shortcut);
+    }
     async AddOrRemoveShortcut(Bucket, Key) {
         ui.logToOutput('S3TreeView.AddShortcut Started');
         if (!Bucket || !Key) {

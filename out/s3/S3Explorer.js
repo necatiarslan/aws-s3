@@ -53,7 +53,7 @@ class S3Explorer {
     }
     ResetCurrentState() {
     }
-    static Render(extensionUri, node) {
+    static Render(extensionUri, node, changeKey = undefined) {
         ui.logToOutput('S3Explorer.Render Started');
         if (S3Explorer.Current) {
             S3Explorer.Current.ResetCurrentState();
@@ -66,6 +66,10 @@ class S3Explorer {
                 enableScripts: true,
             });
             S3Explorer.Current = new S3Explorer(panel, extensionUri, node);
+        }
+        if (changeKey) {
+            S3Explorer.Current.S3ExplorerItem.Key = changeKey;
+            S3Explorer.Current.Load();
         }
     }
     GetFileExtension(Key) {

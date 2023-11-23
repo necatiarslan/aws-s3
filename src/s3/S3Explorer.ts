@@ -73,7 +73,7 @@ export class S3Explorer {
 
     }
 
-    public static Render(extensionUri: vscode.Uri, node:S3TreeItem) {
+    public static Render(extensionUri: vscode.Uri, node:S3TreeItem, changeKey:string|undefined=undefined) {
         ui.logToOutput('S3Explorer.Render Started');
         if (S3Explorer.Current) {
             S3Explorer.Current.ResetCurrentState();
@@ -88,6 +88,11 @@ export class S3Explorer {
             });
 
             S3Explorer.Current = new S3Explorer(panel, extensionUri, node);
+        }
+        if(changeKey)
+        {
+            S3Explorer.Current.S3ExplorerItem.Key = changeKey;
+            S3Explorer.Current.Load();
         }
     }
 

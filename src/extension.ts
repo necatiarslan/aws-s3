@@ -40,6 +40,10 @@ export function activate(context: vscode.ExtensionContext) {
 		treeView.RemoveBucket(node);
 	});
 
+	vscode.commands.registerCommand('S3TreeView.Goto', (node: S3TreeItem) => {
+		treeView.Goto(node);
+	});
+
 	vscode.commands.registerCommand('S3TreeView.RemoveShortcut', (node: S3TreeItem) => {
 		treeView.RemoveShortcut(node);
 	});
