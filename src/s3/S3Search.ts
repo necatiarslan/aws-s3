@@ -61,7 +61,7 @@ export class S3Search {
         ui.logToOutput('S3Search.LoadLogs Started');
         if(!S3TreeView.Current){return;}
 
-        var result = await api.SearchS3Object(S3TreeView.Current.AwsProfile, this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, this.FileName, this.FileExtension, this.FolderName);
+        var result = await api.SearchS3Object(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, this.FileName, this.FileExtension, this.FolderName);
         if(result.isSuccessful)
         {
             this.S3ObjectList = result.result;

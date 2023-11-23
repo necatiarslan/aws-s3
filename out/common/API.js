@@ -12,15 +12,32 @@ const parseKnownFiles_1 = require("../aws-sdk/parseKnownFiles");
 const s3_helper = require("../s3/S3Helper");
 const fs = require("fs");
 const S3TreeView = require("../s3/S3TreeView");
-function GetS3Object(Profile) {
-    const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-    const s3 = new AWS.S3({ credentials: credentials, endpoint: S3TreeView.S3TreeView.Current?.AwsEndPoint });
+function GetS3Client() {
+    let s3 = undefined;
+    ui.logToOutput(AWS.config);
+    if (S3TreeView.S3TreeView.Current?.AwsProfile != "default") {
+        let credentials = new AWS.SharedIniFileCredentials({ profile: S3TreeView.S3TreeView.Current?.AwsProfile });
+        s3 = new AWS.S3({ credentials: credentials, endpoint: S3TreeView.S3TreeView.Current?.AwsEndPoint });
+    }
+    else {
+        s3 = new AWS.S3();
+    }
     return s3;
 }
-async function GetS3ObjectList(Profile, Bucket, Key) {
+function GetIAMClient() {
+    const credentials = new AWS.SharedIniFileCredentials({ profile: S3TreeView.S3TreeView.Current?.AwsProfile });
+    const iam = new AWS.IAM({ credentials: credentials });
+    return iam;
+}
+function GetEC2Client() {
+    const credentials = new AWS.SharedIniFileCredentials({ profile: S3TreeView.S3TreeView.Current?.AwsProfile });
+    const ec2 = new AWS.EC2({ region: 'us-east-1', credentials: credentials });
+    return ec2;
+}
+async function GetS3ObjectList(Bucket, Key) {
     let result = new MethodResult_1.MethodResult();
     try {
-        const s3 = GetS3Object(Profile);
+        const s3 = GetS3Client();
         let param = {
             Bucket: Bucket,
             Prefix: Key,
@@ -40,14 +57,14 @@ async function GetS3ObjectList(Profile, Bucket, Key) {
     }
 }
 exports.GetS3ObjectList = GetS3ObjectList;
-async function SearchS3Object(Profile, Bucket, PrefixKey, FileName, FileExtension, FolderName, MaxResultCount = 100) {
+async function SearchS3Object(Bucket, PrefixKey, FileName, FileExtension, FolderName, MaxResultCount = 100) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
     FileName = FileName?.toLowerCase();
     FileExtension = FileExtension?.toLowerCase();
     FolderName = FolderName?.toLowerCase();
     try {
-        const s3 = GetS3Object(Profile);
+        const s3 = GetS3Client();
         let continuationToken;
         do {
             const params = {
@@ -88,11 +105,11 @@ async function SearchS3Object(Profile, Bucket, PrefixKey, FileName, FileExtensio
     }
 }
 exports.SearchS3Object = SearchS3Object;
-async function CreateS3Folder(Profile, Bucket, Key, FolderName) {
+async function CreateS3Folder(Bucket, Key, FolderName) {
     let result = new MethodResult_1.MethodResult();
     let TargetKey = (0, path_2.join)(Key, FolderName + "/");
     try {
-        const s3 = GetS3Object(Profile);
+        const s3 = GetS3Client();
         let param = {
             Bucket: Bucket,
             Key: TargetKey
@@ -111,10 +128,10 @@ async function CreateS3Folder(Profile, Bucket, Key, FolderName) {
     }
 }
 exports.CreateS3Folder = CreateS3Folder;
-async function DeleteObject(Profile, Bucket, Key) {
+async function DeleteObject(Bucket, Key) {
     let result = new MethodResult_1.MethodResult();
     try {
-        const s3 = GetS3Object(Profile);
+        const s3 = GetS3Client();
         if (s3_helper.IsFolder(Key)) {
             const objects = await s3.listObjects({
                 Bucket: Bucket,
@@ -142,9 +159,9 @@ async function DeleteObject(Profile, Bucket, Key) {
     }
 }
 exports.DeleteObject = DeleteObject;
-async function DeleteS3Folder(Profile, Bucket, Key) {
+async function DeleteS3Folder(Bucket, Key) {
     // List all the objects in the folder
-    const s3 = GetS3Object(Profile);
+    const s3 = GetS3Client();
     // const objects = await s3.listObjects({
     //   Bucket: Bucket,
     //   Prefix: Key
@@ -168,17 +185,17 @@ async function DeleteS3Folder(Profile, Bucket, Key) {
         Key: Key
     }).promise();
 }
-async function UploadFileToFolder(Profile, Bucket, FolderKey, SourcePath) {
+async function UploadFileToFolder(Bucket, FolderKey, SourcePath) {
     let result = new MethodResult_1.MethodResult();
     if (!s3_helper.IsFolder(FolderKey)) {
         result.isSuccessful = false;
         return result;
     }
     let TargetKey = (0, path_2.join)(FolderKey, s3_helper.GetFileNameWithExtension(SourcePath));
-    return UploadFile(Profile, Bucket, TargetKey, SourcePath);
+    return UploadFile(Bucket, TargetKey, SourcePath);
 }
 exports.UploadFileToFolder = UploadFileToFolder;
-async function UploadFile(Profile, Bucket, TargetKey, SourcePath) {
+async function UploadFile(Bucket, TargetKey, SourcePath) {
     let result = new MethodResult_1.MethodResult();
     if (!s3_helper.IsFile(TargetKey)) {
         result.isSuccessful = false;
@@ -189,7 +206,7 @@ async function UploadFile(Profile, Bucket, TargetKey, SourcePath) {
         return result;
     }
     try {
-        const s3 = GetS3Object(Profile);
+        const s3 = GetS3Client();
         const stream = fs.createReadStream(SourcePath);
         const param = {
             Bucket: Bucket,
@@ -210,11 +227,11 @@ async function UploadFile(Profile, Bucket, TargetKey, SourcePath) {
     }
 }
 exports.UploadFile = UploadFile;
-async function DownloadS3File(Profile, Bucket, Key, TargetPath) {
+async function DownloadS3File(Bucket, Key, TargetPath) {
     let result = new MethodResult_1.MethodResult();
     let TargetFilePath = (0, path_2.join)(TargetPath, s3_helper.GetFileNameWithExtension(Key));
     try {
-        const s3 = GetS3Object(Profile);
+        const s3 = GetS3Client();
         const param = {
             Bucket: Bucket,
             Key: Key
@@ -235,11 +252,11 @@ async function DownloadS3File(Profile, Bucket, Key, TargetPath) {
     }
 }
 exports.DownloadS3File = DownloadS3File;
-async function GetBucketList(Profile, BucketName) {
+async function GetBucketList(BucketName) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
     try {
-        const s3 = GetS3Object(Profile);
+        const s3 = GetS3Client();
         if (BucketName) {
             try {
                 let is_bucket_response = await s3.headBucket({ Bucket: BucketName }).promise();
@@ -270,11 +287,10 @@ async function GetBucketList(Profile, BucketName) {
     }
 }
 exports.GetBucketList = GetBucketList;
-async function TestAwsConnection(Profile) {
+async function TestAwsConnection() {
     let result = new MethodResult_1.MethodResult();
     try {
-        const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-        const iam = new AWS.IAM({ credentials: credentials });
+        const iam = GetIAMClient();
         let response = await iam.getUser().promise();
         result.isSuccessful = true;
         result.result = true;
@@ -289,12 +305,11 @@ async function TestAwsConnection(Profile) {
     }
 }
 exports.TestAwsConnection = TestAwsConnection;
-async function GetRegionList(Profile) {
+async function GetRegionList() {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
     try {
-        const credentials = new AWS.SharedIniFileCredentials({ profile: Profile });
-        const ec2 = new AWS.EC2({ region: 'us-east-1', credentials: credentials });
+        const ec2 = GetEC2Client();
         let response = await ec2.describeRegions().promise();
         result.isSuccessful = true;
         if (response.Regions) {

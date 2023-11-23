@@ -176,7 +176,7 @@ class S3TreeView {
         if (selectedBucketName === undefined) {
             return;
         }
-        var resultBucket = await api.GetBucketList(this.AwsProfile, selectedBucketName);
+        var resultBucket = await api.GetBucketList(selectedBucketName);
         if (!resultBucket.isSuccessful) {
             return;
         }

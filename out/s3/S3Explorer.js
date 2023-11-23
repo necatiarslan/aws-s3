@@ -45,7 +45,7 @@ class S3Explorer {
         if (!S3TreeView_1.S3TreeView.Current) {
             return;
         }
-        var result = await api.GetS3ObjectList(S3TreeView_1.S3TreeView.Current.AwsProfile, this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key);
+        var result = await api.GetS3ObjectList(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key);
         if (result.isSuccessful) {
             this.S3ObjectList = result.result;
         }
@@ -635,9 +635,6 @@ class S3Explorer {
         if (keys.length === 0) {
             return;
         }
-        if (!S3TreeView_1.S3TreeView.Current?.AwsProfile) {
-            return;
-        }
         var keyList = keys.split("|");
         let confirm = await vscode.window.showInputBox({ placeHolder: 'print delete to confirm' });
         if (confirm === undefined || confirm != "delete") {
@@ -646,7 +643,7 @@ class S3Explorer {
         let deleteCounter = 0;
         for (var key of keyList) {
             if (key) {
-                let response = await api.DeleteObject(S3TreeView_1.S3TreeView.Current.AwsProfile, this.S3ExplorerItem.Bucket, key);
+                let response = await api.DeleteObject(this.S3ExplorerItem.Bucket, key);
                 if (response.isSuccessful) {
                     deleteCounter++;
                 }
@@ -681,8 +678,8 @@ class S3Explorer {
         }
         let downloadCounter = 0;
         for (var key of keyList) {
-            if (key && S3TreeView_1.S3TreeView.Current?.AwsProfile && s3_helper.IsFile(key)) {
-                api.DownloadS3File(S3TreeView_1.S3TreeView.Current?.AwsProfile, this.S3ExplorerItem.Bucket, key, selectedFolder[0].path);
+            if (key && s3_helper.IsFile(key)) {
+                api.DownloadS3File(this.S3ExplorerItem.Bucket, key, selectedFolder[0].path);
                 downloadCounter++;
             }
         }
@@ -690,9 +687,6 @@ class S3Explorer {
     }
     async UploadFile() {
         if (!this.S3ExplorerItem.IsFolder) {
-            return;
-        }
-        if (!S3TreeView_1.S3TreeView.Current?.AwsProfile) {
             return;
         }
         let param = {
@@ -707,7 +701,7 @@ class S3Explorer {
             return;
         }
         for (var file of selectedFileList) {
-            let result = await api.UploadFileToFolder(S3TreeView_1.S3TreeView.Current.AwsProfile, this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, file.path);
+            let result = await api.UploadFileToFolder(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, file.path);
             if (result.isSuccessful) {
                 ui.showInfoMessage(s3_helper.GetFileNameWithExtension(file.path) + " is uploaded");
             }
@@ -716,9 +710,6 @@ class S3Explorer {
     }
     async UpdateFile() {
         if (!this.S3ExplorerItem.IsFile()) {
-            return;
-        }
-        if (!S3TreeView_1.S3TreeView.Current?.AwsProfile) {
             return;
         }
         let param = {
@@ -733,7 +724,7 @@ class S3Explorer {
             return;
         }
         let file = selectedFileList[0];
-        let result = await api.UploadFile(S3TreeView_1.S3TreeView.Current.AwsProfile, this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, file.path);
+        let result = await api.UploadFile(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, file.path);
         if (result.isSuccessful) {
             ui.showInfoMessage(s3_helper.GetFileNameWithExtension(file.path) + " is replaced");
             this.Load();
@@ -743,14 +734,11 @@ class S3Explorer {
         if (!this.S3ExplorerItem.IsFolder) {
             return;
         }
-        if (!S3TreeView_1.S3TreeView.Current?.AwsProfile) {
-            return;
-        }
         let folderName = await vscode.window.showInputBox({ placeHolder: 'Folder Name' });
         if (folderName === undefined) {
             return;
         }
-        let result = await api.CreateS3Folder(S3TreeView_1.S3TreeView.Current.AwsProfile, this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, folderName);
+        let result = await api.CreateS3Folder(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, folderName);
         if (result.isSuccessful) {
             ui.showInfoMessage(result.result + " Folder is Created");
             this.Load();

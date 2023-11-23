@@ -217,7 +217,7 @@ export class S3TreeView {
 		let selectedBucketName = await vscode.window.showInputBox({ placeHolder: 'Enter Bucket Name / Search Text' });
 		if(selectedBucketName===undefined){ return; }
 
-		var resultBucket = await api.GetBucketList(this.AwsProfile, selectedBucketName);
+		var resultBucket = await api.GetBucketList(selectedBucketName);
 		if(!resultBucket.isSuccessful){ return; }
 
 		let selectedBucketList = await vscode.window.showQuickPick(resultBucket.result, {canPickMany:true, placeHolder: 'Select Bucket(s)'});
