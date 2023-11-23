@@ -13,6 +13,7 @@ class S3TreeView {
     constructor(context) {
         this.FilterString = "";
         this.isShowOnlyFavorite = false;
+        this.isShowHiddenNodes = false;
         this.AwsProfile = "default";
         ui.logToOutput('TreeView.constructor Started');
         this.context = context;
@@ -56,6 +57,15 @@ class S3TreeView {
         node.IsFav = true;
         node.refreshUI();
     }
+    async HideNode(node) {
+        ui.logToOutput('S3TreeView.HideNode Started');
+        node.IsHidden = true;
+        this.treeDataProvider.Refresh();
+    }
+    async UnHideNode(node) {
+        ui.logToOutput('S3TreeView.UnHideNode Started');
+        node.IsHidden = false;
+    }
     async DeleteFromFav(node) {
         ui.logToOutput('S3TreeView.DeleteFromFav Started');
         node.IsFav = false;
@@ -85,6 +95,13 @@ class S3TreeView {
         this.SetFilterMessage();
         this.SaveState();
     }
+    async ShowHiddenNodes() {
+        ui.logToOutput('S3TreeView.ShowHiddenNodes Started');
+        this.isShowHiddenNodes = !this.isShowHiddenNodes;
+        this.treeDataProvider.Refresh();
+        this.SetFilterMessage();
+        this.SaveState();
+    }
     async SetViewTitle() {
         this.view.title = "Aws S3";
     }
@@ -93,7 +110,8 @@ class S3TreeView {
         try {
             this.context.globalState.update('AwsProfile', this.AwsProfile);
             this.context.globalState.update('FilterString', this.FilterString);
-            this.context.globalState.update('ShowOnlyFavorite', this.ShowOnlyFavorite);
+            this.context.globalState.update('ShowOnlyFavorite', this.isShowOnlyFavorite);
+            this.context.globalState.update('ShowHiddenNodes', this.isShowHiddenNodes);
             this.context.globalState.update('BucketList', this.treeDataProvider.GetBucketList());
             this.context.globalState.update('ShortcutList', this.treeDataProvider.GetShortcutList());
             this.context.globalState.update('ViewType', this.treeDataProvider.ViewType);
@@ -119,6 +137,10 @@ class S3TreeView {
             if (ShowOnlyFavoriteTemp) {
                 this.isShowOnlyFavorite = ShowOnlyFavoriteTemp;
             }
+            let ShowHiddenNodesTemp = this.context.globalState.get('ShowHiddenNodes');
+            if (ShowHiddenNodesTemp) {
+                this.isShowHiddenNodes = ShowHiddenNodesTemp;
+            }
             let BucketListTemp = this.context.globalState.get('BucketList');
             if (BucketListTemp) {
                 this.treeDataProvider.SetBucketList(BucketListTemp);
@@ -140,7 +162,10 @@ class S3TreeView {
         }
     }
     SetFilterMessage() {
-        this.view.message = "Profile:" + this.AwsProfile + " " + this.GetBoolenSign(this.isShowOnlyFavorite) + "Fav, " + this.FilterString;
+        this.view.message = "Profile:" + this.AwsProfile
+            + " " + this.GetBoolenSign(this.isShowOnlyFavorite) + "Fav,"
+            + " " + this.GetBoolenSign(this.isShowHiddenNodes) + "Hidden,"
+            + " " + this.FilterString;
     }
     GetBoolenSign(variable) {
         return variable ? "✓" : "𐄂";

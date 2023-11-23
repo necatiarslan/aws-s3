@@ -38,12 +38,25 @@
         "icon": "$(bookmark)"
       },
       {
+        "command": "S3TreeView.ShowHiddenNodes",
+        "title": "Show Hidden Nodes",
+        "icon": "$(eye-closed)"
+      },
+      {
         "command": "S3TreeView.AddToFav",
         "title": "Fav"
       },
       {
         "command": "S3TreeView.DeleteFromFav",
         "title": "UnFav"
+      },
+      {
+        "command": "S3TreeView.HideNode",
+        "title": "Hide"
+      },
+      {
+        "command": "S3TreeView.UnHideNode",
+        "title": "UnHide"
       },
       {
         "command": "S3TreeView.AddBucket",
@@ -103,29 +116,34 @@
           "group": "navigation@1"
         },
         {
-          "command": "S3TreeView.Filter",
+          "command": "S3TreeView.ShowHiddenNodes",
           "when": "view == S3TreeView",
           "group": "navigation@2"
         },
         {
-          "command": "S3TreeView.AddBucket",
+          "command": "S3TreeView.Filter",
           "when": "view == S3TreeView",
           "group": "navigation@3"
         },
         {
-          "command": "S3TreeView.ChangeView",
+          "command": "S3TreeView.AddBucket",
           "when": "view == S3TreeView",
           "group": "navigation@4"
         },
         {
-          "command": "S3TreeView.SelectAwsProfile",
+          "command": "S3TreeView.ChangeView",
           "when": "view == S3TreeView",
           "group": "navigation@5"
         },
         {
-          "command": "S3TreeView.Refresh",
+          "command": "S3TreeView.SelectAwsProfile",
           "when": "view == S3TreeView",
           "group": "navigation@6"
+        },
+        {
+          "command": "S3TreeView.Refresh",
+          "when": "view == S3TreeView",
+          "group": "navigation@7"
         },
         {
           "command": "S3TreeView.UpdateAwsEndPoint",
@@ -137,12 +155,22 @@
         {
           "command": "S3TreeView.AddToFav",
           "when": "view == S3TreeView",
-          "group": "Fav"
+          "group": "Filter"
         },
         {
           "command": "S3TreeView.DeleteFromFav",
           "when": "view == S3TreeView",
-          "group": "Fav"
+          "group": "Filter"
+        },
+        {
+          "command": "S3TreeView.HideNode",
+          "when": "view == S3TreeView",
+          "group": "Filter"
+        },
+        {
+          "command": "S3TreeView.UnHideNode",
+          "when": "view == S3TreeView",
+          "group": "Filter"
         },
         {
           "command": "S3TreeView.RemoveBucket",

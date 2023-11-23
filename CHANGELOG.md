@@ -3,6 +3,7 @@
     - copy shortcut key
     - add shortcut with key
     - Goto File/Folder
+    - Hide Bucket/Shortcuts
 
 # v1.2.0
     - Update Aws Endpoint (to connect your localstack)

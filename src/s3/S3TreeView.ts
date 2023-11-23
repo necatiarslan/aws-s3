@@ -16,6 +16,7 @@ export class S3TreeView {
 	public context: vscode.ExtensionContext;
 	public FilterString: string = "";
 	public isShowOnlyFavorite: boolean = false;
+	public isShowHiddenNodes: boolean = false;
 	public AwsProfile: string = "default";	
 	public AwsEndPoint: string | undefined;
 
@@ -73,6 +74,18 @@ export class S3TreeView {
 		node.refreshUI();
 	}
 
+	async HideNode(node: S3TreeItem) {
+		ui.logToOutput('S3TreeView.HideNode Started');
+		node.IsHidden = true;
+
+		this.treeDataProvider.Refresh();
+	}
+
+	async UnHideNode(node: S3TreeItem) {
+		ui.logToOutput('S3TreeView.UnHideNode Started');
+		node.IsHidden = false;
+	}
+
 	async DeleteFromFav(node: S3TreeItem) {
 		ui.logToOutput('S3TreeView.DeleteFromFav Started');
 		node.IsFav = false;
@@ -106,6 +119,14 @@ export class S3TreeView {
 		this.SaveState();
 	}
 
+	async ShowHiddenNodes() {
+		ui.logToOutput('S3TreeView.ShowHiddenNodes Started');
+		this.isShowHiddenNodes = !this.isShowHiddenNodes;
+		this.treeDataProvider.Refresh();
+		this.SetFilterMessage();
+		this.SaveState();
+	}
+
 	async SetViewTitle(){
 		this.view.title = "Aws S3";
 	}
@@ -116,7 +137,8 @@ export class S3TreeView {
 
 			this.context.globalState.update('AwsProfile', this.AwsProfile);
 			this.context.globalState.update('FilterString', this.FilterString);
-			this.context.globalState.update('ShowOnlyFavorite', this.ShowOnlyFavorite);
+			this.context.globalState.update('ShowOnlyFavorite', this.isShowOnlyFavorite);
+			this.context.globalState.update('ShowHiddenNodes', this.isShowHiddenNodes);
 			this.context.globalState.update('BucketList', this.treeDataProvider.GetBucketList());
 			this.context.globalState.update('ShortcutList', this.treeDataProvider.GetShortcutList());
 			this.context.globalState.update('ViewType', this.treeDataProvider.ViewType);
@@ -144,6 +166,9 @@ export class S3TreeView {
 
 			let ShowOnlyFavoriteTemp: boolean | undefined = this.context.globalState.get('ShowOnlyFavorite');
 			if (ShowOnlyFavoriteTemp) { this.isShowOnlyFavorite = ShowOnlyFavoriteTemp; }
+
+			let ShowHiddenNodesTemp: boolean | undefined = this.context.globalState.get('ShowHiddenNodes');
+			if (ShowHiddenNodesTemp) { this.isShowHiddenNodes = ShowHiddenNodesTemp; }
 
 			let BucketListTemp:string[] | undefined  = this.context.globalState.get('BucketList');
 			if(BucketListTemp)
@@ -176,7 +201,10 @@ export class S3TreeView {
 	}
 
 	SetFilterMessage(){
-		this.view.message = "Profile:" + this.AwsProfile + " " + this.GetBoolenSign(this.isShowOnlyFavorite) + "Fav, " + this.FilterString;
+		this.view.message = "Profile:" + this.AwsProfile 
+		+ " " + this.GetBoolenSign(this.isShowOnlyFavorite) + "Fav," 
+		+ " " + this.GetBoolenSign(this.isShowHiddenNodes) + "Hidden,"
+		+ " " + this.FilterString;
 	}
 
 	GetBoolenSign(variable: boolean){

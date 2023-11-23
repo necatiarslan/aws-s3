@@ -185,6 +185,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 		for (var node of this.BucketNodeList) {
 			if (S3TreeView.Current && S3TreeView.Current.FilterString && !node.IsFilterStringMatch(S3TreeView.Current.FilterString)) { continue; }
 			if (S3TreeView.Current && S3TreeView.Current.isShowOnlyFavorite && !(node.IsFav || node.IsAnyChidrenFav())) { continue; }
+			if (S3TreeView.Current && !S3TreeView.Current.isShowHiddenNodes && (node.IsHidden)) { continue; }
 
 			result.push(node);
 		}
@@ -197,6 +198,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 			if(!(node.Bucket === BucketNode.Bucket)) { continue; }
 			if (S3TreeView.Current && S3TreeView.Current.FilterString && !node.IsFilterStringMatch(S3TreeView.Current.FilterString)) { continue; }
 			if (S3TreeView.Current && S3TreeView.Current.isShowOnlyFavorite && !(node.IsFav || node.IsAnyChidrenFav())) { continue; }
+			if (S3TreeView.Current && !S3TreeView.Current.isShowHiddenNodes && (node.IsHidden)) { continue; }
 
 			node.Parent = BucketNode;
 			if(BucketNode.Children.indexOf(node) === -1)
@@ -213,6 +215,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 		for (var node of this.ShortcutNodeList) {
 			if (S3TreeView.Current && S3TreeView.Current.FilterString && !node.IsFilterStringMatch(S3TreeView.Current.FilterString)) { continue; }
 			if (S3TreeView.Current && S3TreeView.Current.isShowOnlyFavorite && !(node.IsFav || node.IsAnyChidrenFav())) { continue; }
+			if (S3TreeView.Current && !S3TreeView.Current.isShowHiddenNodes && (node.IsHidden)) { continue; }
 
 			result.push(node);
 		}

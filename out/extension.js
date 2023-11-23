@@ -19,11 +19,20 @@ function activate(context) {
     vscode.commands.registerCommand('S3TreeView.ShowOnlyFavorite', () => {
         treeView.ShowOnlyFavorite();
     });
+    vscode.commands.registerCommand('S3TreeView.ShowHiddenNodes', () => {
+        treeView.ShowHiddenNodes();
+    });
     vscode.commands.registerCommand('S3TreeView.AddToFav', (node) => {
         treeView.AddToFav(node);
     });
     vscode.commands.registerCommand('S3TreeView.DeleteFromFav', (node) => {
         treeView.DeleteFromFav(node);
+    });
+    vscode.commands.registerCommand('S3TreeView.HideNode', (node) => {
+        treeView.HideNode(node);
+    });
+    vscode.commands.registerCommand('S3TreeView.UnHideNode', (node) => {
+        treeView.UnHideNode(node);
     });
     vscode.commands.registerCommand('S3TreeView.AddBucket', () => {
         treeView.AddBucket();

@@ -149,6 +149,9 @@ class S3TreeDataProvider {
             if (S3TreeView_1.S3TreeView.Current && S3TreeView_1.S3TreeView.Current.isShowOnlyFavorite && !(node.IsFav || node.IsAnyChidrenFav())) {
                 continue;
             }
+            if (S3TreeView_1.S3TreeView.Current && !S3TreeView_1.S3TreeView.Current.isShowHiddenNodes && (node.IsHidden)) {
+                continue;
+            }
             result.push(node);
         }
         return result;
@@ -163,6 +166,9 @@ class S3TreeDataProvider {
                 continue;
             }
             if (S3TreeView_1.S3TreeView.Current && S3TreeView_1.S3TreeView.Current.isShowOnlyFavorite && !(node.IsFav || node.IsAnyChidrenFav())) {
+                continue;
+            }
+            if (S3TreeView_1.S3TreeView.Current && !S3TreeView_1.S3TreeView.Current.isShowHiddenNodes && (node.IsHidden)) {
                 continue;
             }
             node.Parent = BucketNode;
@@ -180,6 +186,9 @@ class S3TreeDataProvider {
                 continue;
             }
             if (S3TreeView_1.S3TreeView.Current && S3TreeView_1.S3TreeView.Current.isShowOnlyFavorite && !(node.IsFav || node.IsAnyChidrenFav())) {
+                continue;
+            }
+            if (S3TreeView_1.S3TreeView.Current && !S3TreeView_1.S3TreeView.Current.isShowHiddenNodes && (node.IsHidden)) {
                 continue;
             }
             result.push(node);

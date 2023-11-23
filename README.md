@@ -57,7 +57,6 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Environment Varible Credentials support
 - Hide shortcuts, add show hidden filter button [H]
 - Move, Copy, Rename files
-- S3.getBucketAcl to get permissions and enable/disable command buttons
 - Paging (now max 1000)
 - File count in a folder (option)
 - Remove Search Button from S3 Explorer
@@ -76,6 +75,7 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Show progressbar when uploading, downloading, deleting etc
 - Freeze top bar
 - Fix: Cannot read properties of null (reading '_panel')
+- S3.getBucketAcl to get permissions and enable/disable command buttons
 
 Follow me on linkedin to get latest news \
 https://www.linkedin.com/in/necati-arslan/

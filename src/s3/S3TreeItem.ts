@@ -9,6 +9,7 @@ export class S3TreeItem extends vscode.TreeItem {
 	public Shortcut:string | undefined;
 	public Parent:S3TreeItem | undefined;
 	public Children:S3TreeItem[] = [];
+	public IsHidden: boolean = false;
 
 	constructor(text:string, treeItemType:TreeItemType) {
 		super(text);
