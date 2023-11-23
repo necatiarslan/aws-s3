@@ -30,6 +30,11 @@ export class S3TreeView {
 		context.subscriptions.push(this.view);
 		S3TreeView.Current = this;
 		this.SetFilterMessage();
+		this.TestAwsConnection();
+	}
+
+	TestAwsConnection(){
+		api.TestAwsConnection()
 	}
 
 	Refresh(): void {
@@ -201,10 +206,19 @@ export class S3TreeView {
 	}
 
 	SetFilterMessage(){
-		this.view.message = "Profile:" + this.AwsProfile 
-		+ " " + this.GetBoolenSign(this.isShowOnlyFavorite) + "Fav," 
-		+ " " + this.GetBoolenSign(this.isShowHiddenNodes) + "Hidden,"
-		+ " " + this.FilterString;
+		this.view.message = 
+		this.GetFilterProfilePrompt()
+		+ this.GetBoolenSign(this.isShowOnlyFavorite) + "Fav, " 
+		+ this.GetBoolenSign(this.isShowHiddenNodes) + "Hidden, "
+		+ this.FilterString;
+	}
+
+	private GetFilterProfilePrompt() {
+		if(api.IsSharedIniFileCredentials())
+		{
+			return "Profile:" + this.AwsProfile + " ";
+		}
+		return ""
 	}
 
 	GetBoolenSign(variable: boolean){
@@ -320,6 +334,12 @@ export class S3TreeView {
 	async SelectAwsProfile(node: S3TreeItem) {
 		ui.logToOutput('S3TreeView.SelectAwsProfile Started');
 
+		if (!api.IsSharedIniFileCredentials())
+		{
+			ui.showWarningMessage("Your Aws Access method is not credentials file");
+			return;
+		}
+
 		var result = await api.GetAwsProfileList();
 		if(!result.isSuccessful){ return; }
 
@@ -329,6 +349,7 @@ export class S3TreeView {
 		this.AwsProfile = selectedAwsProfile;
 		this.SaveState();
 		this.SetFilterMessage();
+		this.TestAwsConnection();
 	}
 
 	async UpdateAwsEndPoint() {

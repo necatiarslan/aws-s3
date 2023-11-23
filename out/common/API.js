@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadS3File = exports.UploadFile = exports.UploadFileToFolder = exports.DeleteObject = exports.CreateS3Folder = exports.SearchS3Object = exports.GetS3ObjectList = void 0;
+exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadS3File = exports.UploadFile = exports.UploadFileToFolder = exports.DeleteObject = exports.CreateS3Folder = exports.SearchS3Object = exports.GetS3ObjectList = exports.IsSharedIniFileCredentials = void 0;
 /* eslint-disable @typescript-eslint/naming-convention */
 const AWS = require("aws-sdk");
 const ui = require("./UI");
@@ -12,25 +12,31 @@ const parseKnownFiles_1 = require("../aws-sdk/parseKnownFiles");
 const s3_helper = require("../s3/S3Helper");
 const fs = require("fs");
 const S3TreeView = require("../s3/S3TreeView");
+function IsSharedIniFileCredentials() {
+    return AWS.config.credentials instanceof AWS.SharedIniFileCredentials;
+}
+exports.IsSharedIniFileCredentials = IsSharedIniFileCredentials;
+function GetCredentials() {
+    let credentials = AWS.config.credentials;
+    if (IsSharedIniFileCredentials()) {
+        credentials = new AWS.SharedIniFileCredentials({ profile: S3TreeView.S3TreeView.Current?.AwsProfile });
+    }
+    ui.logToOutput("Aws credentials AccessKeyId=" + credentials?.accessKeyId);
+    return credentials;
+}
 function GetS3Client() {
     let s3 = undefined;
-    ui.logToOutput(AWS.config);
-    if (S3TreeView.S3TreeView.Current?.AwsProfile != "default") {
-        let credentials = new AWS.SharedIniFileCredentials({ profile: S3TreeView.S3TreeView.Current?.AwsProfile });
-        s3 = new AWS.S3({ credentials: credentials, endpoint: S3TreeView.S3TreeView.Current?.AwsEndPoint });
-    }
-    else {
-        s3 = new AWS.S3();
-    }
+    let credentials = GetCredentials();
+    s3 = new AWS.S3({ credentials: credentials, endpoint: S3TreeView.S3TreeView.Current?.AwsEndPoint });
     return s3;
 }
 function GetIAMClient() {
-    const credentials = new AWS.SharedIniFileCredentials({ profile: S3TreeView.S3TreeView.Current?.AwsProfile });
+    let credentials = GetCredentials();
     const iam = new AWS.IAM({ credentials: credentials });
     return iam;
 }
 function GetEC2Client() {
-    const credentials = new AWS.SharedIniFileCredentials({ profile: S3TreeView.S3TreeView.Current?.AwsProfile });
+    let credentials = GetCredentials();
     const ec2 = new AWS.EC2({ region: 'us-east-1', credentials: credentials });
     return ec2;
 }
@@ -297,10 +303,16 @@ async function TestAwsConnection() {
         return result;
     }
     catch (error) {
-        result.isSuccessful = false;
-        result.error = error;
-        ui.showErrorMessage('api.TestAwsConnection Error !!!', error);
-        ui.logToOutput("api.TestAwsConnection Error !!!", error);
+        if (error.name.includes("Signature")) {
+            result.isSuccessful = false;
+            result.error = error;
+            ui.showErrorMessage('api.TestAwsConnection Error !!!', error);
+            ui.logToOutput("api.TestAwsConnection Error !!!", error);
+        }
+        else {
+            result.isSuccessful = true;
+            result.result = true;
+        }
         return result;
     }
 }

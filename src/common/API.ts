@@ -11,34 +11,41 @@ import * as s3_helper from '../s3/S3Helper'
 import * as fs from 'fs';
 import * as S3TreeView from '../s3/S3TreeView';
 
+export function IsSharedIniFileCredentials()
+{
+  return AWS.config.credentials instanceof AWS.SharedIniFileCredentials
+}
+
+function GetCredentials()
+{
+  let credentials = AWS.config.credentials
+  if(IsSharedIniFileCredentials())
+  {
+    credentials = new AWS.SharedIniFileCredentials({ profile: S3TreeView.S3TreeView.Current?.AwsProfile });
+  }
+  ui.logToOutput("Aws credentials AccessKeyId=" + credentials?.accessKeyId)
+  return credentials
+}
+
 function GetS3Client() {
   let s3 = undefined; 
 
-  ui.logToOutput(AWS.config)
-
-  if(S3TreeView.S3TreeView.Current?.AwsProfile != "default")
-  {
-    let credentials = new AWS.SharedIniFileCredentials({ profile: S3TreeView.S3TreeView.Current?.AwsProfile });
-    s3 = new AWS.S3({ credentials: credentials, endpoint:S3TreeView.S3TreeView.Current?.AwsEndPoint});
-  }
-  else
-  {
-    s3 = new AWS.S3();
-  }
+  let credentials = GetCredentials();
+  s3 = new AWS.S3({ credentials: credentials, endpoint:S3TreeView.S3TreeView.Current?.AwsEndPoint});
   
   return s3;
 }
 
 function GetIAMClient()
 {
-  const credentials = new AWS.SharedIniFileCredentials({ profile: S3TreeView.S3TreeView.Current?.AwsProfile });
+  let credentials = GetCredentials();
   const iam = new AWS.IAM({credentials:credentials});
   return iam;
 }
 
 function GetEC2Client()
 {
-  const credentials = new AWS.SharedIniFileCredentials({ profile: S3TreeView.S3TreeView.Current?.AwsProfile });
+  let credentials = GetCredentials();
   const ec2 = new AWS.EC2({region: 'us-east-1', credentials:credentials});
   return ec2;
 }
@@ -372,10 +379,19 @@ export async function TestAwsConnection(): Promise<MethodResult<boolean>> {
   } 
   catch (error:any) 
   {
-    result.isSuccessful = false;
-    result.error = error;
-    ui.showErrorMessage('api.TestAwsConnection Error !!!', error);
-    ui.logToOutput("api.TestAwsConnection Error !!!", error); 
+    if (error.name.includes("Signature"))
+    {
+      result.isSuccessful = false;
+      result.error = error;
+      ui.showErrorMessage('api.TestAwsConnection Error !!!', error);
+      ui.logToOutput("api.TestAwsConnection Error !!!", error); 
+    }
+    else
+    {
+      result.isSuccessful = true;
+      result.result = true;
+    }
+    
     return result;
   }
 }
