@@ -59,15 +59,8 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Move, Copy, Rename files
 - S3.getBucketAcl to get permissions and enable/disable command buttons
 - Paging (now max 1000)
-- Fix: Cannot read properties of null (reading '_panel')
-- Show progressbar when uploading, downloading, deleting etc
-- Freeze top bar
 - File count in a folder (option)
-- Copy Shortcut
 - GoTo Key
-- Add Folder Shortcuts With Key
-- Add Survey Link to the S3 Explorer and Tree Other Command
-- Add Bug Report to the Tree Other Command
 - Remove Search Button from S3 Explorer
 - Auto Refresh Checkbox
 - Show shortcuts when you add the bucket to fav and filter
@@ -81,6 +74,9 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Filter by Date/Size
 - Multiple S3 Explorer
 - Highlight Icons On Hover
+- Show progressbar when uploading, downloading, deleting etc
+- Freeze top bar
+- Fix: Cannot read properties of null (reading '_panel')
 
 Follow me on linkedin to get latest news \
 https://www.linkedin.com/in/necati-arslan/

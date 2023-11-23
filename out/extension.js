@@ -34,6 +34,12 @@ function activate(context) {
     vscode.commands.registerCommand('S3TreeView.RemoveShortcut', (node) => {
         treeView.RemoveShortcut(node);
     });
+    vscode.commands.registerCommand('S3TreeView.AddShortcut', (node) => {
+        treeView.AddShortcut(node);
+    });
+    vscode.commands.registerCommand('S3TreeView.CopyShortcut', (node) => {
+        treeView.CopyShortcut(node);
+    });
     vscode.commands.registerCommand('S3TreeView.ShowS3Explorer', (node) => {
         treeView.ShowS3Explorer(node);
     });

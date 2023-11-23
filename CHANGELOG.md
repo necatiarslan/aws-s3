@@ -1,3 +1,8 @@
+# v1.3.0
+    - add bucket: do not search if bucket name entered (thanks Ferabeo #12)
+    - copy shortcut key
+    - add shortcut with key
+
 # v1.2.0
     - Update Aws Endpoint (to connect your localstack)
 

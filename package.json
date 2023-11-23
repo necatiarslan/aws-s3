@@ -2,7 +2,7 @@
   "name": "aws-s3-vscode-extension",
   "displayName": "Aws S3",
   "description": "Browse Your AWS S3 Buckets, Upload, Download, Delete Files",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "publisher": "NecatiARSLAN",
   "repository": {
     "type": "git",
@@ -10,7 +10,7 @@
   },
   "icon": "media/aws-s3-logo-extension.png",
   "engines": {
-    "vscode": "^1.71.0"
+    "vscode": "^1.75.0"
   },
   "categories": [
     "Other"
@@ -18,9 +18,6 @@
   "keywords": [
     "AWS",
     "S3"
-  ],
-  "activationEvents": [
-    "onView:S3TreeView"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -60,6 +57,14 @@
       {
         "command": "S3TreeView.RemoveShortcut",
         "title": "Remove Shortcut"
+      },
+      {
+        "command": "S3TreeView.AddShortcut",
+        "title": "Add Shortcut"
+      },
+      {
+        "command": "S3TreeView.CopyShortcut",
+        "title": "Copy Shortcut"
       },
       {
         "command": "S3TreeView.ShowS3Explorer",
@@ -142,6 +147,16 @@
         },
         {
           "command": "S3TreeView.RemoveShortcut",
+          "when": "view == S3TreeView",
+          "group": "Shortcut"
+        },
+        {
+          "command": "S3TreeView.AddShortcut",
+          "when": "view == S3TreeView",
+          "group": "Shortcut"
+        },
+        {
+          "command": "S3TreeView.CopyShortcut",
           "when": "view == S3TreeView",
           "group": "Shortcut"
         },

@@ -206,6 +206,28 @@ class S3TreeView {
         S3Explorer_1.S3Explorer.Current?.RenderHtml(); //to update shortcut icon
         this.SaveState();
     }
+    async CopyShortcut(node) {
+        ui.logToOutput('S3TreeView.CopyShortcut Started');
+        if (node.TreeItemType !== S3TreeItem_1.TreeItemType.Shortcut) {
+            return;
+        }
+        if (!node.Bucket || !node.Shortcut) {
+            return;
+        }
+        vscode.env.clipboard.writeText(node.Shortcut);
+    }
+    async AddShortcut(node) {
+        ui.logToOutput('S3TreeView.AddShortcut Started');
+        if (!node.Bucket) {
+            return;
+        }
+        let bucket = node.Bucket;
+        let shortcut = await vscode.window.showInputBox({ placeHolder: 'Enter a Folder/File Key' });
+        if (shortcut === undefined) {
+            return;
+        }
+        this.AddOrRemoveShortcut(bucket, shortcut);
+    }
     async ShowS3Explorer(node) {
         ui.logToOutput('S3TreeView.ShowS3Explorer Started');
         S3Explorer_1.S3Explorer.Render(this.context.extensionUri, node);
