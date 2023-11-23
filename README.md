@@ -55,15 +55,10 @@ https://github.com/necatiarslan/aws-s3/issues/new
 
 ## Todo
 - Environment Varible Credentials support
-- Hide shortcuts, add show hidden filter button [H]
 - Move, Copy, Rename files
-- Paging (now max 1000)
-- File count in a folder (option)
-- Remove Search Button from S3 Explorer
-- Auto Refresh Checkbox
-- Show shortcuts when you add the bucket to fav and filter
 
 ## Nice To Have
+- Paging (now max 1000)
 - Theme support
 - Sort By Name / Type
 - Delete Folder with files in it

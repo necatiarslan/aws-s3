@@ -383,10 +383,13 @@ export class S3Explorer {
                 <th style="width:20px; text-align:center">
                     <vscode-link id="go_up"><img src="${goUpUri}" alt="Go Up"></vscode-link>
                 </th>
+                <th style="width:40px; text-align:center">
+                    <!--<vscode-link id="go_to">Goto</vscode-link>-->
+                </th>
                 <th>Name</th>
                 <th style="width:100px; text-align:center">Type</th>
-                <th style="width:100px; text-align:center">Modified</th>
-                <th style="width:100px; text-align:center">Size</th>
+                <th style="width:80px; text-align:center">Modified</th>
+                <th style="width:80px; text-align:center">Size</th>
             </tr>
             </table>
 
@@ -577,6 +580,16 @@ export class S3Explorer {
                         this.S3ExplorerItem.Key = "";
                         this.Load();
                         return;
+
+                    case "go_to":
+                        let shortcut:string|undefined  = undefined;
+                        vscode.window.showInputBox({ placeHolder: 'Enter a Folder/File Key' }).then(shortcut);
+		                if(shortcut===undefined){ return; }
+
+                        this.S3ExplorerItem.Key = shortcut;
+                        this.Load();
+                        return;
+
                     
                     case "go_key":
                         id = message.id;
