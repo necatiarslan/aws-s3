@@ -10,19 +10,75 @@ import { ParsedIniData } from "@aws-sdk/types";
 import * as s3_helper from '../s3/S3Helper'
 import * as fs from 'fs';
 import * as S3TreeView from '../s3/S3TreeView';
+import { error } from "console";
 
-export function IsSharedIniFileCredentials()
+export function IsSharedIniFileCredentials(credentials:any|undefined=undefined)
 {
-  return AWS.config.credentials instanceof AWS.SharedIniFileCredentials
+  if(credentials)
+  {
+    return GetCredentialProvider(credentials) === "SharedIniFileCredentials"
+  }
+  return GetCredentialProvider(AWS.config.credentials) === "SharedIniFileCredentials"
+}
+
+export function IsEnvironmentCredentials(credentials:any|undefined=undefined)
+{
+  if(credentials)
+  {
+    return GetCredentialProvider(credentials) === "EnvironmentCredentials"
+  }
+  return GetCredentialProvider(AWS.config.credentials) === "EnvironmentCredentials"
+}
+
+function GetCredentialProvider(credentials:any){
+
+  if (credentials instanceof(AWS.EnvironmentCredentials))
+  {
+    return "EnvironmentCredentials";
+  }
+  else if (credentials instanceof(AWS.ECSCredentials))
+  {
+    return "ECSCredentials";
+  }
+  else if (credentials instanceof(AWS.SsoCredentials))
+  {
+    return "SsoCredentials";
+  }
+  else if (credentials instanceof(AWS.SharedIniFileCredentials))
+  {
+    return "SharedIniFileCredentials";
+  }
+  else if (credentials instanceof(AWS.ProcessCredentials))
+  {
+    return "ProcessCredentials";
+  }
+  else if (credentials instanceof(AWS.TokenFileWebIdentityCredentials))
+  {
+    return "TokenFileWebIdentityCredentials";
+  }
+  else if (credentials instanceof(AWS.EC2MetadataCredentials))
+  {
+    return "EC2MetadataCredentials";
+  }
+  return "UnknownProvider";
 }
 
 function GetCredentials()
 {
+  
+  if(!AWS.config.credentials)
+  {
+    throw new Error("Aws credentials not found !!!")
+  }
   let credentials = AWS.config.credentials
   if(IsSharedIniFileCredentials())
   {
-    credentials = new AWS.SharedIniFileCredentials({ profile: S3TreeView.S3TreeView.Current?.AwsProfile });
+    if(S3TreeView.S3TreeView.Current && S3TreeView.S3TreeView.Current?.AwsProfile != "default")
+    {
+      credentials = new AWS.SharedIniFileCredentials({ profile: S3TreeView.S3TreeView.Current?.AwsProfile });
+    }
   }
+  ui.logToOutput("Aws credentials provider " + GetCredentialProvider(credentials));
   ui.logToOutput("Aws credentials AccessKeyId=" + credentials?.accessKeyId)
   return credentials
 }
