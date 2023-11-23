@@ -295,6 +295,19 @@ export async function GetBucketList(Profile:string, BucketName?:string): Promise
   {
     const s3 = GetS3Object(Profile);
 
+    if (BucketName)
+    {
+      try
+      {
+        let is_bucket_response = await s3.headBucket({ Bucket: BucketName }).promise();
+        //bucket exists, so return it
+        result.result.push(BucketName);
+        result.isSuccessful = true;
+        return result;
+      }
+      catch {}
+    }
+    
     let response = await s3.listBuckets().promise();
     result.isSuccessful = true;
     if(response.Buckets)
