@@ -630,6 +630,10 @@ class S3Explorer {
         if (!key) {
             return;
         }
+        if (s3_helper.IsFolder(key)) {
+            ui.showWarningMessage("Select a file");
+            return;
+        }
         let targetPath = await vscode.window.showInputBox({ placeHolder: 'Target Path with / at the end' });
         if (targetPath === undefined) {
             return;
@@ -645,6 +649,10 @@ class S3Explorer {
     async CopyFile(keys) {
         let key = this.getFirstKeyFromKeys(keys);
         if (!key) {
+            return;
+        }
+        if (s3_helper.IsFolder(key)) {
+            ui.showWarningMessage("Select a file");
             return;
         }
         let targetPath = await vscode.window.showInputBox({ placeHolder: 'Target Path with / at the end' });
@@ -703,6 +711,10 @@ class S3Explorer {
     async RenameFile(keys) {
         let key = this.getFirstKeyFromKeys(keys);
         if (!key) {
+            return;
+        }
+        if (s3_helper.IsFolder(key)) {
+            ui.showWarningMessage("Select a file");
             return;
         }
         let fileName = await vscode.window.showInputBox({ placeHolder: 'New File Name Without Extension' });
