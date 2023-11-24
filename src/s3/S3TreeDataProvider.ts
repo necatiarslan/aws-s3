@@ -124,6 +124,18 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 		this.Refresh();
 	}
 
+	UpdateShortcut(Bucket:string, Shortcut:string, NewShortcut:string){
+		for(let i = 0; i < this.ShortcutList.length; i++)
+		{
+			if(this.ShortcutList[i][0] === Bucket && this.ShortcutList[i][1] === Shortcut)
+			{
+				this.ShortcutList[i][1] = NewShortcut
+			}
+		}
+		this.LoadShortcutNodeList();
+		this.Refresh();
+	}
+
 	LoadBucketNodeList(){
 		this.BucketNodeList = [];
 		

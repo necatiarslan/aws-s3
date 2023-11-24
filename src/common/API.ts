@@ -344,6 +344,85 @@ export async function UploadFile(Bucket:string, TargetKey:string, SourcePath:str
   }
 } 
 
+export async function CopyFile(Bucket:string, SourceKey:string, TargetKey:string) : Promise<MethodResult<string>>
+{
+  let result = new MethodResult<string>();
+  if(!s3_helper.IsFile(SourceKey))
+  {
+    result.isSuccessful = false;
+    return result;
+  }
+
+  if(s3_helper.IsFolder(TargetKey))
+  {
+    TargetKey = TargetKey + s3_helper.GetFileNameWithExtension(SourceKey);
+  }
+
+  try 
+  {
+    const s3 = GetS3Client();
+
+    const param = {
+      Bucket: Bucket,
+      CopySource: `/${Bucket}/${SourceKey}`,
+      Key: TargetKey,
+    };
+
+    let response = await s3.copyObject(param).promise();
+
+    result.result = TargetKey;
+    result.isSuccessful = true;
+    return result;
+  } 
+  catch (error:any) 
+  {
+    result.isSuccessful = false;
+    result.error = error;
+    ui.showErrorMessage('api.CopyFile Error !!! File=' + SourceKey, error);
+    ui.logToOutput("api.CopyFile Error !!! File=" + SourceKey, error); 
+    return result;
+  }
+}
+
+export async function MoveFile(Bucket:string, SourceKey:string, TargetKey:string) : Promise<MethodResult<string>>
+{
+  let result = new MethodResult<string>();
+
+  let copy_result = await CopyFile(Bucket, SourceKey, TargetKey);
+  if(!copy_result.isSuccessful)
+  {
+    result.result = copy_result.result;
+    result.isSuccessful = false;
+    return result;
+  }
+  
+  let delete_result = await DeleteObject(Bucket, SourceKey);
+  if(!delete_result.isSuccessful)
+  {
+    result.result = SourceKey;
+    result.isSuccessful = false;
+    return result;
+  }
+
+  result.result = copy_result.result;
+  result.isSuccessful = true;
+  return result;
+}
+
+export async function RenameFile(Bucket:string, SourceKey:string, TargetFileName:string) : Promise<MethodResult<string>>
+{
+  let TargetKey = s3_helper.GetParentFolderKey(SourceKey) + TargetFileName + "." +s3_helper.GetFileExtension(SourceKey)
+  
+  let result = new MethodResult<string>();
+
+  let move_result = await MoveFile(Bucket, SourceKey, TargetKey);
+
+  result.result = TargetKey;
+  result.isSuccessful = move_result.isSuccessful;
+  result.error = move_result.error;
+  return result;
+}
+
 export async function DownloadS3File(Bucket:string, Key:string, TargetPath:string) : Promise<MethodResult<string>>
 {
   let result = new MethodResult<string>();

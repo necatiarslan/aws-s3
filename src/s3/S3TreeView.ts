@@ -267,7 +267,7 @@ export class S3TreeView {
 	}
 
 	async AddOrRemoveShortcut(Bucket:string, Key:string) {
-		ui.logToOutput('S3TreeView.AddShortcut Started');
+		ui.logToOutput('S3TreeView.AddOrRemoveShortcut Started');
 		if(!Bucket || !Key) { return; }
 		
 		if(this.treeDataProvider.DoesShortcutExists(Bucket, Key))
@@ -280,6 +280,28 @@ export class S3TreeView {
 		}
 		
 		this.SaveState();
+	}
+
+	async RemoveShortcutByKey(Bucket:string, Key:string) {
+		ui.logToOutput('S3TreeView.RemoveShortcutByKey Started');
+		if(!Bucket || !Key) { return; }
+		
+		if(this.treeDataProvider.DoesShortcutExists(Bucket, Key))
+		{
+			this.treeDataProvider.RemoveShortcut(Bucket, Key);
+			this.SaveState();
+		}
+	}
+
+	async UpdateShortcutByKey(Bucket:string, Key:string, NewKey:string) {
+		ui.logToOutput('S3TreeView.RemoveShortcutByKey Started');
+		if(!Bucket || !Key) { return; }
+		
+		if(this.treeDataProvider.DoesShortcutExists(Bucket, Key))
+		{
+			this.treeDataProvider.UpdateShortcut(Bucket, Key, NewKey);
+			this.SaveState();
+		}
 	}
 
 	DoesShortcutExists(Bucket:string, Key:string|undefined):boolean {

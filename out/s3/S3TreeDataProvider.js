@@ -100,6 +100,15 @@ class S3TreeDataProvider {
         this.LoadShortcutNodeList();
         this.Refresh();
     }
+    UpdateShortcut(Bucket, Shortcut, NewShortcut) {
+        for (let i = 0; i < this.ShortcutList.length; i++) {
+            if (this.ShortcutList[i][0] === Bucket && this.ShortcutList[i][1] === Shortcut) {
+                this.ShortcutList[i][1] = NewShortcut;
+            }
+        }
+        this.LoadShortcutNodeList();
+        this.Refresh();
+    }
     LoadBucketNodeList() {
         this.BucketNodeList = [];
         for (var bucket of this.BucketList) {

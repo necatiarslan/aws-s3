@@ -715,11 +715,36 @@ export class S3Explorer {
             ui.showInfoMessage("ARN(s) are copied to clipboard");
         }
     }
-    async MoveFile(key: string) {
-        ui.showInfoMessage("Stay Tuned ... MoveFile key=" + key);
+    async MoveFile(keys: string) {
+        let key = this.getFirstKeyFromKeys(keys);
+        if (!key) {return;}
+
+        let targetPath = await vscode.window.showInputBox({ placeHolder: 'Target Path with / at the end' });
+		if(targetPath===undefined){ return; }
+
+        let result = await api.MoveFile(this.S3ExplorerItem.Bucket, key, targetPath);
+        if(result.isSuccessful)
+        {
+            S3TreeView.Current?.UpdateShortcutByKey(this.S3ExplorerItem.Bucket, key, result.result)
+            this.S3ExplorerItem.Key = result.result;
+            this.Load();
+            ui.showInfoMessage("File is Moved");
+        }
     }
-    async CopyFile(key: string) {
-        ui.showInfoMessage("Stay Tuned ... CopyFile key=" + key);
+    async CopyFile(keys: string) {
+        let key = this.getFirstKeyFromKeys(keys);
+        if (!key) {return;}
+
+        let targetPath = await vscode.window.showInputBox({ placeHolder: 'Target Path with / at the end' });
+		if(targetPath===undefined){ return; }
+
+        let result = await api.CopyFile(this.S3ExplorerItem.Bucket, key, targetPath);
+        if(result.isSuccessful)
+        {
+            this.S3ExplorerItem.Key = result.result;
+            this.Load();
+            ui.showInfoMessage("File is Copied");
+        }
     }
     async DeleteFile(keys: string) {
         if(keys.length === 0) { return; }
@@ -727,6 +752,8 @@ export class S3Explorer {
 
         let confirm = await vscode.window.showInputBox({ placeHolder: 'print delete to confirm' });
 		if(confirm===undefined || confirm!="delete"){ return; }
+
+        let goto_parent_folder = false;
 
         let deleteCounter = 0;
         for(var key of keyList)
@@ -737,12 +764,17 @@ export class S3Explorer {
                 if(response.isSuccessful)
                 {
                     deleteCounter++;
+                    S3TreeView.Current?.RemoveShortcutByKey(this.S3ExplorerItem.Bucket, key)
+                    if(this.S3ExplorerItem.Key === key)
+                    {
+                        goto_parent_folder = true;
+                    }
                 }
             }
         }
 
         //go up if current file/folder is deleted
-        if(deleteCounter >= 1 && keys === this.S3ExplorerItem.Key)
+        if(goto_parent_folder)
         {
             this.S3ExplorerItem.Key = this.S3ExplorerItem.GetParentFolderKey();
         }
@@ -750,8 +782,34 @@ export class S3Explorer {
         this.Load();
         ui.showInfoMessage(deleteCounter.toString() + " object(s) are deleted");
     }
-    async RenameFile(key: string) {
-        ui.showInfoMessage("Stay Tuned ... RenameFile key=" + key);
+    getFirstKeyFromKeys(keys: string):string|undefined
+    {
+        if(keys.length === 0) { return undefined; }
+        var keyList = keys.split("|");
+        for(var key of keyList)
+        {
+            if(key)
+            {
+                return key;
+            }
+        }
+        return undefined;
+    }
+    async RenameFile(keys: string) {
+        let key = this.getFirstKeyFromKeys(keys);
+        if (!key) {return;}
+
+        let fileName = await vscode.window.showInputBox({ placeHolder: 'New File Name Without Extension' });
+		if(fileName===undefined){ return; }
+
+        let result = await api.RenameFile(this.S3ExplorerItem.Bucket, key, fileName);
+        if(result.isSuccessful)
+        {
+            S3TreeView.Current?.UpdateShortcutByKey(this.S3ExplorerItem.Bucket, key, result.result)
+            this.S3ExplorerItem.Key = result.result;
+            this.Load();
+            ui.showInfoMessage(" File is Renamed");
+        }
     }
     async DownloadFile(keys: string) {
         if(keys.length === 0) { return; }
@@ -842,7 +900,6 @@ export class S3Explorer {
         }
 
     }
-
     public dispose() {
         ui.logToOutput('S3Explorer.dispose Started');
         S3Explorer.Current = undefined;

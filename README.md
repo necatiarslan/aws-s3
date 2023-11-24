@@ -42,7 +42,6 @@ https://bit.ly/s3-extension-survey
 
 ## Aws Credentials Setup
 To Access Aws, you need to configure aws credentials. \
-The extension now supports only the credentials in the .aws/credentials file, not environment varibles or other methods.
 
 For more detail on aws credentials \
 https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html \
@@ -54,8 +53,7 @@ https://github.com/necatiarslan/aws-s3/issues/new
 
 
 ## Todo
-- Environment Varible Credentials support
-- Move, Copy, Rename files
+-
 
 ## Nice To Have
 - Paging (now max 1000)

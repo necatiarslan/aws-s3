@@ -1,9 +1,11 @@
 # v1.3.0
+    - File: rename, copy, move
     - add bucket: do not search if bucket name entered (thanks Ferabeo #12)
     - copy shortcut key
     - add shortcut with key
     - Goto File/Folder
     - Hide Bucket/Shortcuts
+    - Environment Varible Credentials Support
 
 # v1.2.0
     - Update Aws Endpoint (to connect your localstack)

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadS3File = exports.UploadFile = exports.UploadFileToFolder = exports.DeleteObject = exports.CreateS3Folder = exports.SearchS3Object = exports.GetS3ObjectList = exports.IsEnvironmentCredentials = exports.IsSharedIniFileCredentials = void 0;
+exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadS3File = exports.RenameFile = exports.MoveFile = exports.CopyFile = exports.UploadFile = exports.UploadFileToFolder = exports.DeleteObject = exports.CreateS3Folder = exports.SearchS3Object = exports.GetS3ObjectList = exports.IsEnvironmentCredentials = exports.IsSharedIniFileCredentials = void 0;
 /* eslint-disable @typescript-eslint/naming-convention */
 const AWS = require("aws-sdk");
 const ui = require("./UI");
@@ -273,6 +273,65 @@ async function UploadFile(Bucket, TargetKey, SourcePath) {
     }
 }
 exports.UploadFile = UploadFile;
+async function CopyFile(Bucket, SourceKey, TargetKey) {
+    let result = new MethodResult_1.MethodResult();
+    if (!s3_helper.IsFile(SourceKey)) {
+        result.isSuccessful = false;
+        return result;
+    }
+    if (s3_helper.IsFolder(TargetKey)) {
+        TargetKey = TargetKey + s3_helper.GetFileNameWithExtension(SourceKey);
+    }
+    try {
+        const s3 = GetS3Client();
+        const param = {
+            Bucket: Bucket,
+            CopySource: `/${Bucket}/${SourceKey}`,
+            Key: TargetKey,
+        };
+        let response = await s3.copyObject(param).promise();
+        result.result = TargetKey;
+        result.isSuccessful = true;
+        return result;
+    }
+    catch (error) {
+        result.isSuccessful = false;
+        result.error = error;
+        ui.showErrorMessage('api.CopyFile Error !!! File=' + SourceKey, error);
+        ui.logToOutput("api.CopyFile Error !!! File=" + SourceKey, error);
+        return result;
+    }
+}
+exports.CopyFile = CopyFile;
+async function MoveFile(Bucket, SourceKey, TargetKey) {
+    let result = new MethodResult_1.MethodResult();
+    let copy_result = await CopyFile(Bucket, SourceKey, TargetKey);
+    if (!copy_result.isSuccessful) {
+        result.result = copy_result.result;
+        result.isSuccessful = false;
+        return result;
+    }
+    let delete_result = await DeleteObject(Bucket, SourceKey);
+    if (!delete_result.isSuccessful) {
+        result.result = SourceKey;
+        result.isSuccessful = false;
+        return result;
+    }
+    result.result = copy_result.result;
+    result.isSuccessful = true;
+    return result;
+}
+exports.MoveFile = MoveFile;
+async function RenameFile(Bucket, SourceKey, TargetFileName) {
+    let TargetKey = s3_helper.GetParentFolderKey(SourceKey) + TargetFileName + "." + s3_helper.GetFileExtension(SourceKey);
+    let result = new MethodResult_1.MethodResult();
+    let move_result = await MoveFile(Bucket, SourceKey, TargetKey);
+    result.result = TargetKey;
+    result.isSuccessful = move_result.isSuccessful;
+    result.error = move_result.error;
+    return result;
+}
+exports.RenameFile = RenameFile;
 async function DownloadS3File(Bucket, Key, TargetPath) {
     let result = new MethodResult_1.MethodResult();
     let TargetFilePath = (0, path_2.join)(TargetPath, s3_helper.GetFileNameWithExtension(Key));
