@@ -19,6 +19,9 @@
     "AWS",
     "S3"
   ],
+  "activationEvents": [
+    "onView:S3TreeView"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
