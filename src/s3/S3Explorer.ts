@@ -7,8 +7,6 @@ import { S3TreeView } from "./S3TreeView";
 import { S3TreeItem, TreeItemType } from "./S3TreeItem";
 import { S3ExplorerItem } from "./S3ExplorerItem";
 import * as s3_helper from "./S3Helper";
-import { S3TreeDataProvider } from "./S3TreeDataProvider";
-import { threadId } from "worker_threads";
 import { S3Search } from "./S3Search";
 
 export class S3Explorer {

@@ -213,7 +213,7 @@ class S3Search {
                     </vscode-text-field>
                 </td>
                 <td colspan="4" style="text-align:right">
-                <vscode-button appearance="primary" id="refresh">Search</vscode-button>
+                <vscode-button appearance="secondary" id="refresh">Search</vscode-button>
                 <vscode-dropdown style="width: 200px" id="copy_dropdown">
                     <vscode-option>Copy</vscode-option>
                     <vscode-option>File Name(s) Without Extension</vscode-option>

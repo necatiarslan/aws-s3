@@ -6,24 +6,19 @@ table {
   }
 /*
   tr:nth-child(even) {
-    background-color: #2a2d2e;
+    background-color: var(--vscode-panelSectionHeader-background);
   }
-  
-  tr:hover {background-color: #505050;}
+*/  
+  tr:hover {
+    background-color: var(--vscode-settings-rowHoverBackground);
+  }
 
   th {
-    background-color: #3c3c3c;
-    color: white;
-    padding: 1px;
-    font-size: 12px;
-    font: bold;
-    height: 25px;
+    background-color: var(--vscode-settings-focusedRowBackground);
   }
   
+  /*
   td {
-    color: white;
-    padding: 1px;
-    font-size: 12px;
-    vertical-align: middle;
+    color: var(--vscode-panelSectionHeader-background);
   }
   */
