@@ -4,7 +4,7 @@ table {
     border-spacing: 0;
     border-collapse: collapse;
   }
-
+/*
   tr:nth-child(even) {
     background-color: #2a2d2e;
   }
@@ -26,3 +26,4 @@ table {
     font-size: 12px;
     vertical-align: middle;
   }
+  */
