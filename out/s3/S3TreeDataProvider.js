@@ -207,12 +207,6 @@ class S3TreeDataProvider {
     getTreeItem(element) {
         return element;
     }
-    async ChangeView() {
-        if (this.ViewType === ViewType.Bucket_Shortcut) {
-            this.ViewType = ViewType.Bucket_Shortcut;
-        }
-        this.Refresh();
-    }
 }
 exports.S3TreeDataProvider = S3TreeDataProvider;
 var ViewType;

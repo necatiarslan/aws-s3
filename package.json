@@ -102,11 +102,6 @@
         "icon": "$(account)"
       },
       {
-        "command": "S3TreeView.ChangeView",
-        "title": "Change View",
-        "icon": "$(symbol-class)"
-      },
-      {
         "command": "S3TreeView.UpdateAwsEndPoint",
         "title": "Update Aws EndPoint"
       }
@@ -132,11 +127,6 @@
           "command": "S3TreeView.AddBucket",
           "when": "view == S3TreeView",
           "group": "navigation@4"
-        },
-        {
-          "command": "S3TreeView.ChangeView",
-          "when": "view == S3TreeView",
-          "group": "navigation@5"
         },
         {
           "command": "S3TreeView.SelectAwsProfile",

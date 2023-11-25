@@ -237,14 +237,6 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 	getTreeItem(element: S3TreeItem): S3TreeItem {
 		return element;
 	}
-
-	public async ChangeView(){
-		if(this.ViewType === ViewType.Bucket_Shortcut)
-		{
-			this.ViewType = ViewType.Bucket_Shortcut;
-		}
-		this.Refresh();
-	}
 }
 
 export enum ViewType{

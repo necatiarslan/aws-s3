@@ -13,9 +13,6 @@ function activate(context) {
     vscode.commands.registerCommand('S3TreeView.Filter', () => {
         treeView.Filter();
     });
-    vscode.commands.registerCommand('S3TreeView.ChangeView', () => {
-        treeView.ChangeView();
-    });
     vscode.commands.registerCommand('S3TreeView.ShowOnlyFavorite', () => {
         treeView.ShowOnlyFavorite();
     });

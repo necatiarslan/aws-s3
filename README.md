@@ -57,7 +57,6 @@ https://github.com/necatiarslan/aws-s3/issues/new
 
 ## Nice To Have
 - Paging (now max 1000)
-- Theme support
 - Sort By Name / Type
 - Delete Folder with files in it
 - Write Selected File and Folder count to the bottom

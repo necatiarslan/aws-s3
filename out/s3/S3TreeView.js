@@ -86,12 +86,6 @@ class S3TreeView {
         this.SetFilterMessage();
         this.SaveState();
     }
-    async ChangeView() {
-        ui.logToOutput('S3TreeView.ChangeView Started');
-        this.treeDataProvider.ChangeView();
-        this.SaveState();
-        ui.logToOutput('S3TreeView.ChangeView New View=' + this.treeDataProvider.ViewType);
-    }
     async ShowOnlyFavorite() {
         ui.logToOutput('S3TreeView.ShowOnlyFavorite Started');
         this.isShowOnlyFavorite = !this.isShowOnlyFavorite;

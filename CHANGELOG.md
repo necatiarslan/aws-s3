@@ -1,8 +1,9 @@
 # v1.3.0
     - File: rename, copy, move
-    - add bucket: do not search if bucket name entered (thanks Ferabeo #12)
-    - copy shortcut key
-    - add shortcut with key
+    - Full Theme support
+    - Add bucket: do not search if bucket name entered (thanks Ferabeo #12)
+    - Copy shortcut key
+    - Add shortcut with key
     - Goto File/Folder
     - Hide Bucket/Shortcuts
     - Environment Varible Credentials Support
