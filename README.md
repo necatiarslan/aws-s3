@@ -40,8 +40,11 @@ https://bit.ly/s3-extension-survey
 ## Copy Menu
 ![screenshoot](media/psc-copy-combo.png)
 
+## Endpoint Url
+![screenshoot](media/endpoint_url.png)
+
 ## Aws Credentials Setup
-To Access Aws, you need to configure aws credentials. \
+To Access Aws, you need to configure aws credentials. 
 
 For more detail on aws credentials \
 https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html \
