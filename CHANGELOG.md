@@ -1,3 +1,6 @@
+# v1.4.0
+    - Tree context menu fix
+
 # v1.3.0
     - File: rename, copy, move
     - Full Theme support

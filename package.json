@@ -2,7 +2,7 @@
   "name": "aws-s3-vscode-extension",
   "displayName": "Aws S3",
   "description": "Browse Your AWS S3 Buckets, Upload, Download, Delete Files",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "publisher": "NecatiARSLAN",
   "repository": {
     "type": "git",
@@ -167,27 +167,27 @@
         },
         {
           "command": "S3TreeView.RemoveBucket",
-          "when": "view == S3TreeView",
+          "when": "view == S3TreeView && viewItem == Bucket",
           "group": "Bucket"
         },
         {
           "command": "S3TreeView.Goto",
-          "when": "view == S3TreeView",
+          "when": "view == S3TreeView && viewItem == Bucket",
           "group": "Bucket"
         },
         {
           "command": "S3TreeView.RemoveShortcut",
-          "when": "view == S3TreeView",
+          "when": "view == S3TreeView && viewItem == Shortcut",
           "group": "Shortcut"
         },
         {
           "command": "S3TreeView.AddShortcut",
-          "when": "view == S3TreeView",
+          "when": "view == S3TreeView && viewItem == Bucket",
           "group": "Shortcut"
         },
         {
           "command": "S3TreeView.CopyShortcut",
-          "when": "view == S3TreeView",
+          "when": "view == S3TreeView && viewItem == Shortcut",
           "group": "Shortcut"
         },
         {

@@ -23,14 +23,17 @@ export class S3TreeItem extends vscode.TreeItem {
 		if(this.TreeItemType === TreeItemType.Bucket)
 		{
 			this.iconPath = new vscode.ThemeIcon('package');
+			this.contextValue = "Bucket"
 		}
 		else if(this.TreeItemType === TreeItemType.Shortcut)
 		{
 			this.iconPath = new vscode.ThemeIcon('file-symlink-directory');
+			this.contextValue = "Shortcut"
 		}
 		else
 		{
 			this.iconPath = new vscode.ThemeIcon('circle-outline');
+			this.contextValue = "Other"
 		}
 	}
 
