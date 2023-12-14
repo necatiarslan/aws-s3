@@ -56,6 +56,7 @@ https://github.com/necatiarslan/aws-s3/issues/new
 
 
 ## Todo
+- File Preview
 - IAM Role Credentials support https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-role.html
 
 ## Nice To Have
