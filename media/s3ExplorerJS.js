@@ -35,6 +35,12 @@ function main() {
   const DownloadButton = document.getElementById("download");
   DownloadButton.addEventListener("click", DownloadButtonClicked);
 
+  const PreviewCurrentFileButton = document.getElementById("preview_current_file");
+  if(PreviewCurrentFileButton)
+  {
+    PreviewCurrentFileButton.addEventListener("click", PreviewCurrentFileButtonClicked);
+  }
+
   const DownloadCurrentFileButton = document.getElementById("download_current_file");
   if(DownloadCurrentFileButton)
   {
@@ -212,6 +218,12 @@ function MoveFileButtonClicked() {
 function DeleteFolderButtonClicked() {
   vscode.postMessage({
     command: "delete_folder"
+  });
+}
+
+function PreviewCurrentFileButtonClicked(e) {
+  vscode.postMessage({
+    command: "preview_current_file"
   });
 }
 

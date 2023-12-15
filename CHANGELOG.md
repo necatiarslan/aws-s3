@@ -1,3 +1,6 @@
+# v1.5.0
+    - Preview File button
+
 # v1.4.0
     - Tree context menu fix
 

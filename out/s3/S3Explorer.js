@@ -228,6 +228,8 @@ class S3Explorer {
             S3RowHtml = `
             <tr style="height:50px; text-align:center;">
             <td colspan="6">
+                <vscode-button appearance="secondary" id="preview_current_file">Preview</vscode-button>
+                &nbsp;
                 <vscode-button appearance="secondary" id="download_current_file">Download</vscode-button>
                 &nbsp;
                 <vscode-button appearance="secondary" id="update_file">Update</vscode-button>
@@ -452,6 +454,9 @@ class S3Explorer {
                     return;
                 case "download":
                     this.DownloadFile(message.keys);
+                    return;
+                case "preview_current_file":
+                    this.PreviewFile(this.S3ExplorerItem.Key);
                     return;
                 case "download_current_file":
                     this.DownloadFile(this.S3ExplorerItem.Key);
@@ -754,6 +759,19 @@ class S3Explorer {
             }
         }
         ui.showInfoMessage(downloadCounter.toString() + " File(s) are downloaded");
+    }
+    async PreviewFile(key) {
+        if (key.length === 0) {
+            return;
+        }
+        if (key && s3_helper.IsFile(key)) {
+            const tmp = require('tmp');
+            const tempFolderPath = tmp.dirSync().name;
+            let result = await api.DownloadS3File(this.S3ExplorerItem.Bucket, key, tempFolderPath);
+            if (result.isSuccessful) {
+                ui.openFile(result.result);
+            }
+        }
     }
     async UploadFile() {
         if (!this.S3ExplorerItem.IsFolder) {
