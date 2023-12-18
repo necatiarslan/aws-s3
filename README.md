@@ -71,6 +71,7 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Freeze top bar
 - Fix: Cannot read properties of null (reading '_panel')
 - S3.getBucketAcl to get permissions and enable/disable command buttons
+- Local folder sync
 
 Follow me on linkedin to get latest news \
 https://www.linkedin.com/in/necati-arslan/
