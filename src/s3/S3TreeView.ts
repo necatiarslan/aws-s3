@@ -17,6 +17,7 @@ export class S3TreeView {
 	public FilterString: string = "";
 	public isShowOnlyFavorite: boolean = false;
 	public isShowHiddenNodes: boolean = false;
+    public Addressing_style: boolean = false;
 	public AwsProfile: string = "default";	
 	public AwsEndPoint: string | undefined;
 
@@ -141,6 +142,7 @@ export class S3TreeView {
 			this.context.globalState.update('ShortcutList', this.treeDataProvider.GetShortcutList());
 			this.context.globalState.update('ViewType', this.treeDataProvider.ViewType);
 			this.context.globalState.update('AwsEndPoint', this.AwsEndPoint);
+			this.context.globalState.update('Addressing_style', this.Addressing_style);
 
 			ui.logToOutput("S3TreeView.saveState Successfull");
 		} catch (error) {
@@ -189,6 +191,11 @@ export class S3TreeView {
 			let AwsEndPointTemp: string | undefined = this.context.globalState.get('AwsEndPoint');
 			this.AwsEndPoint = AwsEndPointTemp;
 
+			let Addressing_styleTemp: boolean | undefined = this.context.globalState.get('Addressing_style');
+			if(Addressing_styleTemp)
+			{
+				this.Addressing_style=Addressing_styleTemp;
+			}
 			ui.logToOutput("S3TreeView.loadState Successfull");
 
 		} 
@@ -362,6 +369,10 @@ export class S3TreeView {
 		if(!selectedAwsProfile){ return; }
 
 		this.AwsProfile = selectedAwsProfile;
+
+		var selectedConfigs = await api.getIniProfileData({profile:this.AwsProfile});
+		this.AwsEndPoint = selectedConfigs[this.AwsProfile].endpoint_url;
+		this.Addressing_style = selectedConfigs[this.AwsProfile].addressing_style==="false"?false:true;
 		this.SaveState();
 		this.SetFilterMessage();
 		this.TestAwsConnection();

@@ -88,7 +88,7 @@ function GetS3Client() {
 
   let credentials = GetCredentials();
   s3 = new AWS.S3({ credentials: credentials, endpoint:S3TreeView.S3TreeView.Current?.AwsEndPoint});
-  
+  s3.config.s3ForcePathStyle = S3TreeView.S3TreeView.Current?.Addressing_style;
   return s3;
 }
 
