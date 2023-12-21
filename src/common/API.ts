@@ -10,7 +10,6 @@ import { ParsedIniData } from "@aws-sdk/types";
 import * as s3_helper from '../s3/S3Helper'
 import * as fs from 'fs';
 import * as S3TreeView from '../s3/S3TreeView';
-import { error } from "console";
 
 export function IsSharedIniFileCredentials(credentials:any|undefined=undefined)
 {
@@ -589,6 +588,27 @@ export async function getIniProfileData(init: SourceProfileInit = {}):Promise<Pa
 {
     const profiles = await parseKnownFiles(init);
     return profiles;
+}
+
+export function getPresignedUrl(Bucket:string,Key:string): string {
+  try 
+  {
+    const s3 = GetS3Client();
+
+    let param = {
+      Bucket:Bucket,
+      Key:Key
+    }
+
+    let response = s3.getSignedUrl('getObject', param);
+    return response;
+  } 
+  catch (error:any) 
+  {
+    ui.showErrorMessage('api.getPresignedUrl Error !!!', error);
+    ui.logToOutput("api.getPresignedUrl Error !!!", error); 
+    return error.message;
+  }
 }
 
 export const ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
