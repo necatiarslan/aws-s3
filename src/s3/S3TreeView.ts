@@ -381,4 +381,23 @@ export class S3TreeView {
 		this.SaveState();
 	}
 
+	async AwsCredentialsSetup() {
+		ui.logToOutput('S3TreeView.AwsCredentialsSetup Started');
+
+		try
+		{
+		let credentials = api.GetCredentials();
+
+		let credentialProvider:string = api.GetCredentialProvider(credentials);
+		ui.showWarningMessage("Aws Credentails Provider : " + credentialProvider);
+		ui.showWarningMessage("Aws Credentails Access Key : " + credentials.accessKeyId);
+		}
+		catch (error:any) 
+		{
+			ui.showErrorMessage('AwsCredentialsSetup Error !!!', error);
+			ui.logToOutput("AwsCredentialsSetup Error !!!", error);
+		}
+
+	}
+
 }

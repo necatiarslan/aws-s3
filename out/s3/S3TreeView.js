@@ -334,6 +334,19 @@ class S3TreeView {
         }
         this.SaveState();
     }
+    async AwsCredentialsSetup() {
+        ui.logToOutput('S3TreeView.AwsCredentialsSetup Started');
+        try {
+            let credentials = api.GetCredentials();
+            let credentialProvider = api.GetCredentialProvider(credentials);
+            ui.showWarningMessage("Aws Credentails Provider : " + credentialProvider);
+            ui.showWarningMessage("Aws Credentails Access Key : " + credentials.accessKeyId);
+        }
+        catch (error) {
+            ui.showErrorMessage('AwsCredentialsSetup Error !!!', error);
+            ui.logToOutput("AwsCredentialsSetup Error !!!", error);
+        }
+    }
 }
 exports.S3TreeView = S3TreeView;
 //# sourceMappingURL=S3TreeView.js.map
