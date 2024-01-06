@@ -303,7 +303,8 @@ class S3TreeView {
     async SelectAwsProfile(node) {
         ui.logToOutput('S3TreeView.SelectAwsProfile Started');
         if (!api.IsSharedIniFileCredentials()) {
-            ui.showWarningMessage("Your Aws Access method is not credentials file");
+            let credentialProvider = api.GetCredentialProvider();
+            ui.showWarningMessage("Your Aws Access method is not credentials file. It is " + credentialProvider);
             return;
         }
         var result = await api.GetAwsProfileList();

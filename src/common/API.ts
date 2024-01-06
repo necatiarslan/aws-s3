@@ -30,7 +30,11 @@ export function IsEnvironmentCredentials(credentials:any|undefined=undefined)
   return GetCredentialProvider(AWS.config.credentials) === "EnvironmentCredentials"
 }
 
-function GetCredentialProvider(credentials:any){
+export function GetCredentialProvider(credentials:any|undefined=undefined){
+  if(!credentials)
+  {
+    credentials = AWS.config.credentials;
+  }
 
   if (credentials instanceof(AWS.EnvironmentCredentials))
   {

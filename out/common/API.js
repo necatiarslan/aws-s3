@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadS3File = exports.RenameFile = exports.MoveFile = exports.CopyFile = exports.UploadFile = exports.UploadFileToFolder = exports.DeleteObject = exports.CreateS3Folder = exports.SearchS3Object = exports.GetS3ObjectList = exports.IsEnvironmentCredentials = exports.IsSharedIniFileCredentials = void 0;
+exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadS3File = exports.RenameFile = exports.MoveFile = exports.CopyFile = exports.UploadFile = exports.UploadFileToFolder = exports.DeleteObject = exports.CreateS3Folder = exports.SearchS3Object = exports.GetS3ObjectList = exports.GetCredentialProvider = exports.IsEnvironmentCredentials = exports.IsSharedIniFileCredentials = void 0;
 /* eslint-disable @typescript-eslint/naming-convention */
 const AWS = require("aws-sdk");
 const ui = require("./UI");
@@ -26,7 +26,10 @@ function IsEnvironmentCredentials(credentials = undefined) {
     return GetCredentialProvider(AWS.config.credentials) === "EnvironmentCredentials";
 }
 exports.IsEnvironmentCredentials = IsEnvironmentCredentials;
-function GetCredentialProvider(credentials) {
+function GetCredentialProvider(credentials = undefined) {
+    if (!credentials) {
+        credentials = AWS.config.credentials;
+    }
     if (credentials instanceof (AWS.EnvironmentCredentials)) {
         return "EnvironmentCredentials";
     }
@@ -50,6 +53,7 @@ function GetCredentialProvider(credentials) {
     }
     return "UnknownProvider";
 }
+exports.GetCredentialProvider = GetCredentialProvider;
 function GetCredentials() {
     if (!AWS.config.credentials) {
         throw new Error("Aws credentials not found !!!");

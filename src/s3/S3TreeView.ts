@@ -351,7 +351,8 @@ export class S3TreeView {
 
 		if (!api.IsSharedIniFileCredentials())
 		{
-			ui.showWarningMessage("Your Aws Access method is not credentials file");
+			let credentialProvider:string = api.GetCredentialProvider();
+			ui.showWarningMessage("Your Aws Access method is not credentials file. It is " + credentialProvider);
 			return;
 		}
 
