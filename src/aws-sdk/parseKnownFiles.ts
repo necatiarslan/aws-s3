@@ -17,8 +17,12 @@ export interface SourceProfileInit extends SharedConfigInit {
  */
 export const parseKnownFiles = async (init: SourceProfileInit): Promise<ParsedIniData> => {
   const parsedFiles = await loadSharedConfigFiles(init);
-  return {
-    ...parsedFiles.configFile,
-    ...parsedFiles.credentialsFile,
-  };
+  let returnProfile: { [key: string]: any } = {}; // Add index signature
+  if (init !== undefined && init.profile !== undefined) {
+    var name = init.profile;
+    returnProfile[name] = { ...parsedFiles.configFile[name], ...parsedFiles.credentialsFile[name] }; // Remove extra closing brace
+  }
+  else{
+  returnProfile = { ...parsedFiles.configFile, ...parsedFiles.credentialsFile };}
+  return returnProfile;
 };

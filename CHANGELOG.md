@@ -1,3 +1,5 @@
+# v1.5.1
+    - Support S3 Compatibility(e.g. ECS)
 # v1.5.0
     - Preview File button
 

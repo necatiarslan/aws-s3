@@ -1,5 +1,6 @@
 import * as path from "path";
-
+import * as api from "../common/API";
+import { log } from "console";
 export function IsRoot(Key:string):boolean
 {
     return Key === "";
@@ -34,12 +35,12 @@ export function GetFullPath(Bucket:string, Key:string):string
 
 export function GetURI(Bucket:string, Key:string):string
 {
-    return "s3://" + GetFullPath(Bucket, Key);
+    return "s3a://" + GetFullPath(Bucket, Key);
 }
 
 export function GetURL(Bucket:string, Key:string):string
 {
-    return "https://" + Bucket + ".s3.amazonaws.com/" + Key;
+    return api.getPresignedUrl(Bucket, Key);
 }
 
 export function GetARN(Bucket:string, Key:string)
