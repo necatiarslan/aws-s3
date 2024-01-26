@@ -2,7 +2,7 @@
   "name": "aws-s3-vscode-extension",
   "displayName": "Aws S3",
   "description": "Browse Your AWS S3 Buckets, Upload, Download, Delete Files",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "publisher": "NecatiARSLAN",
   "repository": {
     "type": "git",
@@ -20,7 +20,6 @@
     "S3"
   ],
   "activationEvents": [
-    "onView:S3TreeView"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -104,6 +103,10 @@
       {
         "command": "S3TreeView.UpdateAwsEndPoint",
         "title": "Update Aws EndPoint"
+      },
+      {
+        "command": "S3TreeView.AwsCredentialsSetup",
+        "title": "Aws Credentials Setup"
       }
     ],
     "menus": {
@@ -140,6 +143,11 @@
         },
         {
           "command": "S3TreeView.UpdateAwsEndPoint",
+          "when": "view == S3TreeView",
+          "group": "other"
+        },
+        {
+          "command": "S3TreeView.AwsCredentialsSetup",
           "when": "view == S3TreeView",
           "group": "other"
         }

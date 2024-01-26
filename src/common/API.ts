@@ -29,7 +29,11 @@ export function IsEnvironmentCredentials(credentials:any|undefined=undefined)
   return GetCredentialProvider(AWS.config.credentials) === "EnvironmentCredentials"
 }
 
-function GetCredentialProvider(credentials:any){
+export function GetCredentialProvider(credentials:any|undefined=undefined){
+  if(!credentials)
+  {
+    credentials = AWS.config.credentials;
+  }
 
   if (credentials instanceof(AWS.EnvironmentCredentials))
   {
@@ -62,7 +66,7 @@ function GetCredentialProvider(credentials:any){
   return "UnknownProvider";
 }
 
-function GetCredentials()
+export function GetCredentials()
 {
   
   if(!AWS.config.credentials)
@@ -70,7 +74,7 @@ function GetCredentials()
     throw new Error("Aws credentials not found !!!")
   }
   let credentials = AWS.config.credentials
-  if(IsSharedIniFileCredentials())
+  if(IsSharedIniFileCredentials(credentials))
   {
     if(S3TreeView.S3TreeView.Current && S3TreeView.S3TreeView.Current?.AwsProfile != "default")
     {
