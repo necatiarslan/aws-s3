@@ -57,7 +57,11 @@ https://github.com/necatiarslan/aws-s3/issues/new
 
 ## Todo
 - IAM Role Credentials support https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-role.html
-
+- (node:59796) NOTE: The AWS SDK for JavaScript (v2) is in maintenance mode.
+SDK releases are limited to address critical bug fixes and security issues only.
+Please migrate your code to use AWS SDK for JavaScript (v3).
+For more information, check the blog post at https://a.co/cUPnyil
+(Use `Code Helper (Plugin) --trace-warnings ...` to show where the warning was created)
 ## Nice To Have
 - Paging (now max 1000)
 - Sort By Name / Type
