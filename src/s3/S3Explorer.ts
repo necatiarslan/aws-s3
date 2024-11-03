@@ -769,12 +769,21 @@ export class S3Explorer {
                 let response = await api.DeleteObject(this.S3ExplorerItem.Bucket, key);
                 if(response.isSuccessful)
                 {
+                    let fileCountDeleted = response.result.length;
+                    ui.showInfoMessage(key + " is deleted. Deleted " + fileCountDeleted.toString() + " file(s)");
                     deleteCounter++;
-                    S3TreeView.Current?.RemoveShortcutByKey(this.S3ExplorerItem.Bucket, key)
+                    for(var responseKey of response.result)
+                    {
+                        S3TreeView.Current?.RemoveShortcutByKey(this.S3ExplorerItem.Bucket, responseKey);
+                    }
                     if(this.S3ExplorerItem.Key === key)
                     {
                         goto_parent_folder = true;
                     }
+                }
+                else
+                {
+                    ui.showInfoMessage(key + " is not deleted");
                 }
             }
         }
@@ -786,7 +795,6 @@ export class S3Explorer {
         }
 
         this.Load();
-        ui.showInfoMessage(deleteCounter.toString() + " object(s) are deleted");
     }
     getFirstKeyFromKeys(keys: string):string|undefined
     {

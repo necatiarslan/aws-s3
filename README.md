@@ -61,7 +61,6 @@ https://github.com/necatiarslan/aws-s3/issues/new
 ## Nice To Have
 - Paging (now max 1000)
 - Sort By Name / Type
-- Delete Folder with files in it
 - Write Selected File and Folder count to the bottom
 - Drag/Drop files and folders to upload
 - Filter by Date/Size

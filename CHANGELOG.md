@@ -1,3 +1,6 @@
+# v1.6.0
+    - Delete Folder with files in it
+
 # v1.5.0
     - Preview File button
 

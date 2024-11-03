@@ -221,9 +221,9 @@ export async function CreateS3Folder(Bucket:string, Key:string, FolderName:strin
   }
 }
 
-export async function DeleteObject(Bucket:string, Key:string): Promise<MethodResult<boolean>> {
-  let result = new MethodResult<boolean>();
-
+export async function DeleteObject(Bucket:string, Key:string): Promise<MethodResult<string[]>> {
+  let result = new MethodResult<string[]>();
+  result.result = [];
   try 
   {
     const s3 = GetS3Client();
@@ -235,12 +235,21 @@ export async function DeleteObject(Bucket:string, Key:string): Promise<MethodRes
         Prefix: Key
       }).promise();
       
-      if(objects.Contents && objects.Contents.length > 1)
+      if(objects.Contents && objects.Contents.length > 0)
       {
-        throw new Error(Key + " folder contains " + objects.Contents.length + " files");
+        for(var object of objects.Contents)
+        {
+          if(object.Key && s3_helper.IsFile(object.Key))
+          {
+            let response = await DeleteObject(Bucket, object.Key);
+            if(response.isSuccessful)
+            {
+              result.result.push(object.Key);
+            }
+          }
+        }
       }
     }
-
     let param = {
       Bucket:Bucket,
       Key:Key
@@ -248,7 +257,7 @@ export async function DeleteObject(Bucket:string, Key:string): Promise<MethodRes
 
     let response = await s3.deleteObject(param).promise();
     result.isSuccessful = true;
-    result.result = true;
+    result.result.push(Key);
     return result;
   } 
   catch (error:any) 
@@ -259,37 +268,6 @@ export async function DeleteObject(Bucket:string, Key:string): Promise<MethodRes
     ui.logToOutput("api.DeleteObject Error !!! File=" + Key, error); 
     return result;
   }
-}
-
-async function DeleteS3Folder(Bucket:string, Key:string) {
-  // List all the objects in the folder
-  
-  const s3 = GetS3Client();
-
-  // const objects = await s3.listObjects({
-  //   Bucket: Bucket,
-  //   Prefix: Key
-  // }).promise();
-
-  // if(objects.Contents)
-  // {
-  //   // Create an array of "Delete" objects for each object in the folder
-  //   const deleteObjects = objects.Contents.map(object => ({ Key: object.Key }));
-  //   if(deleteObjects)
-  //   {
-  //     // Delete all the objects in the folder
-  //     await s3.deleteObjects({
-  //       Bucket: Bucket,
-  //       Delete: { Objects: deleteObjects }
-  //     }).promise();
-  //   }
-  // }
-
-  // Delete the folder itself
-  await s3.deleteObject({
-    Bucket: Bucket,
-    Key: Key
-  }).promise();
 }
 
 export async function UploadFileToFolder(Bucket:string, FolderKey:string, SourcePath:string) : Promise<MethodResult<string>>
