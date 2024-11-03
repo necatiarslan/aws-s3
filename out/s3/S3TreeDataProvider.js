@@ -212,5 +212,5 @@ exports.S3TreeDataProvider = S3TreeDataProvider;
 var ViewType;
 (function (ViewType) {
     ViewType[ViewType["Bucket_Shortcut"] = 1] = "Bucket_Shortcut";
-})(ViewType || (exports.ViewType = ViewType = {}));
+})(ViewType = exports.ViewType || (exports.ViewType = {}));
 //# sourceMappingURL=S3TreeDataProvider.js.map

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.run = run;
+exports.run = void 0;
 const path = require("path");
 const Mocha = require("mocha");
 const glob = require("glob");
@@ -36,4 +36,5 @@ function run() {
         });
     });
 }
+exports.run = run;
 //# sourceMappingURL=index.js.map

@@ -67,5 +67,5 @@ var TreeItemType;
 (function (TreeItemType) {
     TreeItemType[TreeItemType["Bucket"] = 1] = "Bucket";
     TreeItemType[TreeItemType["Shortcut"] = 2] = "Shortcut";
-})(TreeItemType || (exports.TreeItemType = TreeItemType = {}));
+})(TreeItemType = exports.TreeItemType || (exports.TreeItemType = {}));
 //# sourceMappingURL=S3TreeItem.js.map
