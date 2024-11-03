@@ -1,6 +1,6 @@
 import { ParsedIniData } from "@aws-sdk/types";
 
-const profileKeyRegex = /^profile\s(["'])?([^\1]+)\1$/;
+const profileKeyRegex = /^profile\s(["'])?([^\"]+)\1$/;
 
 /**
  * Returns the profile data from parsed ini data.

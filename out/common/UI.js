@@ -1,6 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CopyListToClipboard = exports.CopyToClipboard = exports.bytesToText = exports.isValidDate = exports.isJsonString = exports.convertMsToTime = exports.getDuration = exports.getSeconds = exports.getMilliSeconds = exports.openFile = exports.getExtensionVersion = exports.showErrorMessage = exports.showWarningMessage = exports.showInfoMessage = exports.logToOutput = exports.showOutputMessage = exports.getUri = void 0;
+exports.getUri = getUri;
+exports.showOutputMessage = showOutputMessage;
+exports.logToOutput = logToOutput;
+exports.showInfoMessage = showInfoMessage;
+exports.showWarningMessage = showWarningMessage;
+exports.showErrorMessage = showErrorMessage;
+exports.getExtensionVersion = getExtensionVersion;
+exports.openFile = openFile;
+exports.getMilliSeconds = getMilliSeconds;
+exports.getSeconds = getSeconds;
+exports.getDuration = getDuration;
+exports.convertMsToTime = convertMsToTime;
+exports.isJsonString = isJsonString;
+exports.isValidDate = isValidDate;
+exports.bytesToText = bytesToText;
+exports.CopyToClipboard = CopyToClipboard;
+exports.CopyListToClipboard = CopyListToClipboard;
 const vscode = require("vscode");
 const fs_1 = require("fs");
 const path_1 = require("path");
@@ -11,7 +27,6 @@ var NEW_LINE = " | ";
 function getUri(webview, extensionUri, pathList) {
     return webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, ...pathList));
 }
-exports.getUri = getUri;
 function showOutputMessage(message, popupMessage = "Results are printed to OUTPUT / AwsS3-Extension", clearPrevMessages = true) {
     if (!outputChannel) {
         outputChannel = vscode.window.createOutputChannel("AwsS3-Extension");
@@ -30,7 +45,6 @@ function showOutputMessage(message, popupMessage = "Results are printed to OUTPU
         showInfoMessage(popupMessage);
     }
 }
-exports.showOutputMessage = showOutputMessage;
 function logToOutput(message, error) {
     let now = new Date().toLocaleString();
     if (!logsOutputChannel) {
@@ -50,15 +64,12 @@ function logToOutput(message, error) {
         }
     }
 }
-exports.logToOutput = logToOutput;
 function showInfoMessage(message) {
     vscode.window.showInformationMessage(message);
 }
-exports.showInfoMessage = showInfoMessage;
 function showWarningMessage(message) {
     vscode.window.showWarningMessage(message);
 }
-exports.showWarningMessage = showWarningMessage;
 function showErrorMessage(message, error) {
     if (error) {
         vscode.window.showErrorMessage(message + NEW_LINE + error.name + NEW_LINE + error.message);
@@ -67,16 +78,13 @@ function showErrorMessage(message, error) {
         vscode.window.showErrorMessage(message);
     }
 }
-exports.showErrorMessage = showErrorMessage;
 function getExtensionVersion() {
     const { version: extVersion } = JSON.parse((0, fs_1.readFileSync)((0, path_1.join)(__dirname, '..', 'package.json'), { encoding: 'utf8' }));
     return extVersion;
 }
-exports.getExtensionVersion = getExtensionVersion;
 function openFile(file) {
     vscode.commands.executeCommand('vscode.open', vscode.Uri.file(file), vscode.ViewColumn.One);
 }
-exports.openFile = openFile;
 function padTo2Digits(num) {
     return num.toString().padStart(2, '0');
 }
@@ -89,11 +97,9 @@ function getMilliSeconds(startDate, endDate) {
     }
     return endDate.valueOf() - startDate.valueOf();
 }
-exports.getMilliSeconds = getMilliSeconds;
 function getSeconds(startDate, endDate) {
     return Math.floor(getMilliSeconds(startDate, endDate) / 1000);
 }
-exports.getSeconds = getSeconds;
 function getDuration(startDate, endDate) {
     if (!startDate) {
         return "";
@@ -101,7 +107,6 @@ function getDuration(startDate, endDate) {
     var duration = getMilliSeconds(startDate, endDate);
     return (convertMsToTime(duration));
 }
-exports.getDuration = getDuration;
 function convertMsToTime(milliseconds) {
     let seconds = Math.floor(milliseconds / 1000);
     let minutes = Math.floor(seconds / 60);
@@ -117,7 +122,6 @@ function convertMsToTime(milliseconds) {
     }
     return result;
 }
-exports.convertMsToTime = convertMsToTime;
 function isJsonString(jsonString) {
     try {
         var json = JSON.parse(jsonString);
@@ -127,7 +131,6 @@ function isJsonString(jsonString) {
         return false;
     }
 }
-exports.isJsonString = isJsonString;
 function isValidDate(dateString) {
     var regEx = /^\d{4}-\d{2}-\d{2}$/;
     if (!dateString.match(regEx)) {
@@ -140,7 +143,6 @@ function isValidDate(dateString) {
     }
     return d.toISOString().slice(0, 10) === dateString;
 }
-exports.isValidDate = isValidDate;
 function bytesToText(bytes) {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     if (bytes === undefined)
@@ -150,7 +152,6 @@ function bytesToText(bytes) {
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
 }
-exports.bytesToText = bytesToText;
 function CopyToClipboard(text) {
     let result = new MethodResult_1.MethodResult();
     try {
@@ -163,7 +164,6 @@ function CopyToClipboard(text) {
     }
     return result;
 }
-exports.CopyToClipboard = CopyToClipboard;
 function CopyListToClipboard(textList) {
     let text = "";
     for (var t of textList) {
@@ -173,5 +173,4 @@ function CopyListToClipboard(textList) {
     }
     return CopyToClipboard(text);
 }
-exports.CopyListToClipboard = CopyListToClipboard;
 //# sourceMappingURL=UI.js.map

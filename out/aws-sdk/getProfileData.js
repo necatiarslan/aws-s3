@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getProfileData = void 0;
-const profileKeyRegex = /^profile\s(["'])?([^\1]+)\1$/;
+const profileKeyRegex = /^profile\s(["'])?([^\"]+)\1$/;
 /**
  * Returns the profile data from parsed ini data.
  * * Returns data for `default`

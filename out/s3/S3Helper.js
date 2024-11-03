@@ -1,19 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetFolderName = exports.GetFileExtension = exports.RemoveExtesionFromFileName = exports.GetFileNameWithoutExtension = exports.GetFileNameWithExtension = exports.GetARN = exports.GetURL = exports.GetURI = exports.GetFullPath = exports.GetParentFolderKey = exports.IsFile = exports.IsFolder = exports.IsRoot = void 0;
+exports.IsRoot = IsRoot;
+exports.IsFolder = IsFolder;
+exports.IsFile = IsFile;
+exports.GetParentFolderKey = GetParentFolderKey;
+exports.GetFullPath = GetFullPath;
+exports.GetURI = GetURI;
+exports.GetURL = GetURL;
+exports.GetARN = GetARN;
+exports.GetFileNameWithExtension = GetFileNameWithExtension;
+exports.GetFileNameWithoutExtension = GetFileNameWithoutExtension;
+exports.RemoveExtesionFromFileName = RemoveExtesionFromFileName;
+exports.GetFileExtension = GetFileExtension;
+exports.GetFolderName = GetFolderName;
 const path = require("path");
 function IsRoot(Key) {
     return Key === "";
 }
-exports.IsRoot = IsRoot;
 function IsFolder(Key) {
     return IsRoot(Key) || Key.endsWith("/");
 }
-exports.IsFolder = IsFolder;
 function IsFile(Key) {
     return !IsFolder(Key);
 }
-exports.IsFile = IsFile;
 function GetParentFolderKey(Key) {
     if (IsRoot(Key)) {
         return "";
@@ -24,23 +33,18 @@ function GetParentFolderKey(Key) {
     }
     return parentDir + "/";
 }
-exports.GetParentFolderKey = GetParentFolderKey;
 function GetFullPath(Bucket, Key) {
     return Bucket + "/" + Key;
 }
-exports.GetFullPath = GetFullPath;
 function GetURI(Bucket, Key) {
     return "s3://" + GetFullPath(Bucket, Key);
 }
-exports.GetURI = GetURI;
 function GetURL(Bucket, Key) {
     return "https://" + Bucket + ".s3.amazonaws.com/" + Key;
 }
-exports.GetURL = GetURL;
 function GetARN(Bucket, Key) {
     return "arn:aws:s3:::" + GetFullPath(Bucket, Key);
 }
-exports.GetARN = GetARN;
 function GetFileNameWithExtension(Key) {
     if (!Key) {
         return "";
@@ -53,11 +57,9 @@ function GetFileNameWithExtension(Key) {
     }
     return Key.split('/').pop() || "";
 }
-exports.GetFileNameWithExtension = GetFileNameWithExtension;
 function GetFileNameWithoutExtension(Key) {
     return RemoveExtesionFromFileName(GetFileNameWithExtension(Key));
 }
-exports.GetFileNameWithoutExtension = GetFileNameWithoutExtension;
 function RemoveExtesionFromFileName(FileName) {
     if (!FileName) {
         return "";
@@ -68,7 +70,6 @@ function RemoveExtesionFromFileName(FileName) {
     let extension = GetFileExtension(FileName);
     return FileName.replace("." + extension, "");
 }
-exports.RemoveExtesionFromFileName = RemoveExtesionFromFileName;
 function GetFileExtension(FileName) {
     if (!FileName) {
         return "";
@@ -79,7 +80,6 @@ function GetFileExtension(FileName) {
     let extension = FileName.split(".").pop();
     return extension ? extension : "";
 }
-exports.GetFileExtension = GetFileExtension;
 function GetFolderName(Key) {
     if (!Key) {
         return "";
@@ -91,5 +91,4 @@ function GetFolderName(Key) {
     path.pop();
     return path.pop() || "";
 }
-exports.GetFolderName = GetFolderName;
 //# sourceMappingURL=S3Helper.js.map
