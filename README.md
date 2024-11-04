@@ -62,6 +62,10 @@ SDK releases are limited to address critical bug fixes and security issues only.
 Please migrate your code to use AWS SDK for JavaScript (v3).
 For more information, check the blog post at https://a.co/cUPnyil
 (Use `Code Helper (Plugin) --trace-warnings ...` to show where the warning was created)
+- Sunsetting the Webview UI Toolkit, migrate to alternative
+    - https://vscode-elements.github.io/
+    - https://github.com/microsoft/fast
+    - https://code.visualstudio.com/docs/nodejs/vuejs-tutorial
 ## Nice To Have
 - Paging (now max 1000)
 - Sort By Name / Type
