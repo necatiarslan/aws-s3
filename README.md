@@ -56,6 +56,8 @@ https://github.com/necatiarslan/aws-s3/issues/new
 
 
 ## Todo
+- Add Upload Button to Empty Folder
+- Rename a Folder even file exists in it
 - IAM Role Credentials support https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-role.html
 - (node:59796) NOTE: The AWS SDK for JavaScript (v2) is in maintenance mode.
 SDK releases are limited to address critical bug fixes and security issues only.
