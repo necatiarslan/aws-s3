@@ -72,7 +72,7 @@ exports.GetCredentials = GetCredentials;
 function GetS3Client() {
     let s3 = undefined;
     let credentials = GetCredentials();
-    s3 = new AWS.S3({ credentials: credentials, endpoint: S3TreeView.S3TreeView.Current?.AwsEndPoint });
+    s3 = new AWS.S3({ credentials: credentials, endpoint: S3TreeView.S3TreeView.Current?.AwsEndPoint, s3ForcePathStyle: true });
     return s3;
 }
 function GetIAMClient() {

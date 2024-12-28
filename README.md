@@ -69,6 +69,7 @@ For more information, check the blog post at https://a.co/cUPnyil
     - https://vscode-elements.github.io/
     - https://github.com/microsoft/fast
     - https://code.visualstudio.com/docs/nodejs/vuejs-tutorial
+- NoSuchBucket: The specified bucket does not exist handle error and show error message
 ## Nice To Have
 - Paging (now max 1000)
 - Sort By Name / Type

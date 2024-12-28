@@ -260,6 +260,8 @@ export class S3Explorer {
             <td colspan="6">
                 <vscode-button appearance="secondary" id="upload_empty_folder">Upload File</vscode-button>
                 &nbsp;
+                <vscode-button appearance="secondary" id="create_folder_in_empty_folder">Create Folder</vscode-button>
+                &nbsp;
                 <vscode-button appearance="secondary" id="delete_folder">Delete Folder</vscode-button>
             </td>
             </tr>

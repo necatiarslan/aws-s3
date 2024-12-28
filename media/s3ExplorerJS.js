@@ -22,6 +22,12 @@ function main() {
   const CreateFolderButton = document.getElementById("create_folder");
   CreateFolderButton.addEventListener("click", CreateFolderButtonClicked);
 
+  const CreateFolderInEmptyFolderButton = document.getElementById("create_folder_in_empty_folder");
+  if (CreateFolderInEmptyFolderButton)
+  {
+    CreateFolderInEmptyFolderButton.addEventListener("click", CreateFolderButtonClicked);
+  }
+
   const UploadButton = document.getElementById("upload");
   UploadButton.addEventListener("click", UploadButtonClicked);
 

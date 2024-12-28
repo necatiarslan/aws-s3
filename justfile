@@ -30,3 +30,30 @@ npm_doctor:
 npm_rebuild:
     rm -rf node_modules
     npm install
+
+localstack_start:
+    localstack start
+
+localstack_stop:
+    localstack stop
+
+localstack_status:
+    localstack status
+
+localstack_logs:
+    localstack logs
+
+localstack_help:
+    localstack --help 
+
+localstack_update:
+    localstack update
+
+create_bucket:
+    aws --endpoint-url=http://localhost:4566 s3 mb s3://my-bucket
+
+list_buckets:
+    aws --endpoint-url=http://localhost:4566 s3 ls
+
+upload_file:
+    aws --endpoint-url=http://localhost:4566 s3 cp README.md s3://my-bucket
