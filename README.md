@@ -56,7 +56,6 @@ https://github.com/necatiarslan/aws-s3/issues/new
 
 
 ## Todo
-- Add Create Folder Button to Empty Folder
 - Rename a Folder even file exists in it
 - Bug: when you delete a folder with files in it, the folder is not deleted, only the files are deleted
 - IAM Role Credentials support https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-role.html

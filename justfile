@@ -1,3 +1,6 @@
+install_vsce: 
+    npm install -g vsce
+
 package:
     vsce package
     mv *.vsix ./vsix/
