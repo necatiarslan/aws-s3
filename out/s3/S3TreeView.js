@@ -160,11 +160,16 @@ class S3TreeView {
         }
     }
     SetFilterMessage() {
-        this.view.message =
-            this.GetFilterProfilePrompt()
-                + this.GetBoolenSign(this.isShowOnlyFavorite) + "Fav, "
-                + this.GetBoolenSign(this.isShowHiddenNodes) + "Hidden, "
-                + this.FilterString;
+        if (this.treeDataProvider.BucketList.length > 0) {
+            this.view.message =
+                this.GetFilterProfilePrompt()
+                    + this.GetBoolenSign(this.isShowOnlyFavorite) + "Fav, "
+                    + this.GetBoolenSign(this.isShowHiddenNodes) + "Hidden, "
+                    + this.FilterString;
+        }
+        else {
+            this.view.message = undefined;
+        }
     }
     GetFilterProfilePrompt() {
         if (api.IsSharedIniFileCredentials()) {
@@ -191,6 +196,7 @@ class S3TreeView {
         }
         for (var selectedBucket of selectedBucketList) {
             this.treeDataProvider.AddBucket(selectedBucket);
+            this.SetFilterMessage();
         }
         this.SaveState();
     }
@@ -203,6 +209,7 @@ class S3TreeView {
             return;
         }
         this.treeDataProvider.RemoveBucket(node.Bucket);
+        this.SetFilterMessage();
         this.SaveState();
     }
     async Goto(node) {

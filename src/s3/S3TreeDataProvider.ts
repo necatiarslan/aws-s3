@@ -11,8 +11,8 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 	BucketNodeList: S3TreeItem[] = [];
 	ShortcutNodeList: S3TreeItem[] = [];
 
-	private BucketList: string[] = [];
-	private ShortcutList: [[string,string]] = [["???","???"]];
+	public BucketList: string[] = [];
+	public ShortcutList: [[string,string]] = [["???","???"]];
 	public ViewType:ViewType = ViewType.Bucket_Shortcut;
 
 	constructor() {
