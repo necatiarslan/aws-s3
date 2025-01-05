@@ -814,18 +814,18 @@ export class S3Explorer {
     async RenameFile(keys: string) {
         let key = this.getFirstKeyFromKeys(keys);
         if (!key) {return;}
-        if(s3_helper.IsFolder(key)) {ui.showWarningMessage("Select a file");return;}
+        //if(s3_helper.IsFolder(key)) {ui.showWarningMessage("Select a file");return;}
 
-        let fileName = await vscode.window.showInputBox({ placeHolder: 'New File Name Without Extension' });
+        let fileName = await vscode.window.showInputBox({ placeHolder: 'New File/Folder Name (Without Ext)' });
 		if(fileName===undefined){ return; }
 
         let result = await api.RenameFile(this.S3ExplorerItem.Bucket, key, fileName);
         if(result.isSuccessful)
         {
             S3TreeView.Current?.UpdateShortcutByKey(this.S3ExplorerItem.Bucket, key, result.result)
-            this.S3ExplorerItem.Key = result.result;
+            this.S3ExplorerItem.Key = s3_helper.GetParentFolderKey(result.result);
             this.Load();
-            ui.showInfoMessage(" File is Renamed");
+            ui.showInfoMessage(" File/Folder is Renamed");
         }
     }
     async DownloadFile(keys: string) {

@@ -347,23 +347,39 @@ export async function UploadFile(Bucket:string, TargetKey:string, SourcePath:str
   }
 } 
 
-export async function CopyFile(Bucket:string, SourceKey:string, TargetKey:string) : Promise<MethodResult<string>>
+export async function CopyFile(Bucket:string, SourceKey:string, TargetKey:string, s3Client?:AWS.S3 | undefined) : Promise<MethodResult<string>>
 {
   let result = new MethodResult<string>();
-  if(!s3_helper.IsFile(SourceKey))
-  {
-    result.isSuccessful = false;
-    return result;
-  }
 
-  if(s3_helper.IsFolder(TargetKey))
+  const s3 = s3Client ? s3Client : GetS3Client();
+
+  if(s3_helper.IsFile(SourceKey) && s3_helper.IsFolder(TargetKey))
   {
     TargetKey = TargetKey + s3_helper.GetFileNameWithExtension(SourceKey);
+  }
+  else if(s3_helper.IsFolder(SourceKey))
+  {
+    const objects = await s3.listObjects({
+      Bucket: Bucket,
+      Prefix: SourceKey
+    }).promise();
+    
+    if(objects.Contents && objects.Contents.length > 0)
+    {
+      for(var object of objects.Contents)
+      {
+        if (!object.Key) { continue; }
+        if(object.Key === SourceKey) { continue; } //this object is folder itself
+        // folder has a file in it
+        ui.showWarningMessage("Folder:" + SourceKey + " has a file in it File:" + object.Key);
+        result.isSuccessful = false;
+        return result;
+      }
+    }
   }
 
   try 
   {
-    const s3 = GetS3Client();
 
     const param = {
       Bucket: Bucket,
@@ -390,8 +406,9 @@ export async function CopyFile(Bucket:string, SourceKey:string, TargetKey:string
 export async function MoveFile(Bucket:string, SourceKey:string, TargetKey:string) : Promise<MethodResult<string>>
 {
   let result = new MethodResult<string>();
+  const s3 =  GetS3Client();
 
-  let copy_result = await CopyFile(Bucket, SourceKey, TargetKey);
+  let copy_result = await CopyFile(Bucket, SourceKey, TargetKey, s3);
   if(!copy_result.isSuccessful)
   {
     result.result = copy_result.result;
@@ -399,7 +416,7 @@ export async function MoveFile(Bucket:string, SourceKey:string, TargetKey:string
     return result;
   }
   
-  let delete_result = await DeleteObject(Bucket, SourceKey);
+  let delete_result = await DeleteObject(Bucket, SourceKey, s3);
   if(!delete_result.isSuccessful)
   {
     result.result = SourceKey;
@@ -414,8 +431,16 @@ export async function MoveFile(Bucket:string, SourceKey:string, TargetKey:string
 
 export async function RenameFile(Bucket:string, SourceKey:string, TargetFileName:string) : Promise<MethodResult<string>>
 {
-  let TargetKey = s3_helper.GetParentFolderKey(SourceKey) + TargetFileName + "." +s3_helper.GetFileExtension(SourceKey)
-  
+  let TargetKey = ""
+  if(s3_helper.IsFile(SourceKey))
+  {
+    TargetKey = s3_helper.GetParentFolderKey(SourceKey) + TargetFileName + "." +s3_helper.GetFileExtension(SourceKey)
+  }
+  else if(s3_helper.IsFolder(SourceKey))
+  {
+    TargetKey = s3_helper.GetParentFolderKey(SourceKey) + TargetFileName + "/";
+  }
+
   let result = new MethodResult<string>();
 
   let move_result = await MoveFile(Bucket, SourceKey, TargetKey);

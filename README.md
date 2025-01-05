@@ -57,7 +57,6 @@ https://github.com/necatiarslan/aws-s3/issues/new
 
 ## Todo
 - Rename a Folder even file exists in it
-- Bug: when you delete a folder with files in it, the folder is not deleted, only the files are deleted
 - IAM Role Credentials support https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-role.html
 - (node:59796) NOTE: The AWS SDK for JavaScript (v2) is in maintenance mode.
 SDK releases are limited to address critical bug fixes and security issues only.

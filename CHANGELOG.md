@@ -1,3 +1,6 @@
+# v1.7.0
+    - Delete Folder with files in it recursively
+    - Rename empty folders
 # v1.6.0
     - Delete Folder with files in it
 
