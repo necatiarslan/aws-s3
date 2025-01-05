@@ -221,15 +221,16 @@ export async function CreateS3Folder(Bucket:string, Key:string, FolderName:strin
   }
 }
 
-export async function DeleteObject(Bucket:string, Key:string): Promise<MethodResult<string[]>> {
+export async function DeleteObject(Bucket:string, Key:string, s3Client?:AWS.S3 | undefined): Promise<MethodResult<string[]>> {
   let result = new MethodResult<string[]>();
   result.result = [];
   try 
   {
-    const s3 = GetS3Client();
+    const s3 = s3Client ? s3Client : GetS3Client();
 
     if(s3_helper.IsFolder(Key))
     {
+      let is_delete_folder = false;
       const objects = await s3.listObjects({
         Bucket: Bucket,
         Prefix: Key
@@ -239,27 +240,47 @@ export async function DeleteObject(Bucket:string, Key:string): Promise<MethodRes
       {
         for(var object of objects.Contents)
         {
-          if(object.Key && s3_helper.IsFile(object.Key))
+          if (!object.Key) { continue; }
+          if(object.Key === Key) 
           {
-            let response = await DeleteObject(Bucket, object.Key);
+            // set is_delete_folder to true to delete folder after all files are deleted
+            is_delete_folder = true;
+          }
+          else
+          {
+            // delete all files in the folder
+            let response = await DeleteObject(Bucket, object.Key, s3);
             if(response.isSuccessful)
             {
               result.result.push(object.Key);
             }
           }
         }
+        if(is_delete_folder)
+        {
+          // delete folder after all files are deleted
+          let response = await s3.deleteObject({
+            Bucket: Bucket,
+            Key: Key
+          }).promise();
+          result.isSuccessful = true;
+          result.result.push(Key);
+        }
       }
     }
-    let param = {
-      Bucket:Bucket,
-      Key:Key
+    else // file
+    {
+      let param = {
+        Bucket:Bucket,
+        Key:Key
+      }
+  
+      let response = await s3.deleteObject(param).promise();
+      result.isSuccessful = true;
+      result.result.push(Key);
     }
-
-    let response = await s3.deleteObject(param).promise();
-    result.isSuccessful = true;
-    result.result.push(Key);
     return result;
-  } 
+  }
   catch (error:any) 
   {
     result.isSuccessful = false;
