@@ -56,8 +56,9 @@ https://github.com/necatiarslan/aws-s3/issues/new
 
 
 ## Todo
-- Rename a Folder even file exists in it
-- IAM Role Credentials support https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-role.html
+- Drag/Drop files and folders to upload
+- Show progressbar when uploading, downloading, deleting etc
+- Download a folder
 - (node:59796) NOTE: The AWS SDK for JavaScript (v2) is in maintenance mode.
 SDK releases are limited to address critical bug fixes and security issues only.
 Please migrate your code to use AWS SDK for JavaScript (v3).
@@ -72,11 +73,9 @@ For more information, check the blog post at https://a.co/cUPnyil
 - Paging (now max 1000)
 - Sort By Name / Type
 - Write Selected File and Folder count to the bottom
-- Drag/Drop files and folders to upload
 - Filter by Date/Size
 - Multiple S3 Explorer
 - Highlight Icons On Hover
-- Show progressbar when uploading, downloading, deleting etc
 - Freeze top bar
 - Fix: Cannot read properties of null (reading '_panel')
 - S3.getBucketAcl to get permissions and enable/disable command buttons

@@ -1,6 +1,8 @@
 # v1.7.0
-    - Delete Folder with files in it recursively
-    - Rename empty folders
+    - Delete Folder with files
+    - Rename, Copy, Move Folder
+    - Download Folder
+    - Multi Select Support For Copy, Move
 # v1.6.0
     - Delete Folder with files in it
 

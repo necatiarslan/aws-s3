@@ -45,7 +45,7 @@ class S3Explorer {
         if (!S3TreeView_1.S3TreeView.Current) {
             return;
         }
-        var result = await api.GetS3ObjectList(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key);
+        var result = await api.GetFolderList(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key);
         if (result.isSuccessful) {
             this.S3ObjectList = result.result;
         }
@@ -317,8 +317,8 @@ class S3Explorer {
                 </vscode-dropdown>
                 <vscode-dropdown style="width: 200px" id="copy_dropdown">
                     <vscode-option>Copy</vscode-option>
-                    <vscode-option>File Name(s) Without Extension</vscode-option>
-                    <vscode-option>File Name(s) With Extension</vscode-option>
+                    <vscode-option>File Name(s) Without Ext</vscode-option>
+                    <vscode-option>File Name(s) With Ext</vscode-option>
                     <vscode-option>Key(s)</vscode-option>
                     <vscode-option>ARN(s)</vscode-option>
                     <vscode-option>S3 URI(s)</vscode-option>
@@ -434,19 +434,19 @@ class S3Explorer {
                     this.UpdateFile();
                     return;
                 case "delete_file":
-                    this.DeleteFile(this.S3ExplorerItem.Key);
+                    this.DeleteObject(this.S3ExplorerItem.Key);
                     return;
                 case "rename_file":
-                    this.RenameFile(this.S3ExplorerItem.Key);
+                    this.RenameObject(this.S3ExplorerItem.Key);
                     return;
                 case "move_file":
-                    this.MoveFile(this.S3ExplorerItem.Key);
+                    this.MoveObject(this.S3ExplorerItem.Key);
                     return;
                 case "copy_file":
-                    this.CopyFile(this.S3ExplorerItem.Key);
+                    this.CopyObject(this.S3ExplorerItem.Key);
                     return;
                 case "delete_folder":
-                    this.DeleteFile(this.S3ExplorerItem.Key);
+                    this.DeleteObject(this.S3ExplorerItem.Key);
                     return;
                 case "open":
                     id = message.id;
@@ -469,16 +469,16 @@ class S3Explorer {
                     }
                     switch (message.action) {
                         case "Delete":
-                            this.DeleteFile(message.keys);
+                            this.DeleteObject(message.keys);
                             return;
                         case "Rename":
-                            this.RenameFile(message.keys);
+                            this.RenameObject(message.keys);
                             return;
                         case "Copy":
-                            this.CopyFile(message.keys);
+                            this.CopyObject(message.keys);
                             return;
                         case "Move":
-                            this.MoveFile(message.keys);
+                            this.MoveObject(message.keys);
                             return;
                     }
                     return;
@@ -487,10 +487,10 @@ class S3Explorer {
                         return;
                     }
                     switch (message.action) {
-                        case "File Name(s) Without Extension":
+                        case "File Name(s) Without Ext":
                             this.CopyFileNameWithoutExtension(message.keys);
                             return;
-                        case "File Name(s) With Extension":
+                        case "File Name(s) With Ext":
                             this.CopyFileNameWithExtension(message.keys);
                             return;
                         case "Key(s)":
@@ -549,9 +549,10 @@ class S3Explorer {
         var keyList = keys.split("|");
         var listToCopy = [];
         for (var key of keyList) {
-            if (key) {
-                listToCopy.push(s3_helper.GetURI(this.S3ExplorerItem.Bucket, key));
+            if (!key || key === "") {
+                continue;
             }
+            listToCopy.push(s3_helper.GetURI(this.S3ExplorerItem.Bucket, key));
         }
         let result = ui.CopyListToClipboard(listToCopy);
         if (result.isSuccessful) {
@@ -565,9 +566,10 @@ class S3Explorer {
         var keyList = keys.split("|");
         var listToCopy = [];
         for (var key of keyList) {
-            if (key) {
-                listToCopy.push(s3_helper.GetURL(this.S3ExplorerItem.Bucket, key));
+            if (!key || key === "") {
+                continue;
             }
+            listToCopy.push(s3_helper.GetURL(this.S3ExplorerItem.Bucket, key));
         }
         let result = ui.CopyListToClipboard(listToCopy);
         if (result.isSuccessful) {
@@ -581,13 +583,14 @@ class S3Explorer {
         var keyList = keys.split("|");
         var listToCopy = [];
         for (var key of keyList) {
-            if (key) {
-                listToCopy.push(s3_helper.GetFileNameWithExtension(key));
+            if (!key || key === "") {
+                continue;
             }
+            listToCopy.push(s3_helper.GetFileNameWithExtension(key));
         }
         let result = ui.CopyListToClipboard(listToCopy);
         if (result.isSuccessful) {
-            ui.showInfoMessage("File Name(s) with extension are copied to clipboard");
+            ui.showInfoMessage("File Name(s) With Ext are copied to clipboard");
         }
     }
     CopyFileNameWithoutExtension(keys) {
@@ -597,13 +600,14 @@ class S3Explorer {
         var keyList = keys.split("|");
         var listToCopy = [];
         for (var key of keyList) {
-            if (key) {
-                listToCopy.push(s3_helper.GetFileNameWithoutExtension(key));
+            if (!key || key === "") {
+                continue;
             }
+            listToCopy.push(s3_helper.GetFileNameWithoutExtension(key));
         }
         let result = ui.CopyListToClipboard(listToCopy);
         if (result.isSuccessful) {
-            ui.showInfoMessage("File Name(s) without extension are copied to clipboard");
+            ui.showInfoMessage("File Name(s) Without Ext are copied to clipboard");
         }
     }
     CopyKeys(keys) {
@@ -623,84 +627,101 @@ class S3Explorer {
         var keyList = keys.split("|");
         var listToCopy = [];
         for (var key of keyList) {
-            if (key) {
-                listToCopy.push(s3_helper.GetARN(this.S3ExplorerItem.Bucket, key));
+            if (!key || key === "") {
+                continue;
             }
+            listToCopy.push(s3_helper.GetARN(this.S3ExplorerItem.Bucket, key));
         }
         let result = ui.CopyListToClipboard(listToCopy);
         if (result.isSuccessful) {
             ui.showInfoMessage("ARN(s) are copied to clipboard");
         }
     }
-    async MoveFile(keys) {
-        let key = this.getFirstKeyFromKeys(keys);
-        if (!key) {
+    async MoveObject(keys) {
+        if (keys.length === 0) {
             return;
         }
-        if (s3_helper.IsFolder(key)) {
-            ui.showWarningMessage("Select a file");
+        var keyList = keys.split("|");
+        let targetKey = await vscode.window.showInputBox({ placeHolder: 'Target Path with / at the end' });
+        if (targetKey === undefined) {
             return;
         }
-        let targetPath = await vscode.window.showInputBox({ placeHolder: 'Target Path with / at the end' });
-        if (targetPath === undefined) {
+        if (!targetKey.endsWith("/")) {
+            ui.showInfoMessage("Add / at the end");
             return;
         }
-        let result = await api.MoveFile(this.S3ExplorerItem.Bucket, key, targetPath);
-        if (result.isSuccessful) {
-            S3TreeView_1.S3TreeView.Current?.UpdateShortcutByKey(this.S3ExplorerItem.Bucket, key, result.result);
-            this.S3ExplorerItem.Key = result.result;
+        let results = [];
+        for (var key of keyList) {
+            if (!key || key === "") {
+                continue;
+            }
+            let result = await api.MoveObject(this.S3ExplorerItem.Bucket, key, targetKey);
+            if (result.isSuccessful) {
+                results = results.concat(result.result || []);
+            }
+        }
+        if (results.length > 0) {
+            this.S3ExplorerItem.Key = targetKey;
             this.Load();
-            ui.showInfoMessage("File is Moved");
+            ui.showInfoMessage("File/Folder is Moved. Objects Moved: " + results.length.toString());
         }
     }
-    async CopyFile(keys) {
-        let key = this.getFirstKeyFromKeys(keys);
-        if (!key) {
+    async CopyObject(keys) {
+        if (keys.length === 0) {
             return;
         }
-        if (s3_helper.IsFolder(key)) {
-            ui.showWarningMessage("Select a file");
+        var keyList = keys.split("|");
+        let targetKey = await vscode.window.showInputBox({ placeHolder: 'Target Path with / at the end' });
+        if (targetKey === undefined) {
             return;
         }
-        let targetPath = await vscode.window.showInputBox({ placeHolder: 'Target Path with / at the end' });
-        if (targetPath === undefined) {
+        if (!targetKey.endsWith("/")) {
+            ui.showInfoMessage("Add / at the end");
             return;
         }
-        let result = await api.CopyFile(this.S3ExplorerItem.Bucket, key, targetPath);
-        if (result.isSuccessful) {
-            this.S3ExplorerItem.Key = result.result;
+        let results = [];
+        for (var key of keyList) {
+            if (!key || key === "") {
+                continue;
+            }
+            let result = await api.CopyObject(this.S3ExplorerItem.Bucket, key, targetKey);
+            if (result.isSuccessful) {
+                results = results.concat(result.result || []);
+            }
+        }
+        if (results.length > 0) {
+            this.S3ExplorerItem.Key = targetKey;
             this.Load();
-            ui.showInfoMessage("File is Copied");
+            ui.showInfoMessage("File/Folder is Copied. Objects Copied: " + results.length.toString());
         }
     }
-    async DeleteFile(keys) {
+    async DeleteObject(keys) {
         if (keys.length === 0) {
             return;
         }
         var keyList = keys.split("|");
         let confirm = await vscode.window.showInputBox({ placeHolder: 'print delete to confirm' });
-        if (confirm === undefined || confirm != "delete") {
+        if (confirm === undefined || !["delete", "d"].includes(confirm)) {
             return;
         }
         let goto_parent_folder = false;
         let deleteCounter = 0;
         for (var key of keyList) {
-            if (key) {
-                let response = await api.DeleteObject(this.S3ExplorerItem.Bucket, key);
-                if (response.isSuccessful) {
-                    let fileCountDeleted = response.result.length;
-                    ui.showInfoMessage(key + " is deleted. Deleted " + fileCountDeleted.toString() + " file(s)");
-                    deleteCounter++;
-                    for (var responseKey of response.result) {
-                        S3TreeView_1.S3TreeView.Current?.RemoveShortcutByKey(this.S3ExplorerItem.Bucket, responseKey);
-                    }
-                    if (this.S3ExplorerItem.Key === key) {
-                        goto_parent_folder = true;
-                    }
+            if (!key || key === "") {
+                continue;
+            }
+            let response = await api.DeleteObject(this.S3ExplorerItem.Bucket, key);
+            if (response.isSuccessful) {
+                let fileCountDeleted = response.result.length;
+                ui.showInfoMessage(key + " is deleted " + fileCountDeleted.toString() + " object(s)");
+                deleteCounter++;
+                S3TreeView_1.S3TreeView.Current?.RemoveShortcutByKey(this.S3ExplorerItem.Bucket, key);
+                if (this.S3ExplorerItem.Key === key) {
+                    goto_parent_folder = true;
                 }
-                else {
-                    ui.showInfoMessage(key + " is not deleted");
-                }
+            }
+            else {
+                ui.showInfoMessage(key + " is not deleted");
             }
         }
         //go up if current file/folder is deleted
@@ -715,28 +736,36 @@ class S3Explorer {
         }
         var keyList = keys.split("|");
         for (var key of keyList) {
-            if (key) {
+            if (key && key !== "") {
                 return key;
             }
         }
         return undefined;
     }
-    async RenameFile(keys) {
+    async RenameObject(keys) {
         let key = this.getFirstKeyFromKeys(keys);
         if (!key) {
             return;
         }
-        //if(s3_helper.IsFolder(key)) {ui.showWarningMessage("Select a file");return;}
-        let fileName = await vscode.window.showInputBox({ placeHolder: 'New File/Folder Name (Without Ext)' });
-        if (fileName === undefined) {
+        let targetName = await vscode.window.showInputBox({ placeHolder: 'New File/Folder Name (Without Ext)' });
+        if (targetName === undefined) {
             return;
         }
-        let result = await api.RenameFile(this.S3ExplorerItem.Bucket, key, fileName);
+        let result = await api.RenameObject(this.S3ExplorerItem.Bucket, key, targetName);
         if (result.isSuccessful) {
-            S3TreeView_1.S3TreeView.Current?.UpdateShortcutByKey(this.S3ExplorerItem.Bucket, key, result.result);
-            this.S3ExplorerItem.Key = s3_helper.GetParentFolderKey(result.result);
+            if (s3_helper.IsFile(key) && result.result && result.result.length > 0) {
+                this.S3ExplorerItem.Key = result.result[0];
+            }
+            else if (s3_helper.IsFolder(key) && result.result && result.result.length > 0) {
+                let TargetFolderKey = s3_helper.GetParentFolderKey(key) + targetName + "/";
+                this.S3ExplorerItem.Key = TargetFolderKey;
+            }
             this.Load();
             ui.showInfoMessage(" File/Folder is Renamed");
+        }
+        else {
+            this.Load();
+            ui.showInfoMessage(" File/Folder is not Renamed");
         }
     }
     async DownloadFile(keys) {
@@ -744,7 +773,6 @@ class S3Explorer {
             return;
         }
         var keyList = keys.split("|");
-        var listToCopy = [];
         let param = {
             canSelectFolders: true,
             canSelectFiles: false,
@@ -756,14 +784,13 @@ class S3Explorer {
         if (!selectedFolder) {
             return;
         }
-        let downloadCounter = 0;
         for (var key of keyList) {
-            if (key && s3_helper.IsFile(key)) {
-                api.DownloadS3File(this.S3ExplorerItem.Bucket, key, selectedFolder[0].path);
-                downloadCounter++;
+            if (!key || key === "") {
+                continue;
             }
+            api.DownloadObject(this.S3ExplorerItem.Bucket, key, selectedFolder[0].path);
         }
-        ui.showInfoMessage(downloadCounter.toString() + " File(s) are downloaded");
+        ui.showInfoMessage("File(s) are downloaded");
     }
     async PreviewFile(key) {
         if (key.length === 0) {
@@ -772,7 +799,7 @@ class S3Explorer {
         if (key && s3_helper.IsFile(key)) {
             const tmp = require('tmp');
             const tempFolderPath = tmp.dirSync().name;
-            let result = await api.DownloadS3File(this.S3ExplorerItem.Bucket, key, tempFolderPath);
+            let result = await api.DownloadFile(this.S3ExplorerItem.Bucket, key, tempFolderPath);
             if (result.isSuccessful) {
                 ui.openFile(result.result);
             }
@@ -831,7 +858,7 @@ class S3Explorer {
         if (folderName === undefined) {
             return;
         }
-        let result = await api.CreateS3Folder(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, folderName);
+        let result = await api.CreateFolder(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, folderName);
         if (result.isSuccessful) {
             ui.showInfoMessage(result.result + " Folder is Created");
             this.Load();
