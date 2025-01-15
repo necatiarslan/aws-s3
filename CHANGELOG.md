@@ -3,6 +3,8 @@
     - Rename, Copy, Move Folder
     - Download Folder
     - Multi Select Support For Copy, Move
+    - Localstack Support
+
 # v1.6.0
     - Delete Folder with files in it
 

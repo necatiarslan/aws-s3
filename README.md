@@ -58,7 +58,6 @@ https://github.com/necatiarslan/aws-s3/issues/new
 ## Todo
 - Drag/Drop files and folders to upload
 - Show progressbar when uploading, downloading, deleting etc
-- Download a folder
 - (node:59796) NOTE: The AWS SDK for JavaScript (v2) is in maintenance mode.
 SDK releases are limited to address critical bug fixes and security issues only.
 Please migrate your code to use AWS SDK for JavaScript (v3).
