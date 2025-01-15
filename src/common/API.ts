@@ -35,35 +35,7 @@ export function GetCredentialProvider(credentials:any|undefined=undefined){
     credentials = AWS.config.credentials;
   }
 
-  if (credentials instanceof(AWS.EnvironmentCredentials))
-  {
-    return "EnvironmentCredentials";
-  }
-  else if (credentials instanceof(AWS.ECSCredentials))
-  {
-    return "ECSCredentials";
-  }
-  else if (credentials instanceof(AWS.SsoCredentials))
-  {
-    return "SsoCredentials";
-  }
-  else if (credentials instanceof(AWS.SharedIniFileCredentials))
-  {
-    return "SharedIniFileCredentials";
-  }
-  else if (credentials instanceof(AWS.ProcessCredentials))
-  {
-    return "ProcessCredentials";
-  }
-  else if (credentials instanceof(AWS.TokenFileWebIdentityCredentials))
-  {
-    return "TokenFileWebIdentityCredentials";
-  }
-  else if (credentials instanceof(AWS.EC2MetadataCredentials))
-  {
-    return "EC2MetadataCredentials";
-  }
-  return "UnknownProvider";
+  return credentials.constructor.name;
 }
 
 export function GetCredentials()
