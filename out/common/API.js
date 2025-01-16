@@ -299,11 +299,22 @@ async function UploadFile(Bucket, TargetKey, SourcePath) {
 }
 exports.UploadFile = UploadFile;
 async function CopyObject(Bucket, SourceKey, TargetKey, s3Client) {
-    if (s3_helper.IsFolder(SourceKey)) {
-        return await CopyFolder(Bucket, SourceKey, TargetKey, s3Client);
+    let result = new MethodResult_1.MethodResult();
+    result.result = [];
+    try {
+        if (s3_helper.IsFolder(SourceKey)) {
+            return await CopyFolder(Bucket, SourceKey, TargetKey, s3Client);
+        }
+        else {
+            return await CopyFile(Bucket, SourceKey, TargetKey, s3Client);
+        }
     }
-    else {
-        return await CopyFile(Bucket, SourceKey, TargetKey, s3Client);
+    catch (error) {
+        result.isSuccessful = false;
+        result.error = error;
+        ui.showErrorMessage('api.CopyObject Error !!! SourceKey=' + SourceKey, error);
+        ui.logToOutput("api.CopyObject Error !!! SourceKey=" + SourceKey, error);
+        return result;
     }
 }
 exports.CopyObject = CopyObject;
@@ -314,6 +325,11 @@ async function CopyFile(Bucket, SourceKey, TargetKey, s3Client) {
     if (s3_helper.IsFolder(TargetKey)) {
         TargetKey = TargetKey === "/" ? "" : TargetKey;
         TargetKey = TargetKey + s3_helper.GetFileNameWithExtension(SourceKey);
+    }
+    if (SourceKey === TargetKey) {
+        result.isSuccessful = false;
+        result.error = new Error('SourceKey and TargetKey are the same, SourceKey=' + SourceKey);
+        return result;
     }
     try {
         const param = {
@@ -341,10 +357,14 @@ async function CopyFolder(Bucket, SourceKey, TargetKey, s3Client) {
     result.result = [];
     try {
         if (s3_helper.IsFile(SourceKey)) {
-            throw new Error('api.CopyFolder Error !!! Source Is a File, SourceKey=' + SourceKey);
+            result.isSuccessful = false;
+            result.error = new Error('Source Is a File, SourceKey=' + SourceKey);
+            return result;
         }
         if (s3_helper.IsFile(TargetKey)) {
-            throw new Error('api.CopyFolder Error !!! Target Is a File, TargetKey=' + SourceKey);
+            result.isSuccessful = false;
+            result.error = new Error('Target Is a File, TargetKey=' + SourceKey);
+            return result;
         }
         const s3 = s3Client ? s3Client : GetS3Client();
         let result_objects = await GetObjectList(Bucket, SourceKey);
@@ -375,17 +395,38 @@ async function CopyFolder(Bucket, SourceKey, TargetKey, s3Client) {
 }
 exports.CopyFolder = CopyFolder;
 async function MoveObject(Bucket, SourceKey, TargetKey, s3Client) {
-    if (s3_helper.IsFolder(SourceKey)) {
-        return MoveFolder(Bucket, SourceKey, TargetKey, s3Client);
+    let result = new MethodResult_1.MethodResult();
+    result.result = [];
+    try {
+        if (SourceKey === TargetKey) {
+            result.isSuccessful == false;
+            result.error = new Error('api.MoveObject Error !!! SourceKey and TargetKey are the same, SourceKey=' + SourceKey);
+            return result;
+        }
+        if (s3_helper.IsFolder(SourceKey)) {
+            return MoveFolder(Bucket, SourceKey, TargetKey, s3Client);
+        }
+        else {
+            return MoveFile(Bucket, SourceKey, TargetKey, s3Client);
+        }
     }
-    else {
-        return MoveFile(Bucket, SourceKey, TargetKey, s3Client);
+    catch (error) {
+        result.isSuccessful = false;
+        result.error = error;
+        ui.showErrorMessage('api.MoveObject Error !!! SourceKey=' + SourceKey, error);
+        ui.logToOutput("api.MoveObject Error !!! SourceKey=" + SourceKey, error);
+        return result;
     }
 }
 exports.MoveObject = MoveObject;
 async function MoveFile(Bucket, SourceKey, TargetKey, s3Client) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
+    if (SourceKey === TargetKey) {
+        result.isSuccessful = false;
+        result.error = new Error('SourceKey and TargetKey are the same, SourceKey=' + SourceKey);
+        return result;
+    }
     const s3 = s3Client ? s3Client : GetS3Client();
     let copy_result = await CopyFile(Bucket, SourceKey, TargetKey, s3);
     if (!copy_result.isSuccessful) {
@@ -407,6 +448,11 @@ exports.MoveFile = MoveFile;
 async function MoveFolder(Bucket, SourceKey, TargetKey, s3Client) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
+    if (SourceKey === TargetKey) {
+        result.isSuccessful = false;
+        result.error = new Error('SourceKey and TargetKey are the same, SourceKey=' + SourceKey);
+        return result;
+    }
     if (!s3_helper.IsFolder(SourceKey)) {
         result.error = new Error('api.MoveFolder Error !!! Source Is a File, SourceKey=' + SourceKey);
         result.isSuccessful = false;
@@ -485,11 +531,22 @@ async function RenameFolder(Bucket, SourceKey, TargetName) {
 }
 exports.RenameFolder = RenameFolder;
 async function RenameObject(Bucket, SourceKey, TargetName) {
-    if (s3_helper.IsFolder(SourceKey)) {
-        return RenameFolder(Bucket, SourceKey, TargetName);
+    let result = new MethodResult_1.MethodResult();
+    result.result = [];
+    try {
+        if (s3_helper.IsFolder(SourceKey)) {
+            return RenameFolder(Bucket, SourceKey, TargetName);
+        }
+        else {
+            return RenameFile(Bucket, SourceKey, TargetName);
+        }
     }
-    else {
-        return RenameFile(Bucket, SourceKey, TargetName);
+    catch (error) {
+        result.isSuccessful = false;
+        result.error = error;
+        ui.showErrorMessage('api.RenameObject Error !!! File=' + SourceKey, error);
+        ui.logToOutput("api.RenameObject Error !!! File=" + SourceKey, error);
+        return result;
     }
 }
 exports.RenameObject = RenameObject;

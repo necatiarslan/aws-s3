@@ -836,11 +836,11 @@ export class S3Explorer {
         let result = await api.RenameObject(this.S3ExplorerItem.Bucket, key, targetName);
         if(result.isSuccessful)
         {
-            if(s3_helper.IsFile(key) && result.result && result.result.length > 0)
+            if(s3_helper.IsFile(key) && result.result && result.result.length > 0 && key === this.S3ExplorerItem.Key)
             {
                 this.S3ExplorerItem.Key = result.result[0];
             }
-            else if (s3_helper.IsFolder(key) && result.result && result.result.length > 0)
+            else if (s3_helper.IsFolder(key) && result.result && result.result.length > 0 && key === this.S3ExplorerItem.Key)   
             {
                 let TargetFolderKey = s3_helper.GetParentFolderKey(key) + targetName + "/";
                 this.S3ExplorerItem.Key = TargetFolderKey;
