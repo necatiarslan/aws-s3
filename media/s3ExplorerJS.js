@@ -101,6 +101,24 @@ function main() {
     GoUpLink.addEventListener("click", GoUpLinkClicked);
   }
 
+  const FileDownloadLink = document.getElementById("file_download");
+  if(FileDownloadLink)
+  {
+    FileDownloadLink.addEventListener("click", FileDownloadLinkClicked);
+  }
+
+  const FileUploadLink = document.getElementById("file_upload");
+  if(FileUploadLink)
+  {
+    FileUploadLink.addEventListener("click", FileUploadLinkClicked);
+  }
+
+  const FolderCreateLink = document.getElementById("folder_create");
+  if(FolderCreateLink)
+  {
+    FolderCreateLink.addEventListener("click", FolderCreateLinkClicked);
+  }
+
   const FileDeleteLink = document.getElementById("file_delete");
   if(FileDeleteLink)
   {
@@ -199,15 +217,7 @@ function UploadEmptyFolderButtonClicked() {
 }
 
 function DownloadButtonClicked(e) {
-
-  let CheckedKeys = ""
-  const CheckBoxList = document.querySelectorAll("[id^='checkbox_']");
-  for (let i = 0; i < CheckBoxList.length; i++) {
-    if(CheckBoxList[i]._checked)
-    {
-      CheckedKeys += "|" + CheckBoxList[i].id.replace("checkbox_", "");;
-    }
-  }
+  let CheckedKeys = GetCheckedKeys();
 
   vscode.postMessage({
     command: "download",
@@ -265,14 +275,7 @@ function DownloadCurrentFileButtonClicked(e) {
 
 function CopyDropDownChanged(e) {
 
-  let CheckedKeys = ""
-  const CheckBoxList = document.querySelectorAll("[id^='checkbox_']");
-  for (let i = 0; i < CheckBoxList.length; i++) {
-    if(CheckBoxList[i]._checked)
-    {
-      CheckedKeys += "|" + CheckBoxList[i].id.replace("checkbox_", "");;
-    }
-  }
+  let CheckedKeys = GetCheckedKeys();
 
   vscode.postMessage({
     command: "copy",
@@ -311,6 +314,27 @@ function OpenLinkClicked(e) {
 function GoUpLinkClicked() {
   vscode.postMessage({
     command: "go_up"
+  });
+}
+
+function FileDownloadLinkClicked() {
+  let CheckedKeys = GetCheckedKeys();
+
+  vscode.postMessage({
+    command: "download",
+    keys: CheckedKeys
+  });
+}
+
+function FileUploadLinkClicked() {
+  vscode.postMessage({
+    command: "upload"
+  });
+}
+
+function FolderCreateLinkClicked() {
+  vscode.postMessage({
+    command: "create_folder"
   });
 }
 

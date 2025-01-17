@@ -88,6 +88,7 @@ For more information, check the blog post at https://a.co/cUPnyil
     - https://code.visualstudio.com/docs/nodejs/vuejs-tutorial
 - NoSuchBucket: The specified bucket does not exist handle error and show error message
 ## Nice To Have
+- Use vscode icons for files and folders
 - Paging (now max 1000)
 - Sort By Name / Type
 - Write Selected File and Folder count to the bottom

@@ -150,6 +150,11 @@ export class S3Explorer {
         
         const goHomeUri = ui.getUri(webview, extensionUri, ["media", "go-home.png"]);
         const goUpUri = ui.getUri(webview, extensionUri, ["media", "go-up.png"]);
+
+        const fileDownloadUri = ui.getUri(webview, extensionUri, ["media", "file-download.png"]);
+        const fileUploadUri = ui.getUri(webview, extensionUri, ["media", "file-upload.png"]);
+        const folderCreateUri = ui.getUri(webview, extensionUri, ["media", "folder-create.png"]);
+
         const fileDeleteUri = ui.getUri(webview, extensionUri, ["media", "file-delete.png"]);
         const fileRenameUri = ui.getUri(webview, extensionUri, ["media", "file-rename.png"]);
         const fileMoveUri = ui.getUri(webview, extensionUri, ["media", "file-move.png"]);
@@ -385,22 +390,27 @@ export class S3Explorer {
 
             <table>
             <tr>
-                <th style="width:20px; text-align:center">
+                <th style="width:20px; text-align:center; vertical-align:middle">
                     <vscode-link id="go_home"><img src="${goHomeUri}" alt="Go Home"></vscode-link>
                 </th>
-                <th style="width:20px; text-align:center">
+                <th style="width:20px; text-align:center; vertical-align:middle">
                     <vscode-link id="go_up"><img src="${goUpUri}" alt="Go Up"></vscode-link>
                 </th>
-                <th style="width:100px; text-align:center">
+                <th style="width:160px; text-align:center; vertical-align:middle">
+                    
+                    <vscode-link id="file_download"><img src="${fileDownloadUri}" alt="Delete"></vscode-link>
+                    <vscode-link id="file_upload"><img src="${fileUploadUri}" alt="Rename"></vscode-link>
+                    <vscode-link id="folder_create"><img src="${folderCreateUri}" alt="Copy"></vscode-link>
+                    
                     <vscode-link id="file_delete"><img src="${fileDeleteUri}" alt="Delete"></vscode-link>
                     <vscode-link id="file_rename"><img src="${fileRenameUri}" alt="Rename"></vscode-link>
                     <vscode-link id="file_copy"><img src="${fileCopyUri}" alt="Copy"></vscode-link>
                     <vscode-link id="file_move"><img src="${fileMoveUri}" alt="Move"></vscode-link>
                 </th>
                 <th>Name</th>
-                <th style="width:100px; text-align:center">Type</th>
-                <th style="width:80px; text-align:center">Modified</th>
-                <th style="width:80px; text-align:center">Size</th>
+                <th style="width:100px; text-align:center; vertical-align:middle">Type</th>
+                <th style="width:80px; text-align:center; vertical-align:middle">Modified</th>
+                <th style="width:80px; text-align:center; vertical-align:middle">Size</th>
             </tr>
             </table>
 
