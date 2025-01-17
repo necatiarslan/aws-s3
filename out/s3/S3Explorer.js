@@ -133,10 +133,11 @@ class S3Explorer {
         for (var item of this.GetNavigationPath(this.S3ExplorerItem.Key)) {
             PathNavigationHtml += `&nbsp;<vscode-link style="font-size: 16px; font-weight: bold;" id="go_key_${item[1]}">${item[0]}</vscode-link>`;
         }
+        let isChecked = this.S3ExplorerItem.IsFile();
         NavigationRowHtml += `
         <tr style="height:30px">
             <td style="width:20px">
-                <vscode-checkbox id="checkbox_${this.S3ExplorerItem.Key}" ></vscode-checkbox>
+                <vscode-checkbox id="checkbox_${this.S3ExplorerItem.Key}" ${isChecked ? "checked" : ""}></vscode-checkbox>
             </td>
             <td style="width:20px">
                 <vscode-button appearance="icon" id="add_shortcut_${this.S3ExplorerItem.Key}">
@@ -195,7 +196,7 @@ class S3Explorer {
                     S3RowHtml += `
                     <tr>
                         <td style="width:20px">
-                            <vscode-checkbox id="checkbox_${file.Key}" ></vscode-checkbox>
+                            <vscode-checkbox id="checkbox_${file.Key}"></vscode-checkbox>
                         </td>
                         <td style="width:20px">
                             <vscode-button appearance="icon" id="add_shortcut_${file.Key}">
@@ -309,7 +310,7 @@ class S3Explorer {
                 <td colspan="4" style="text-align:left">
                 <vscode-button appearance="secondary" id="refresh">Refresh</vscode-button>
                 <vscode-button appearance="secondary" id="search" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Search</vscode-button>
-                <vscode-button appearance="secondary" id="download">Download</vscode-button>
+                <vscode-button appearance="secondary" id="download" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Download</vscode-button>
                 <vscode-button appearance="secondary" id="upload" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Upload</vscode-button>
                 <vscode-button appearance="secondary" id="create_folder" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Create Folder</vscode-button>
 
@@ -332,7 +333,7 @@ class S3Explorer {
                 </vscode-dropdown>
                 </td>
                 <td colspan="2" style="text-align:right">
-                    <vscode-text-field id="search_text" placeholder="Search" value="${this.SearchText}">
+                    <vscode-text-field id="search_text" placeholder="Search" value="${this.SearchText}" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>
                         <span slot="start" class="codicon codicon-search"></span>
                     </vscode-text-field>
                 </td>
@@ -554,6 +555,7 @@ class S3Explorer {
     CopyS3URI(keys) {
         var keyList = this.GetSelectedKeys(keys);
         if (keyList.length === 0) {
+            ui.showInfoMessage("Select File/Folder");
             return;
         }
         var listToCopy = [];
@@ -568,6 +570,7 @@ class S3Explorer {
     CopyURLs(keys) {
         var keyList = this.GetSelectedKeys(keys);
         if (keyList.length === 0) {
+            ui.showInfoMessage("Select File/Folder");
             return;
         }
         var listToCopy = [];
@@ -582,6 +585,7 @@ class S3Explorer {
     CopyFileNameWithExtension(keys) {
         var keyList = this.GetSelectedKeys(keys);
         if (keyList.length === 0) {
+            ui.showInfoMessage("Select File/Folder");
             return;
         }
         var listToCopy = [];
@@ -597,7 +601,7 @@ class S3Explorer {
         }
     }
     GetSelectedKeys(keys) {
-        if (keys.length === 0 || !keys.includes("|")) {
+        if (keys.length === 0) {
             return [];
         }
         if (!keys.includes("|")) {
@@ -610,6 +614,7 @@ class S3Explorer {
     CopyFileNameWithoutExtension(keys) {
         var keyList = this.GetSelectedKeys(keys);
         if (keyList.length === 0) {
+            ui.showInfoMessage("Select File/Folder");
             return;
         }
         var listToCopy = [];
@@ -624,6 +629,7 @@ class S3Explorer {
     CopyKeys(keys) {
         var keyList = this.GetSelectedKeys(keys);
         if (keyList.length === 0) {
+            ui.showInfoMessage("Select File/Folder");
             return;
         }
         let result = ui.CopyListToClipboard(keyList);
@@ -634,6 +640,7 @@ class S3Explorer {
     CopyFileARNs(keys) {
         var keyList = this.GetSelectedKeys(keys);
         if (keyList.length === 0) {
+            ui.showInfoMessage("Select File/Folder");
             return;
         }
         var listToCopy = [];
@@ -648,6 +655,7 @@ class S3Explorer {
     async MoveObject(keys) {
         var keyList = this.GetSelectedKeys(keys);
         if (keyList.length === 0) {
+            ui.showInfoMessage("Select File/Folder");
             return;
         }
         let targetKey = await vscode.window.showInputBox({ placeHolder: 'Target Path with / at the end (Move)' });
@@ -678,6 +686,7 @@ class S3Explorer {
     async CopyObject(keys) {
         var keyList = this.GetSelectedKeys(keys);
         if (keyList.length === 0) {
+            ui.showInfoMessage("Select File/Folder");
             return;
         }
         let targetKey = await vscode.window.showInputBox({ placeHolder: 'Target Path with / at the end (Copy)' });
@@ -708,6 +717,7 @@ class S3Explorer {
     async DeleteObject(keys) {
         var keyList = this.GetSelectedKeys(keys);
         if (keyList.length === 0) {
+            ui.showInfoMessage("Select File/Folder");
             return;
         }
         let confirm = await vscode.window.showInputBox({ placeHolder: 'print delete to confirm' });
@@ -737,23 +747,17 @@ class S3Explorer {
         }
         this.Load();
     }
-    getFirstKeyFromKeys(keys) {
-        if (keys.length === 0) {
-            return undefined;
-        }
-        var keyList = keys.split("|");
-        for (var key of keyList) {
-            if (key && key !== "") {
-                return key;
-            }
-        }
-        return undefined;
-    }
     async RenameObject(keys) {
-        let key = this.getFirstKeyFromKeys(keys);
-        if (!key) {
+        var keyList = this.GetSelectedKeys(keys);
+        if (keyList.length === 0) {
+            ui.showInfoMessage("Select File/Folder");
             return;
         }
+        if (keyList.length !== 1) {
+            ui.showInfoMessage("Select 1 File/Folder");
+            return;
+        }
+        var key = keyList[0];
         let targetName = await vscode.window.showInputBox({ placeHolder: 'New File/Folder Name (Without Ext)' });
         if (targetName === undefined) {
             return;
@@ -778,6 +782,7 @@ class S3Explorer {
     async DownloadFile(keys) {
         var keyList = this.GetSelectedKeys(keys);
         if (keyList.length === 0) {
+            ui.showInfoMessage("Select File/Folder");
             return;
         }
         let param = {

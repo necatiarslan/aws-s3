@@ -1,19 +1,38 @@
-# Aws S3 
+# AWS S3 Browser Extension for Visual Studio Code
 
 ![screenshoot](media/psc-main-screen.png)
 
-The AWS S3 Browser extension for Visual Studio Code allows users to easily browse and manage their Amazon S3 buckets, files and folders within the vscode editor.
+The **AWS S3 Browser** extension for Visual Studio Code empowers users to seamlessly browse and manage their Amazon S3 buckets, files, and folders directly within the VS Code editor.
 
-With this extension, users can perform a variety of tasks such as 
-- Uploading, downloading and deleting files
-- Creating and deleting folders
-- Copying file names, keys, ARNs, URLs and S3 URIs
-- Adding shortcuts to files and folders for easy to access
-- Searching All Bucket by File Name, Extension, Folder and Key
-- Updating AWS EndPoint (to test your S3 functionality in your localstash environment)
+## Features
 
-The AWS S3 Browser extension is a useful tool for anyone working with S3, whether you are a developer, data scientist, or system administrator. \
-It provides an intuitive and user-friendly interface for managing S3 resources.
+With this extension, you can efficiently perform a wide range of tasks, including:
+
+- **File Management**:  
+  - Rename, copy, move, delete, upload, and download files.  
+
+- **Folder Management**:  
+  - Create, rename, copy, move, delete, and download folders.  
+
+- **Enhanced Copying Options**:  
+  - Copy file names (with or without extensions), keys, ARNs, URLs, and S3 URIs.  
+
+- **Shortcuts**:  
+  - Add shortcuts to frequently accessed files and folders for quick access.  
+
+- **Advanced Search**:  
+  - Search across all buckets using file names, extensions, folders, or keys.  
+
+- **Endpoint Customization**:  
+  - Configure AWS endpoint URLs for flexibility.  
+
+- **Localstack Support**:  
+  - Work with Localstack to emulate S3 for development and testing.  
+
+## Why Use It?
+
+Whether you’re a developer, data scientist, or system administrator, the **AWS S3 Browser** extension simplifies your workflow with an intuitive, user-friendly interface designed to make S3 resource management faster and more convenient.
+
 
 ## Survey
 Please take this survey to help me make the extension better.\
