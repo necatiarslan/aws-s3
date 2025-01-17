@@ -13,20 +13,20 @@ import * as S3TreeView from '../s3/S3TreeView';
 
 export function IsSharedIniFileCredentials(credentials:any|undefined=undefined)
 {
-  if(credentials)
+  if (!credentials)
   {
-    return GetCredentialProvider(credentials) === "SharedIniFileCredentials"
+    credentials = AWS.config.credentials;
   }
-  return GetCredentialProvider(AWS.config.credentials) === "SharedIniFileCredentials"
+  return GetCredentialProvider(credentials) === "SharedIniFileCredentials"
 }
 
 export function IsEnvironmentCredentials(credentials:any|undefined=undefined)
 {
-  if(credentials)
+  if (!credentials)
   {
-    return GetCredentialProvider(credentials) === "EnvironmentCredentials"
+    credentials = AWS.config.credentials;
   }
-  return GetCredentialProvider(AWS.config.credentials) === "EnvironmentCredentials"
+  return GetCredentialProvider(credentials) === "EnvironmentCredentials"
 }
 
 export function GetCredentialProvider(credentials:any|undefined=undefined){

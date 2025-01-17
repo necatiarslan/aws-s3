@@ -13,17 +13,17 @@ const s3_helper = require("../s3/S3Helper");
 const fs = require("fs");
 const S3TreeView = require("../s3/S3TreeView");
 function IsSharedIniFileCredentials(credentials = undefined) {
-    if (credentials) {
-        return GetCredentialProvider(credentials) === "SharedIniFileCredentials";
+    if (!credentials) {
+        credentials = AWS.config.credentials;
     }
-    return GetCredentialProvider(AWS.config.credentials) === "SharedIniFileCredentials";
+    return GetCredentialProvider(credentials) === "SharedIniFileCredentials";
 }
 exports.IsSharedIniFileCredentials = IsSharedIniFileCredentials;
 function IsEnvironmentCredentials(credentials = undefined) {
-    if (credentials) {
-        return GetCredentialProvider(credentials) === "EnvironmentCredentials";
+    if (!credentials) {
+        credentials = AWS.config.credentials;
     }
-    return GetCredentialProvider(AWS.config.credentials) === "EnvironmentCredentials";
+    return GetCredentialProvider(credentials) === "EnvironmentCredentials";
 }
 exports.IsEnvironmentCredentials = IsEnvironmentCredentials;
 function GetCredentialProvider(credentials = undefined) {
