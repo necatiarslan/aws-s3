@@ -101,6 +101,30 @@ function main() {
     GoUpLink.addEventListener("click", GoUpLinkClicked);
   }
 
+  const FileDeleteLink = document.getElementById("file_delete");
+  if(FileDeleteLink)
+  {
+    FileDeleteLink.addEventListener("click", FileDeleteLinkClicked);
+  }
+
+  const FileRenameLink = document.getElementById("file_rename");
+  if(FileRenameLink)
+  {
+    FileRenameLink.addEventListener("click", FileRenameLinkClicked);
+  }
+
+  const FileCopyLink = document.getElementById("file_copy");
+  if(FileCopyLink)
+  {
+    FileCopyLink.addEventListener("click", FileCopyLinkClicked);
+  }
+
+  const FileMoveLink = document.getElementById("file_move");
+  if(FileMoveLink)
+  {
+    FileMoveLink.addEventListener("click", FileMoveLinkClicked);
+  }
+
   const GoHomeLink = document.getElementById("go_home");
   if(GoHomeLink)
   {
@@ -261,22 +285,20 @@ function CopyDropDownChanged(e) {
 
 function EditDropDownChanged(e) {
 
-  let CheckedKeys = ""
+  EditSelectedFiles(e.target._value);
+
+  e.target._selectedIndex = 0;
+}
+
+function GetCheckedKeys() {
+  let CheckedKeys = "";
   const CheckBoxList = document.querySelectorAll("[id^='checkbox_']");
   for (let i = 0; i < CheckBoxList.length; i++) {
-    if(CheckBoxList[i]._checked)
-    {
+    if (CheckBoxList[i]._checked) {
       CheckedKeys += "|" + CheckBoxList[i].id.replace("checkbox_", "");;
     }
   }
-
-  vscode.postMessage({
-    command: "edit",
-    action: e.target._value,
-    keys: CheckedKeys
-  });
-
-  e.target._selectedIndex = 0;
+  return CheckedKeys;
 }
 
 function OpenLinkClicked(e) {
@@ -290,6 +312,32 @@ function GoUpLinkClicked() {
   vscode.postMessage({
     command: "go_up"
   });
+}
+
+function FileDeleteLinkClicked() {
+  EditSelectedFiles("Delete");
+}
+
+function EditSelectedFiles(action) {
+  let CheckedKeys = GetCheckedKeys();
+
+  vscode.postMessage({
+    command: "edit",
+    action: action,
+    keys: CheckedKeys
+  });
+}
+
+function FileRenameLinkClicked() {
+  EditSelectedFiles("Rename");
+}
+
+function FileCopyLinkClicked() {
+  EditSelectedFiles("Copy");
+}
+
+function FileMoveLinkClicked() {
+  EditSelectedFiles("Move");
 }
 
 function GoHomeLinkClicked() {

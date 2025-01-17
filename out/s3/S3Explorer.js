@@ -117,8 +117,12 @@ class S3Explorer {
         const codiconsUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'node_modules', '@vscode/codicons', 'dist', 'codicon.css'));
         const bookmark_yesUri = ui.getUri(webview, extensionUri, ["media", "bookmark_yes.png"]);
         const bookmark_noUri = ui.getUri(webview, extensionUri, ["media", "bookmark_no.png"]);
-        const goUpUri = ui.getUri(webview, extensionUri, ["media", "go-up.png"]);
         const goHomeUri = ui.getUri(webview, extensionUri, ["media", "go-home.png"]);
+        const goUpUri = ui.getUri(webview, extensionUri, ["media", "go-up.png"]);
+        const fileDeleteUri = ui.getUri(webview, extensionUri, ["media", "file-delete.png"]);
+        const fileRenameUri = ui.getUri(webview, extensionUri, ["media", "file-rename.png"]);
+        const fileMoveUri = ui.getUri(webview, extensionUri, ["media", "file-move.png"]);
+        const fileCopyUri = ui.getUri(webview, extensionUri, ["media", "file-copy.png"]);
         const fileUri = ui.getUri(webview, extensionUri, ["media", "file.png"]);
         const folderUri = ui.getUri(webview, extensionUri, ["media", "folder.png"]);
         let fileCounter = 0;
@@ -234,7 +238,7 @@ class S3Explorer {
                 &nbsp;
                 <vscode-button appearance="secondary" id="download_current_file">Download</vscode-button>
                 &nbsp;
-                <vscode-button appearance="secondary" id="update_file">Update</vscode-button>
+                <vscode-button appearance="secondary" id="update_file">Upload</vscode-button>
                 &nbsp;
                 <vscode-button appearance="secondary" id="delete_file">Delete</vscode-button>
                 &nbsp;
@@ -308,6 +312,7 @@ class S3Explorer {
                 <vscode-button appearance="secondary" id="download">Download</vscode-button>
                 <vscode-button appearance="secondary" id="upload" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Upload</vscode-button>
                 <vscode-button appearance="secondary" id="create_folder" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Create Folder</vscode-button>
+
                 <vscode-dropdown id="edit_dropdown">
                     <vscode-option>Edit</vscode-option>
                     <vscode-option>Delete</vscode-option>
@@ -315,10 +320,11 @@ class S3Explorer {
                     <vscode-option>Copy</vscode-option>
                     <vscode-option>Move</vscode-option>
                 </vscode-dropdown>
-                <vscode-dropdown style="width: 200px" id="copy_dropdown">
+
+                <vscode-dropdown style="width: 150px" id="copy_dropdown">
                     <vscode-option>Copy</vscode-option>
-                    <vscode-option>File Name(s) Without Ext</vscode-option>
-                    <vscode-option>File Name(s) With Ext</vscode-option>
+                    <vscode-option>File Name(s) No Ext</vscode-option>
+                    <vscode-option>File Name(s) /w Ext</vscode-option>
                     <vscode-option>Key(s)</vscode-option>
                     <vscode-option>ARN(s)</vscode-option>
                     <vscode-option>S3 URI(s)</vscode-option>
@@ -341,8 +347,11 @@ class S3Explorer {
                 <th style="width:20px; text-align:center">
                     <vscode-link id="go_up"><img src="${goUpUri}" alt="Go Up"></vscode-link>
                 </th>
-                <th style="width:40px; text-align:center">
-                    <!--<vscode-link id="go_to">Goto</vscode-link>-->
+                <th style="width:100px; text-align:center">
+                    <vscode-link id="file_delete"><img src="${fileDeleteUri}" alt="Delete"></vscode-link>
+                    <vscode-link id="file_rename"><img src="${fileRenameUri}" alt="Rename"></vscode-link>
+                    <vscode-link id="file_copy"><img src="${fileCopyUri}" alt="Copy"></vscode-link>
+                    <vscode-link id="file_move"><img src="${fileMoveUri}" alt="Move"></vscode-link>
                 </th>
                 <th>Name</th>
                 <th style="width:100px; text-align:center">Type</th>
@@ -487,10 +496,10 @@ class S3Explorer {
                         return;
                     }
                     switch (message.action) {
-                        case "File Name(s) Without Ext":
+                        case "File Name(s) No Ext":
                             this.CopyFileNameWithoutExtension(message.keys);
                             return;
-                        case "File Name(s) With Ext":
+                        case "File Name(s) /w Ext":
                             this.CopyFileNameWithExtension(message.keys);
                             return;
                         case "Key(s)":
@@ -543,15 +552,12 @@ class S3Explorer {
         this.RenderHtml();
     }
     CopyS3URI(keys) {
-        if (keys.length === 0 || !keys.includes("|")) {
+        var keyList = this.GetSelectedKeys(keys);
+        if (keyList.length === 0) {
             return;
         }
-        var keyList = keys.split("|");
         var listToCopy = [];
         for (var key of keyList) {
-            if (!key || key === "") {
-                continue;
-            }
             listToCopy.push(s3_helper.GetURI(this.S3ExplorerItem.Bucket, key));
         }
         let result = ui.CopyListToClipboard(listToCopy);
@@ -560,15 +566,12 @@ class S3Explorer {
         }
     }
     CopyURLs(keys) {
-        if (keys.length === 0 || !keys.includes("|")) {
+        var keyList = this.GetSelectedKeys(keys);
+        if (keyList.length === 0) {
             return;
         }
-        var keyList = keys.split("|");
         var listToCopy = [];
         for (var key of keyList) {
-            if (!key || key === "") {
-                continue;
-            }
             listToCopy.push(s3_helper.GetURL(this.S3ExplorerItem.Bucket, key));
         }
         let result = ui.CopyListToClipboard(listToCopy);
@@ -577,10 +580,10 @@ class S3Explorer {
         }
     }
     CopyFileNameWithExtension(keys) {
-        if (keys.length === 0 || !keys.includes("|")) {
+        var keyList = this.GetSelectedKeys(keys);
+        if (keyList.length === 0) {
             return;
         }
-        var keyList = keys.split("|");
         var listToCopy = [];
         for (var key of keyList) {
             if (!key || key === "") {
@@ -590,46 +593,51 @@ class S3Explorer {
         }
         let result = ui.CopyListToClipboard(listToCopy);
         if (result.isSuccessful) {
-            ui.showInfoMessage("File Name(s) With Ext are copied to clipboard");
+            ui.showInfoMessage("File Name(s) /w Ext are copied to clipboard");
         }
     }
-    CopyFileNameWithoutExtension(keys) {
+    GetSelectedKeys(keys) {
         if (keys.length === 0 || !keys.includes("|")) {
-            return;
+            return [];
+        }
+        if (!keys.includes("|")) {
+            return [keys];
         }
         var keyList = keys.split("|");
+        keyList = keyList.filter(key => key !== "");
+        return keyList;
+    }
+    CopyFileNameWithoutExtension(keys) {
+        var keyList = this.GetSelectedKeys(keys);
+        if (keyList.length === 0) {
+            return;
+        }
         var listToCopy = [];
         for (var key of keyList) {
-            if (!key || key === "") {
-                continue;
-            }
             listToCopy.push(s3_helper.GetFileNameWithoutExtension(key));
         }
         let result = ui.CopyListToClipboard(listToCopy);
         if (result.isSuccessful) {
-            ui.showInfoMessage("File Name(s) Without Ext are copied to clipboard");
+            ui.showInfoMessage("File Name(s) No Ext are copied to clipboard");
         }
     }
     CopyKeys(keys) {
-        if (keys.length === 0 || !keys.includes("|")) {
+        var keyList = this.GetSelectedKeys(keys);
+        if (keyList.length === 0) {
             return;
         }
-        var keyList = keys.split("|");
         let result = ui.CopyListToClipboard(keyList);
         if (result.isSuccessful) {
             ui.showInfoMessage("Key(s) are copied to clipboard");
         }
     }
     CopyFileARNs(keys) {
-        if (keys.length === 0 || !keys.includes("|")) {
+        var keyList = this.GetSelectedKeys(keys);
+        if (keyList.length === 0) {
             return;
         }
-        var keyList = keys.split("|");
         var listToCopy = [];
         for (var key of keyList) {
-            if (!key || key === "") {
-                continue;
-            }
             listToCopy.push(s3_helper.GetARN(this.S3ExplorerItem.Bucket, key));
         }
         let result = ui.CopyListToClipboard(listToCopy);
@@ -638,11 +646,11 @@ class S3Explorer {
         }
     }
     async MoveObject(keys) {
-        if (keys.length === 0) {
+        var keyList = this.GetSelectedKeys(keys);
+        if (keyList.length === 0) {
             return;
         }
-        var keyList = keys.split("|");
-        let targetKey = await vscode.window.showInputBox({ placeHolder: 'Target Path with / at the end' });
+        let targetKey = await vscode.window.showInputBox({ placeHolder: 'Target Path with / at the end (Move)' });
         if (targetKey === undefined) {
             return;
         }
@@ -650,11 +658,12 @@ class S3Explorer {
             ui.showInfoMessage("Add / at the end");
             return;
         }
+        if (targetKey.startsWith("/")) {
+            ui.showInfoMessage("No / at the start");
+            return;
+        }
         let results = [];
         for (var key of keyList) {
-            if (!key || key === "") {
-                continue;
-            }
             let result = await api.MoveObject(this.S3ExplorerItem.Bucket, key, targetKey);
             if (result.isSuccessful) {
                 results = results.concat(result.result || []);
@@ -667,11 +676,11 @@ class S3Explorer {
         }
     }
     async CopyObject(keys) {
-        if (keys.length === 0) {
+        var keyList = this.GetSelectedKeys(keys);
+        if (keyList.length === 0) {
             return;
         }
-        var keyList = keys.split("|");
-        let targetKey = await vscode.window.showInputBox({ placeHolder: 'Target Path with / at the end' });
+        let targetKey = await vscode.window.showInputBox({ placeHolder: 'Target Path with / at the end (Copy)' });
         if (targetKey === undefined) {
             return;
         }
@@ -679,11 +688,12 @@ class S3Explorer {
             ui.showInfoMessage("Add / at the end");
             return;
         }
+        if (targetKey.startsWith("/")) {
+            ui.showInfoMessage("No / at the start");
+            return;
+        }
         let results = [];
         for (var key of keyList) {
-            if (!key || key === "") {
-                continue;
-            }
             let result = await api.CopyObject(this.S3ExplorerItem.Bucket, key, targetKey);
             if (result.isSuccessful) {
                 results = results.concat(result.result || []);
@@ -696,10 +706,10 @@ class S3Explorer {
         }
     }
     async DeleteObject(keys) {
-        if (keys.length === 0) {
+        var keyList = this.GetSelectedKeys(keys);
+        if (keyList.length === 0) {
             return;
         }
-        var keyList = keys.split("|");
         let confirm = await vscode.window.showInputBox({ placeHolder: 'print delete to confirm' });
         if (confirm === undefined || !["delete", "d"].includes(confirm)) {
             return;
@@ -707,9 +717,6 @@ class S3Explorer {
         let goto_parent_folder = false;
         let deleteCounter = 0;
         for (var key of keyList) {
-            if (!key || key === "") {
-                continue;
-            }
             let response = await api.DeleteObject(this.S3ExplorerItem.Bucket, key);
             if (response.isSuccessful) {
                 let fileCountDeleted = response.result.length;
@@ -769,10 +776,10 @@ class S3Explorer {
         }
     }
     async DownloadFile(keys) {
-        if (keys.length === 0) {
+        var keyList = this.GetSelectedKeys(keys);
+        if (keyList.length === 0) {
             return;
         }
-        var keyList = keys.split("|");
         let param = {
             canSelectFolders: true,
             canSelectFiles: false,
@@ -785,9 +792,6 @@ class S3Explorer {
             return;
         }
         for (var key of keyList) {
-            if (!key || key === "") {
-                continue;
-            }
             api.DownloadObject(this.S3ExplorerItem.Bucket, key, selectedFolder[0].path);
         }
         ui.showInfoMessage("File(s) are downloaded");

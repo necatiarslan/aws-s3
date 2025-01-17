@@ -216,8 +216,8 @@ class S3Search {
                 <vscode-button appearance="secondary" id="refresh">Search</vscode-button>
                 <vscode-dropdown style="width: 200px" id="copy_dropdown">
                     <vscode-option>Copy</vscode-option>
-                    <vscode-option>File Name(s) Without Ext</vscode-option>
-                    <vscode-option>File Name(s) With Ext</vscode-option>
+                    <vscode-option>File Name(s) No Ext</vscode-option>
+                    <vscode-option>File Name(s) /w Ext</vscode-option>
                     <vscode-option>Key(s)</vscode-option>
                     <vscode-option>ARN(s)</vscode-option>
                     <vscode-option>S3 URI(s)</vscode-option>
@@ -303,10 +303,10 @@ class S3Search {
                         return;
                     }
                     switch (message.action) {
-                        case "File Name(s) Without Ext":
+                        case "File Name(s) No Ext":
                             this.CopyFileNameWithoutExtension(message.keys);
                             return;
-                        case "File Name(s) With Ext":
+                        case "File Name(s) /w Ext":
                             this.CopyFileNameWithExtension(message.keys);
                             return;
                         case "Key(s)":
@@ -380,7 +380,7 @@ class S3Search {
         }
         let result = ui.CopyListToClipboard(listToCopy);
         if (result.isSuccessful) {
-            ui.showInfoMessage("File Name(s) With Ext are copied to clipboard");
+            ui.showInfoMessage("File Name(s) /w Ext are copied to clipboard");
         }
     }
     CopyFileNameWithoutExtension(keys) {
@@ -396,7 +396,7 @@ class S3Search {
         }
         let result = ui.CopyListToClipboard(listToCopy);
         if (result.isSuccessful) {
-            ui.showInfoMessage("File Name(s) Without Ext are copied to clipboard");
+            ui.showInfoMessage("File Name(s) No Ext are copied to clipboard");
         }
     }
     CopyKeys(keys) {
