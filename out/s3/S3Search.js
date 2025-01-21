@@ -271,6 +271,13 @@ class S3Search {
                 </td>
             </tr>
         </table>
+        <table>
+            <tr>
+                <td>
+                    <vscode-link href="https://bit.ly/s3-extension-survey">New Feature Survey</vscode-link>
+                </td>
+            </tr>
+        </table>
       </body>
     </html>
     `;

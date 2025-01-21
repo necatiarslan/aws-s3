@@ -160,7 +160,7 @@ class S3Explorer {
                     } //do not list object itself
                     FolderIsEmpty = false;
                     let folderName = s3_helper.GetFolderName(folder.Prefix);
-                    if (this.SearchText.length > 0 && !folderName.includes(this.SearchText)) {
+                    if (this.SearchText.length > 0 && !folderName.toLowerCase().includes(this.SearchText.toLowerCase())) {
                         continue;
                     }
                     folderCounter++;
@@ -192,7 +192,7 @@ class S3Explorer {
                     } //do not list object itself
                     FolderIsEmpty = false;
                     let fileName = s3_helper.GetFileNameWithExtension(file.Key);
-                    if (this.SearchText.length > 0 && !fileName.includes(this.SearchText)) {
+                    if (this.SearchText.length > 0 && !fileName.toLowerCase().includes(this.SearchText.toLowerCase())) {
                         continue;
                     }
                     fileCounter++;

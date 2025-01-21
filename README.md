@@ -38,19 +38,30 @@ Whether you’re a developer, data scientist, or system administrator, the **AWS
 Please take this survey to help me make the extension better.\
 https://bit.ly/s3-extension-survey
 
-## Search
+## Explorer
+Explorer is the main view of the extension. It lists all the files and folders in the selected bucket.
+![screenshoot](media/psc-explorer.png)
+
+## Search Function
+Search for files and folders by name and extension listed in the explorer. Subfolders are not searched.
+Search is case insensitive.
 ![screenshoot](media/psc-search.png)
 
 ## Buckets & Shortcuts
+To add a bucket click on the `+` button. Then enter part of your bucket name or leave it empty to get all your buckets. Then select buckets to add and click `Add`.
+You can add a shortcut for frequently accessed files or folders. 
 ![screenshoot](media/psc-treeview.png)
 
-## File
+## File View
 ![screenshoot](media/psc-file.png)
 
-## Folder
+## Folder View
 ![screenshoot](media/psc-empty-folder.png)
 
-## Global Search
+## Search View
+You can search for files including subfolders. you can use file/folder name, extension or key to search. By clicking  the item on the results, you can go to the s3 explorer.
+To open search view click on the `Search` button on the explorer or magnify icon on the treeview bucket item.
+You can search for the entire bucket or a specific folder.
 ![screenshoot](media/psc-global-search.png)
 
 ## Edit Menu
@@ -60,7 +71,8 @@ https://bit.ly/s3-extension-survey
 ![screenshoot](media/psc-copy-combo.png)
 
 ## Endpoint Url
-![screenshoot](media/endpoint_url.png)
+You can change your aws endpoint url here. To connect your localstack use the following url: http://localhost:4566
+![screenshoot](media/psc-endpoint.png)
 
 ## Aws Credentials Setup
 To Access Aws, you need to configure aws credentials. 
@@ -75,6 +87,8 @@ https://github.com/necatiarslan/aws-s3/issues/new
 
 
 ## Todo
+- Show warning when item is more then 1000
+- Add donate button
 - Drag/Drop files and folders to upload
 - Show progressbar when uploading, downloading, deleting etc
 - (node:59796) NOTE: The AWS SDK for JavaScript (v2) is in maintenance mode.
@@ -89,6 +103,7 @@ For more information, check the blog post at https://a.co/cUPnyil
 - NoSuchBucket: The specified bucket does not exist handle error and show error message
 ## Nice To Have
 - Use vscode icons for files and folders
+- Auto refresh option
 - Paging (now max 1000)
 - Sort By Name / Type
 - Write Selected File and Folder count to the bottom
