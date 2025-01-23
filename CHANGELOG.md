@@ -1,9 +1,11 @@
 # v1.7.0
     - Delete Folder with files
-    - Rename, Copy, Move Folder
-    - Download Folder
+    - Rename, Copy, Move a Folder
+    - Download a Folder
+    - New quick access buttons
     - Multi Select Support For Copy, Move
     - Localstack Support
+    - Sponsor Me link
 
 # v1.6.0
     - Delete Folder with files in it

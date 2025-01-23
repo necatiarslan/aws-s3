@@ -314,6 +314,13 @@ export class S3Search {
                 </td>
             </tr>
         </table>
+        <table>
+            <tr>
+                <td>
+                    <vscode-link href="https://github.com/sponsors/necatiarslan">Sponsor me</vscode-link>
+                </td>
+            </tr>
+        </table>
       </body>
     </html>
     `;

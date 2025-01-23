@@ -33,6 +33,8 @@ With this extension, you can efficiently perform a wide range of tasks, includin
 
 Whether you’re a developer, data scientist, or system administrator, the **AWS S3 Browser** extension simplifies your workflow with an intuitive, user-friendly interface designed to make S3 resource management faster and more convenient.
 
+## Sponsor Me
+If you find this extension useful, you can [sponsor me on GitHub](https://github.com/sponsors/necatiarslan).
 
 ## Survey
 Please take this survey to help me make the extension better.\
@@ -89,7 +91,6 @@ https://github.com/necatiarslan/aws-s3/issues/new
 ## Todo
 - Add "Calculate Folder Size" Button but folder view and show folder size and object count
 - Show warning when item is more then 1000
-- Add donate button
 - Drag/Drop files and folders to upload
 - Show progressbar when uploading, downloading, deleting etc
 - (node:59796) NOTE: The AWS SDK for JavaScript (v2) is in maintenance mode.
