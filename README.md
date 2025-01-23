@@ -87,7 +87,7 @@ https://github.com/necatiarslan/aws-s3/issues/new
 
 
 ## Todo
-- Add "Calculate Folder Size" Button but folder view and show folder size
+- Add "Calculate Folder Size" Button but folder view and show folder size and object count
 - Show warning when item is more then 1000
 - Add donate button
 - Drag/Drop files and folders to upload
