@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadFile = exports.DownloadFolder = exports.DownloadObject = exports.RenameObject = exports.RenameFolder = exports.RenameFile = exports.MoveFolder = exports.MoveFile = exports.MoveObject = exports.CopyFolder = exports.CopyFile = exports.CopyObject = exports.UploadFile = exports.UploadFileToFolder = exports.DeleteFolder = exports.DeleteFile = exports.DeleteObject = exports.CreateFolder = exports.SearchObject = exports.GetObjectList = exports.GetFolderList = exports.GetCredentials = exports.GetCredentialProvider = exports.IsEnvironmentCredentials = exports.IsSharedIniFileCredentials = void 0;
+exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadFile = exports.DownloadFolder = exports.DownloadObject = exports.RenameObject = exports.RenameFolder = exports.RenameFile = exports.MoveFolder = exports.MoveFile = exports.MoveObject = exports.CopyFolder = exports.CopyFile = exports.CopyObject = exports.UploadFile = exports.UploadFileToFolder = exports.DeleteFolder = exports.DeleteFile = exports.DeleteObject = exports.CreateFolder = exports.SearchObject = exports.GetObjectList = exports.GetFolderList = exports.GetCredentials = exports.GetCredentialProviderName = exports.IsEnvironmentCredentials = exports.IsSharedIniFileCredentials = void 0;
 /* eslint-disable @typescript-eslint/naming-convention */
 const AWS = require("aws-sdk");
 const ui = require("./UI");
@@ -13,61 +13,64 @@ const s3_helper = require("../s3/S3Helper");
 const fs = require("fs");
 const S3TreeView = require("../s3/S3TreeView");
 function IsSharedIniFileCredentials(credentials = undefined) {
-    if (!credentials) {
-        credentials = AWS.config.credentials;
-    }
-    return GetCredentialProvider(credentials) === "SharedIniFileCredentials";
+    return GetCredentialProviderName(credentials) === "SharedIniFileCredentials";
 }
 exports.IsSharedIniFileCredentials = IsSharedIniFileCredentials;
 function IsEnvironmentCredentials(credentials = undefined) {
-    if (!credentials) {
-        credentials = AWS.config.credentials;
-    }
-    return GetCredentialProvider(credentials) === "EnvironmentCredentials";
+    return GetCredentialProviderName(credentials) === "EnvironmentCredentials";
 }
 exports.IsEnvironmentCredentials = IsEnvironmentCredentials;
-function GetCredentialProvider(credentials = undefined) {
+function GetCredentialProviderName(credentials = undefined) {
     if (!credentials) {
-        credentials = AWS.config.credentials;
+        credentials = GetCredentials();
     }
     return credentials.constructor.name;
 }
-exports.GetCredentialProvider = GetCredentialProvider;
-function GetCredentials() {
-    if (!AWS.config.credentials) {
-        throw new Error("Aws credentials not found !!!");
-    }
-    let credentials = AWS.config.credentials;
-    if (IsSharedIniFileCredentials(credentials)) {
-        if (S3TreeView.S3TreeView.Current && S3TreeView.S3TreeView.Current?.AwsProfile != "default") {
-            credentials = new AWS.SharedIniFileCredentials({ profile: S3TreeView.S3TreeView.Current?.AwsProfile });
+exports.GetCredentialProviderName = GetCredentialProviderName;
+async function GetCredentials() {
+    let credentials;
+    try {
+        const provider = new AWS.CredentialProviderChain();
+        credentials = await provider.resolvePromise();
+        if (!credentials) {
+            throw new Error("Aws credentials not found !!!");
         }
+        if (IsSharedIniFileCredentials(credentials)) {
+            if (S3TreeView.S3TreeView.Current && S3TreeView.S3TreeView.Current?.AwsProfile != "default") {
+                credentials = new AWS.SharedIniFileCredentials({ profile: S3TreeView.S3TreeView.Current?.AwsProfile });
+            }
+        }
+        ui.logToOutput("Aws credentials provider " + GetCredentialProviderName(credentials));
+        ui.logToOutput("Aws credentials AccessKeyId=" + credentials?.accessKeyId);
+        return credentials;
     }
-    ui.logToOutput("Aws credentials provider " + GetCredentialProvider(credentials));
-    ui.logToOutput("Aws credentials AccessKeyId=" + credentials?.accessKeyId);
-    return credentials;
+    catch (error) {
+        ui.showErrorMessage('Aws Credentials Not Found !!!', error);
+        ui.logToOutput("GetCredentials Error !!!", error);
+        return credentials;
+    }
 }
 exports.GetCredentials = GetCredentials;
-function GetS3Client() {
+async function GetS3Client() {
     let s3 = undefined;
-    let credentials = GetCredentials();
+    let credentials = await GetCredentials();
     s3 = new AWS.S3({ credentials: credentials, endpoint: S3TreeView.S3TreeView.Current?.AwsEndPoint, s3ForcePathStyle: true });
     return s3;
 }
-function GetIAMClient() {
-    let credentials = GetCredentials();
+async function GetIAMClient() {
+    let credentials = await GetCredentials();
     const iam = new AWS.IAM({ credentials: credentials });
     return iam;
 }
-function GetEC2Client() {
-    let credentials = GetCredentials();
+async function GetEC2Client() {
+    let credentials = await GetCredentials();
     const ec2 = new AWS.EC2({ region: 'us-east-1', credentials: credentials });
     return ec2;
 }
 async function GetFolderList(Bucket, Key) {
     let result = new MethodResult_1.MethodResult();
     try {
-        const s3 = GetS3Client();
+        const s3 = await GetS3Client();
         let param = {
             Bucket: Bucket,
             Prefix: Key,
@@ -90,7 +93,7 @@ exports.GetFolderList = GetFolderList;
 async function GetObjectList(Bucket, Key, s3Client) {
     let result = new MethodResult_1.MethodResult();
     try {
-        const s3 = s3Client ? s3Client : GetS3Client();
+        const s3 = s3Client ? s3Client : await GetS3Client();
         let continuationToken;
         let keys = [];
         do {
@@ -127,7 +130,7 @@ async function SearchObject(Bucket, PrefixKey, FileName, FileExtension, FolderNa
     FileExtension = FileExtension?.toLowerCase();
     FolderName = FolderName?.toLowerCase();
     try {
-        const s3 = GetS3Client();
+        const s3 = await GetS3Client();
         let continuationToken;
         do {
             const params = {
@@ -172,7 +175,7 @@ async function CreateFolder(Bucket, Key, FolderName) {
     let result = new MethodResult_1.MethodResult();
     let TargetKey = (0, path_2.join)(Key, FolderName + "/");
     try {
-        const s3 = GetS3Client();
+        const s3 = await GetS3Client();
         let param = {
             Bucket: Bucket,
             Key: TargetKey
@@ -204,7 +207,7 @@ async function DeleteFile(Bucket, Key, s3Client) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
     try {
-        const s3 = s3Client ? s3Client : GetS3Client();
+        const s3 = s3Client ? s3Client : await GetS3Client();
         let param = {
             Bucket: Bucket,
             Key: Key
@@ -231,7 +234,7 @@ async function DeleteFolder(Bucket, Key, s3Client) {
         if (!s3_helper.IsFolder(Key)) {
             throw new Error('api.DeleteFolder Error !!! File=' + Key);
         }
-        const s3 = s3Client ? s3Client : GetS3Client();
+        const s3 = s3Client ? s3Client : await GetS3Client();
         let result_objects = await GetObjectList(Bucket, Key);
         if (result_objects.isSuccessful) {
             for (var file of result_objects.result) {
@@ -277,7 +280,7 @@ async function UploadFile(Bucket, TargetKey, SourcePath) {
         return result;
     }
     try {
-        const s3 = GetS3Client();
+        const s3 = await GetS3Client();
         const stream = fs.createReadStream(SourcePath);
         const param = {
             Bucket: Bucket,
@@ -321,7 +324,7 @@ exports.CopyObject = CopyObject;
 async function CopyFile(Bucket, SourceKey, TargetKey, s3Client) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
-    const s3 = s3Client ? s3Client : GetS3Client();
+    const s3 = s3Client ? s3Client : await GetS3Client();
     if (s3_helper.IsFolder(TargetKey)) {
         TargetKey = TargetKey === "/" ? "" : TargetKey;
         TargetKey = TargetKey + s3_helper.GetFileNameWithExtension(SourceKey);
@@ -366,7 +369,7 @@ async function CopyFolder(Bucket, SourceKey, TargetKey, s3Client) {
             result.error = new Error('Target Is a File, TargetKey=' + SourceKey);
             return result;
         }
-        const s3 = s3Client ? s3Client : GetS3Client();
+        const s3 = s3Client ? s3Client : await GetS3Client();
         let result_objects = await GetObjectList(Bucket, SourceKey);
         if (result_objects.isSuccessful) {
             for (var file of result_objects.result) {
@@ -427,7 +430,7 @@ async function MoveFile(Bucket, SourceKey, TargetKey, s3Client) {
         result.error = new Error('SourceKey and TargetKey are the same, SourceKey=' + SourceKey);
         return result;
     }
-    const s3 = s3Client ? s3Client : GetS3Client();
+    const s3 = s3Client ? s3Client : await GetS3Client();
     let copy_result = await CopyFile(Bucket, SourceKey, TargetKey, s3);
     if (!copy_result.isSuccessful) {
         result.error = copy_result.error;
@@ -463,7 +466,7 @@ async function MoveFolder(Bucket, SourceKey, TargetKey, s3Client) {
         result.isSuccessful = false;
         return result;
     }
-    const s3 = s3Client ? s3Client : GetS3Client();
+    const s3 = s3Client ? s3Client : await GetS3Client();
     let copy_result = await CopyFolder(Bucket, SourceKey, TargetKey, s3);
     if (!copy_result.isSuccessful) {
         result.error = copy_result.error;
@@ -562,7 +565,7 @@ exports.DownloadObject = DownloadObject;
 async function DownloadFolder(Bucket, Key, TargetPath, s3Client) {
     let result = new MethodResult_1.MethodResult();
     try {
-        const s3 = s3Client ? s3Client : GetS3Client();
+        const s3 = s3Client ? s3Client : await GetS3Client();
         let result_objects = await GetObjectList(Bucket, Key);
         if (result_objects.isSuccessful) {
             for (var ObjectKey of result_objects.result) {
@@ -591,7 +594,7 @@ async function DownloadFile(Bucket, Key, TargetPath, s3Client) {
     let result = new MethodResult_1.MethodResult();
     let TargetFilePath = (0, path_2.join)(TargetPath, s3_helper.GetFileNameWithExtension(Key));
     try {
-        const s3 = s3Client ? s3Client : GetS3Client();
+        const s3 = s3Client ? s3Client : await GetS3Client();
         const param = {
             Bucket: Bucket,
             Key: Key
@@ -617,7 +620,7 @@ async function GetBucketList(BucketName) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
     try {
-        const s3 = GetS3Client();
+        const s3 = await GetS3Client();
         if (BucketName) {
             try {
                 let is_bucket_response = await s3.headBucket({ Bucket: BucketName }).promise();
@@ -651,7 +654,7 @@ exports.GetBucketList = GetBucketList;
 async function TestAwsConnection() {
     let result = new MethodResult_1.MethodResult();
     try {
-        const iam = GetIAMClient();
+        const iam = await GetIAMClient();
         let response = await iam.getUser().promise();
         result.isSuccessful = true;
         result.result = true;
@@ -676,7 +679,7 @@ async function GetRegionList() {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
     try {
-        const ec2 = GetEC2Client();
+        const ec2 = await GetEC2Client();
         let response = await ec2.describeRegions().promise();
         result.isSuccessful = true;
         if (response.Regions) {

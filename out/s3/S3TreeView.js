@@ -310,7 +310,7 @@ class S3TreeView {
     async SelectAwsProfile(node) {
         ui.logToOutput('S3TreeView.SelectAwsProfile Started');
         if (!api.IsSharedIniFileCredentials()) {
-            let credentialProvider = api.GetCredentialProvider();
+            let credentialProvider = api.GetCredentialProviderName();
             ui.showWarningMessage("Your Aws Access method is not credentials file. It is " + credentialProvider);
             return;
         }
@@ -344,8 +344,11 @@ class S3TreeView {
     async AwsCredentialsSetup() {
         ui.logToOutput('S3TreeView.AwsCredentialsSetup Started');
         try {
-            let credentials = api.GetCredentials();
-            let credentialProvider = api.GetCredentialProvider(credentials);
+            let credentials = await api.GetCredentials();
+            if (!credentials) {
+                return;
+            }
+            let credentialProvider = api.GetCredentialProviderName(credentials);
             ui.showWarningMessage("Aws Credentails Provider : " + credentialProvider);
             ui.showWarningMessage("Aws Credentails Access Key : " + credentials.accessKeyId);
         }
