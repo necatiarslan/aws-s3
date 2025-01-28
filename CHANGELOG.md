@@ -1,3 +1,5 @@
+# v1.7.1
+    - Extended Aws Credentials support
 # v1.7.0
     - Delete Folder with files
     - Rename, Copy, Move a Folder
