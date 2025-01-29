@@ -1,8 +1,8 @@
-# AWS S3 Browser Extension for Visual Studio Code
+# AWS S3 Extension for Visual Studio Code
 
 ![screenshoot](media/psc-main-screen.png)
 
-The **AWS S3 Browser** extension for Visual Studio Code empowers users to seamlessly browse and manage their Amazon S3 buckets, files, and folders directly within the VS Code editor.
+The **AWS S3** extension for Visual Studio Code empowers users to seamlessly browse and manage their Amazon S3 buckets, files, and folders directly within the VS Code editor.
 
 ## Features
 
@@ -23,15 +23,17 @@ With this extension, you can efficiently perform a wide range of tasks, includin
 - **Advanced Search**:  
   - Search across all buckets using file names, extensions, folders, or keys.  
 
-- **Endpoint Customization**:  
-  - Configure AWS endpoint URLs for flexibility.  
+- **Endpoint & Region Customization**:  
+  - Configure AWS endpoint URLs for flexibility.
+  - Set Aws Region if you need. Some custom S3 compatible cloud providers may need it.
 
 - **Localstack Support**:  
-  - Work with Localstack to emulate S3 for development and testing.  
+  - Work with Localstack to emulate S3 for development and testing.
+  - All s3 compatible cloud providers and emulators works with the extension. 
 
 ## Why Use It?
 
-Whether you’re a developer, data scientist, or system administrator, the **AWS S3 Browser** extension simplifies your workflow with an intuitive, user-friendly interface designed to make S3 resource management faster and more convenient.
+Whether you’re a developer, data scientist, or system administrator, the **AWS S3** extension simplifies your workflow with an intuitive, user-friendly interface designed to make S3 resource management faster and more convenient.
 
 ## Sponsor Me
 If you find this extension useful, you can [sponsor me on GitHub](https://github.com/sponsors/necatiarslan).

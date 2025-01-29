@@ -1,3 +1,5 @@
+# v1.7.2
+    - Set Aws Region
 # v1.7.1
     - Extended Aws Credentials support
 # v1.7.0
