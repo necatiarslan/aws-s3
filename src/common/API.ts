@@ -67,7 +67,7 @@ async function GetS3Client() {
   let s3 = undefined; 
 
   let credentials = await GetCredentials();
-  s3 = new AWS.S3({ credentials: credentials, endpoint:S3TreeView.S3TreeView.Current?.AwsEndPoint, s3ForcePathStyle: true});
+  s3 = new AWS.S3({ credentials: credentials, endpoint:S3TreeView.S3TreeView.Current?.AwsEndPoint, s3ForcePathStyle: true, region: S3TreeView.S3TreeView.Current?.AwsRegion });
   
   return s3;
 }

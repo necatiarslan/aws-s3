@@ -18,6 +18,7 @@ export class S3TreeView {
 	public isShowHiddenNodes: boolean = false;
 	public AwsProfile: string = "default";	
 	public AwsEndPoint: string | undefined;
+	public AwsRegion: string | undefined;
 
 	constructor(context: vscode.ExtensionContext) {
 		ui.logToOutput('TreeView.constructor Started');
@@ -140,6 +141,7 @@ export class S3TreeView {
 			this.context.globalState.update('ShortcutList', this.treeDataProvider.GetShortcutList());
 			this.context.globalState.update('ViewType', this.treeDataProvider.ViewType);
 			this.context.globalState.update('AwsEndPoint', this.AwsEndPoint);
+			this.context.globalState.update('AwsRegion', this.AwsRegion);
 
 			ui.logToOutput("S3TreeView.saveState Successfull");
 		} catch (error) {
@@ -187,6 +189,9 @@ export class S3TreeView {
 
 			let AwsEndPointTemp: string | undefined = this.context.globalState.get('AwsEndPoint');
 			this.AwsEndPoint = AwsEndPointTemp;
+
+			let AwsRegionTemp: string | undefined = this.context.globalState.get('AwsRegion');
+			this.AwsRegion = AwsRegionTemp;
 
 			ui.logToOutput("S3TreeView.loadState Successfull");
 
@@ -385,6 +390,19 @@ export class S3TreeView {
 		else
 		{
 			this.AwsEndPoint = awsEndPointUrl;
+		}
+		this.SaveState();
+	}
+
+	async SetAwsRegion() {
+		ui.logToOutput('S3TreeView.UpdateAwsRegion Started');
+
+		let awsRegion = await vscode.window.showInputBox({ placeHolder: 'Enter Aws Region (Leave Empty To Return To Default)' });
+		if(awsRegion===undefined){ return; }
+		if(awsRegion.length===0) { this.AwsRegion = undefined; }
+		else
+		{
+			this.AwsRegion = awsRegion;
 		}
 		this.SaveState();
 	}

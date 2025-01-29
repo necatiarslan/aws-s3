@@ -80,6 +80,10 @@ export function activate(context: vscode.ExtensionContext) {
 		treeView.UpdateAwsEndPoint();
 	});
 
+	vscode.commands.registerCommand('S3TreeView.SetAwsRegion', () => {
+		treeView.SetAwsRegion();
+	});
+
 	vscode.commands.registerCommand('S3TreeView.AwsCredentialsSetup', () => {
 		treeView.AwsCredentialsSetup();
 	});

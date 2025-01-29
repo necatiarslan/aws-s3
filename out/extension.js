@@ -61,6 +61,9 @@ function activate(context) {
     vscode.commands.registerCommand('S3TreeView.UpdateAwsEndPoint', () => {
         treeView.UpdateAwsEndPoint();
     });
+    vscode.commands.registerCommand('S3TreeView.SetAwsRegion', () => {
+        treeView.SetAwsRegion();
+    });
     vscode.commands.registerCommand('S3TreeView.AwsCredentialsSetup', () => {
         treeView.AwsCredentialsSetup();
     });
