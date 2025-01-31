@@ -19,6 +19,8 @@ export class S3TreeView {
 	public AwsProfile: string = "default";	
 	public AwsEndPoint: string | undefined;
 	public AwsRegion: string | undefined;
+	public IsSharedIniFileCredentials: boolean = false;
+	public CredentialProviderName: string | undefined;
 
 	constructor(context: vscode.ExtensionContext) {
 		ui.logToOutput('TreeView.constructor Started');
@@ -202,11 +204,11 @@ export class S3TreeView {
 		}
 	}
 
-	SetFilterMessage(){
+	async SetFilterMessage(){
 		if(this.treeDataProvider.BucketList.length > 0)
 		{
 			this.view.message = 
-			this.GetFilterProfilePrompt()
+			await this.GetFilterProfilePrompt()
 			+ this.GetBoolenSign(this.isShowOnlyFavorite) + "Fav, " 
 			+ this.GetBoolenSign(this.isShowHiddenNodes) + "Hidden, "
 			+ this.FilterString;	
@@ -218,8 +220,7 @@ export class S3TreeView {
 	}
 
 	private async GetFilterProfilePrompt() {
-		let isSharedIniFileCredentials = await api.IsSharedIniFileCredentials();
-		if(isSharedIniFileCredentials)
+		if(await api.IsSharedIniFileCredentials)
 		{
 			return "Profile:" + this.AwsProfile + " ";
 		}

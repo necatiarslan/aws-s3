@@ -13,7 +13,12 @@ import * as S3TreeView from '../s3/S3TreeView';
 
 export async function IsSharedIniFileCredentials(credentials:any|undefined=undefined)
 {
-  return await GetCredentialProviderName(credentials) === "SharedIniFileCredentials"
+  let result = await GetCredentialProviderName(credentials) === "SharedIniFileCredentials";
+  if(S3TreeView.S3TreeView.Current)
+  {
+    S3TreeView.S3TreeView.Current.IsSharedIniFileCredentials = result;
+  }
+  return result;
 }
 
 export async function IsEnvironmentCredentials(credentials:any|undefined=undefined)
@@ -25,6 +30,10 @@ export async function GetCredentialProviderName(credentials:any|undefined=undefi
   if(!credentials)
   {
     credentials = await GetCredentials();
+  }
+  if(S3TreeView.S3TreeView.Current)
+  {
+    S3TreeView.S3TreeView.Current.CredentialProviderName = credentials.constructor.name;
   }
   return credentials.constructor.name;
 }

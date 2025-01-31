@@ -13,7 +13,11 @@ const s3_helper = require("../s3/S3Helper");
 const fs = require("fs");
 const S3TreeView = require("../s3/S3TreeView");
 async function IsSharedIniFileCredentials(credentials = undefined) {
-    return await GetCredentialProviderName(credentials) === "SharedIniFileCredentials";
+    let result = await GetCredentialProviderName(credentials) === "SharedIniFileCredentials";
+    if (S3TreeView.S3TreeView.Current) {
+        S3TreeView.S3TreeView.Current.IsSharedIniFileCredentials = result;
+    }
+    return result;
 }
 exports.IsSharedIniFileCredentials = IsSharedIniFileCredentials;
 async function IsEnvironmentCredentials(credentials = undefined) {
@@ -23,6 +27,9 @@ exports.IsEnvironmentCredentials = IsEnvironmentCredentials;
 async function GetCredentialProviderName(credentials = undefined) {
     if (!credentials) {
         credentials = await GetCredentials();
+    }
+    if (S3TreeView.S3TreeView.Current) {
+        S3TreeView.S3TreeView.Current.CredentialProviderName = credentials.constructor.name;
     }
     return credentials.constructor.name;
 }

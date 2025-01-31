@@ -15,6 +15,7 @@ class S3TreeView {
         this.isShowOnlyFavorite = false;
         this.isShowHiddenNodes = false;
         this.AwsProfile = "default";
+        this.IsSharedIniFileCredentials = false;
         ui.logToOutput('TreeView.constructor Started');
         this.context = context;
         this.treeDataProvider = new S3TreeDataProvider_1.S3TreeDataProvider();
@@ -162,10 +163,10 @@ class S3TreeView {
             ui.logToOutput("S3TreeView.loadState Error !!!");
         }
     }
-    SetFilterMessage() {
+    async SetFilterMessage() {
         if (this.treeDataProvider.BucketList.length > 0) {
             this.view.message =
-                this.GetFilterProfilePrompt()
+                await this.GetFilterProfilePrompt()
                     + this.GetBoolenSign(this.isShowOnlyFavorite) + "Fav, "
                     + this.GetBoolenSign(this.isShowHiddenNodes) + "Hidden, "
                     + this.FilterString;
@@ -175,8 +176,7 @@ class S3TreeView {
         }
     }
     async GetFilterProfilePrompt() {
-        let isSharedIniFileCredentials = await api.IsSharedIniFileCredentials();
-        if (isSharedIniFileCredentials) {
+        if (await api.IsSharedIniFileCredentials) {
             return "Profile:" + this.AwsProfile + " ";
         }
         return "";
