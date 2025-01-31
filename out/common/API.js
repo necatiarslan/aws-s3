@@ -47,7 +47,7 @@ async function GetCredentials() {
                 credentials = new AWS.SharedIniFileCredentials({ profile: S3TreeView.S3TreeView.Current?.AwsProfile });
             }
         }
-        ui.logToOutput("Aws credentials provider " + GetCredentialProviderName(credentials));
+        ui.logToOutput("Aws credentials provider " + await GetCredentialProviderName(credentials));
         ui.logToOutput("Aws credentials AccessKeyId=" + credentials?.accessKeyId);
         return credentials;
     }
