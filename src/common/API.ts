@@ -11,20 +11,20 @@ import * as s3_helper from '../s3/S3Helper'
 import * as fs from 'fs';
 import * as S3TreeView from '../s3/S3TreeView';
 
-export function IsSharedIniFileCredentials(credentials:any|undefined=undefined)
+export async function IsSharedIniFileCredentials(credentials:any|undefined=undefined)
 {
-  return GetCredentialProviderName(credentials) === "SharedIniFileCredentials"
+  return await GetCredentialProviderName(credentials) === "SharedIniFileCredentials"
 }
 
-export function IsEnvironmentCredentials(credentials:any|undefined=undefined)
+export async function IsEnvironmentCredentials(credentials:any|undefined=undefined)
 {
-  return GetCredentialProviderName(credentials) === "EnvironmentCredentials"
+  return await GetCredentialProviderName(credentials) === "EnvironmentCredentials"
 }
 
-export function GetCredentialProviderName(credentials:any|undefined=undefined){
+export async function GetCredentialProviderName(credentials:any|undefined=undefined){
   if(!credentials)
   {
-    credentials = GetCredentials();
+    credentials = await GetCredentials();
   }
   return credentials.constructor.name;
 }
@@ -43,7 +43,7 @@ export async function GetCredentials()
       throw new Error("Aws credentials not found !!!")
     }
   
-    if(IsSharedIniFileCredentials(credentials))
+    if(await IsSharedIniFileCredentials(credentials))
     {
       if(S3TreeView.S3TreeView.Current && S3TreeView.S3TreeView.Current?.AwsProfile != "default")
       {
@@ -205,6 +205,78 @@ export async function SearchObject(Bucket: string, PrefixKey:string, FileName: s
     result.error = error;
     ui.showErrorMessage('api.SearchObject Error !!!', error);
     ui.logToOutput("api.SearchObject Error !!!", error); 
+    return result;    
+  }
+}
+
+export async function Select(Bucket: string, Key:string, Sql: string, MaxResultCount: number = 100): Promise<MethodResult<AWS.S3.SelectObjectContentEventStream | undefined>> {
+  let result:MethodResult<AWS.S3.SelectObjectContentEventStream | undefined> = new MethodResult<AWS.S3.SelectObjectContentEventStream | undefined>();
+  result.result = [];
+  
+
+  try 
+  {
+    const s3 = await GetS3Client();
+  
+    let extension = s3_helper.GetFileExtension(Key);
+    if(!["csv", "json", "parquet"].includes(extension))
+    {
+      result.isSuccessful = false;
+      result.error = new Error('Invalid Extension !!! File=' + Key);
+      return result;
+    }
+
+    let inputSerialization = {};
+    switch (extension) {
+      case "csv":
+        inputSerialization = {
+          CSV: {
+            FileHeaderInfo: 'USE',
+            RecordDelimiter: '\n',
+            FieldDelimiter: ','
+          }
+        };
+        break;
+      case "json":
+        inputSerialization = {
+          JSON: {
+            Type: 'DOCUMENT'
+          }
+        };
+        break;
+      case "parquet":
+        inputSerialization = {
+          Parquet: {}
+        };
+        break;
+      default:
+        throw new Error('Unsupported file extension');
+    }
+
+    let params = {
+      Bucket: Bucket,
+      Key: Key,
+      Expression: Sql,
+      ExpressionType: 'SQL',
+      InputSerialization: inputSerialization,
+      OutputSerialization: {
+        JSON: {
+          RecordDelimiter: ','
+        }
+      }
+    };
+
+    let response = await s3.selectObjectContent(params).promise();
+    result.result = response.Payload;
+    
+    result.isSuccessful = true;
+    return result;
+  } 
+  catch (error:any) {
+    result.isSuccessful = false;
+    result.error = error;
+    ui.showErrorMessage('api.Select Error !!!', error);
+    ui.logToOutput("api.Select Error !!!", error); 
     return result;    
   }
 }

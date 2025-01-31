@@ -1,3 +1,5 @@
+# v1.7.3
+    - Fix Aws Profile change button
 # v1.7.2
     - Set Aws Region
 # v1.7.1

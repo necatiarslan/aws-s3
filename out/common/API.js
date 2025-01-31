@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadFile = exports.DownloadFolder = exports.DownloadObject = exports.RenameObject = exports.RenameFolder = exports.RenameFile = exports.MoveFolder = exports.MoveFile = exports.MoveObject = exports.CopyFolder = exports.CopyFile = exports.CopyObject = exports.UploadFile = exports.UploadFileToFolder = exports.DeleteFolder = exports.DeleteFile = exports.DeleteObject = exports.CreateFolder = exports.SearchObject = exports.GetObjectList = exports.GetFolderList = exports.GetCredentials = exports.GetCredentialProviderName = exports.IsEnvironmentCredentials = exports.IsSharedIniFileCredentials = void 0;
+exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadFile = exports.DownloadFolder = exports.DownloadObject = exports.RenameObject = exports.RenameFolder = exports.RenameFile = exports.MoveFolder = exports.MoveFile = exports.MoveObject = exports.CopyFolder = exports.CopyFile = exports.CopyObject = exports.UploadFile = exports.UploadFileToFolder = exports.DeleteFolder = exports.DeleteFile = exports.DeleteObject = exports.CreateFolder = exports.Select = exports.SearchObject = exports.GetObjectList = exports.GetFolderList = exports.GetCredentials = exports.GetCredentialProviderName = exports.IsEnvironmentCredentials = exports.IsSharedIniFileCredentials = void 0;
 /* eslint-disable @typescript-eslint/naming-convention */
 const AWS = require("aws-sdk");
 const ui = require("./UI");
@@ -12,17 +12,17 @@ const parseKnownFiles_1 = require("../aws-sdk/parseKnownFiles");
 const s3_helper = require("../s3/S3Helper");
 const fs = require("fs");
 const S3TreeView = require("../s3/S3TreeView");
-function IsSharedIniFileCredentials(credentials = undefined) {
-    return GetCredentialProviderName(credentials) === "SharedIniFileCredentials";
+async function IsSharedIniFileCredentials(credentials = undefined) {
+    return await GetCredentialProviderName(credentials) === "SharedIniFileCredentials";
 }
 exports.IsSharedIniFileCredentials = IsSharedIniFileCredentials;
-function IsEnvironmentCredentials(credentials = undefined) {
-    return GetCredentialProviderName(credentials) === "EnvironmentCredentials";
+async function IsEnvironmentCredentials(credentials = undefined) {
+    return await GetCredentialProviderName(credentials) === "EnvironmentCredentials";
 }
 exports.IsEnvironmentCredentials = IsEnvironmentCredentials;
-function GetCredentialProviderName(credentials = undefined) {
+async function GetCredentialProviderName(credentials = undefined) {
     if (!credentials) {
-        credentials = GetCredentials();
+        credentials = await GetCredentials();
     }
     return credentials.constructor.name;
 }
@@ -35,7 +35,7 @@ async function GetCredentials() {
         if (!credentials) {
             throw new Error("Aws credentials not found !!!");
         }
-        if (IsSharedIniFileCredentials(credentials)) {
+        if (await IsSharedIniFileCredentials(credentials)) {
             if (S3TreeView.S3TreeView.Current && S3TreeView.S3TreeView.Current?.AwsProfile != "default") {
                 credentials = new AWS.SharedIniFileCredentials({ profile: S3TreeView.S3TreeView.Current?.AwsProfile });
             }
@@ -171,6 +171,69 @@ async function SearchObject(Bucket, PrefixKey, FileName, FileExtension, FolderNa
     }
 }
 exports.SearchObject = SearchObject;
+async function Select(Bucket, Key, Sql, MaxResultCount = 100) {
+    let result = new MethodResult_1.MethodResult();
+    result.result = [];
+    try {
+        const s3 = await GetS3Client();
+        let extension = s3_helper.GetFileExtension(Key);
+        if (!["csv", "json", "parquet"].includes(extension)) {
+            result.isSuccessful = false;
+            result.error = new Error('Invalid Extension !!! File=' + Key);
+            return result;
+        }
+        let inputSerialization = {};
+        switch (extension) {
+            case "csv":
+                inputSerialization = {
+                    CSV: {
+                        FileHeaderInfo: 'USE',
+                        RecordDelimiter: '\n',
+                        FieldDelimiter: ','
+                    }
+                };
+                break;
+            case "json":
+                inputSerialization = {
+                    JSON: {
+                        Type: 'DOCUMENT'
+                    }
+                };
+                break;
+            case "parquet":
+                inputSerialization = {
+                    Parquet: {}
+                };
+                break;
+            default:
+                throw new Error('Unsupported file extension');
+        }
+        let params = {
+            Bucket: Bucket,
+            Key: Key,
+            Expression: Sql,
+            ExpressionType: 'SQL',
+            InputSerialization: inputSerialization,
+            OutputSerialization: {
+                JSON: {
+                    RecordDelimiter: ','
+                }
+            }
+        };
+        let response = await s3.selectObjectContent(params).promise();
+        result.result = response.Payload;
+        result.isSuccessful = true;
+        return result;
+    }
+    catch (error) {
+        result.isSuccessful = false;
+        result.error = error;
+        ui.showErrorMessage('api.Select Error !!!', error);
+        ui.logToOutput("api.Select Error !!!", error);
+        return result;
+    }
+}
+exports.Select = Select;
 async function CreateFolder(Bucket, Key, FolderName) {
     let result = new MethodResult_1.MethodResult();
     let TargetKey = (0, path_2.join)(Key, FolderName + "/");
