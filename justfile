@@ -29,6 +29,14 @@ npm_doctor:
     npm -v
     tsc -v
     npm doctor
+    npm prune # remove unused dependencies
+    npx depcheck # check dependencies
+    npm-check # check dependencies
+    
+npm-install:
+    rm -rf node_modules package-lock.json
+    npm install
+    npx tsc --noEmit
 
 npm_rebuild:
     rm -rf node_modules
