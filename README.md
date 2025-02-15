@@ -113,7 +113,6 @@ https://github.com/necatiarslan/aws-s3/issues/new
 
 
 ## Todo
-- if folders name is empty string, write ??? instead
 - S3 Select Support
 - Stick to Profile or Workspace
 - If copied 1 item, no new line at the end

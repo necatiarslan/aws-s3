@@ -215,7 +215,7 @@ export class S3Explorer {
                             </vscode-button>
                         </td>
                         <td>
-                            <img src="${folderUri}"></img>
+                            <img src="${folderUri}" id="open_${folder.Prefix}"></img>
                             <vscode-link id="open_${folder.Prefix}">${folderName}</vscode-link>
                         </td>
                         <td style="text-align:right; width:100px">Folder</td>
@@ -247,7 +247,7 @@ export class S3Explorer {
                             </vscode-button>
                         </td>
                         <td>
-                            <img src="${fileUri}"></img>
+                            <img src="${fileUri}" id="open_${file.Key}"></img>
                             <vscode-link id="open_${file.Key}">${fileName}</vscode-link>
                         </td>
                         <td style="text-align:right; width:100px">${this.GetFileExtension(file.Key)}</td>
