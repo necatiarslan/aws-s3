@@ -2,13 +2,12 @@
 import * as vscode from "vscode";
 import * as ui from '../common/UI';
 import * as api from '../common/API';
-import * as AWS from "aws-sdk";
 import { S3TreeView } from "./S3TreeView";
 import { S3TreeItem, TreeItemType } from "./S3TreeItem";
 import { S3ExplorerItem } from "./S3ExplorerItem";
 import * as s3_helper from "./S3Helper";
 import { S3Explorer } from './S3Explorer';
-
+import { _Object } from "@aws-sdk/client-s3";
 
 export class S3Search {
     public static Current: S3Search | undefined;
@@ -17,7 +16,7 @@ export class S3Search {
     private extensionUri: vscode.Uri;
 
     public S3ExplorerItem: S3ExplorerItem = new S3ExplorerItem("undefined", "");
-    public S3ObjectList: AWS.S3.ObjectList| undefined;
+    public S3ObjectList: _Object[]| undefined;
     public FileName:string = "";
     public FileExtension:string = "";
     public FolderName:string = "";
