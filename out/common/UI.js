@@ -168,7 +168,9 @@ function CopyListToClipboard(textList) {
     let text = "";
     for (var t of textList) {
         if (t) {
-            text += t + "\n";
+            text += t;
+            if (textList.length > 1)
+                text += "\n";
         }
     }
     return CopyToClipboard(text);

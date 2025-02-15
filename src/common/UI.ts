@@ -199,7 +199,8 @@ export function CopyListToClipboard(textList:string[]): MethodResult<boolean>
   {
     if(t)
     {
-      text += t + "\n";
+      text += t;
+      if(textList.length > 1) text += "\n";
     }
   }
   

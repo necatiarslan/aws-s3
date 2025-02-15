@@ -115,7 +115,6 @@ https://github.com/necatiarslan/aws-s3/issues/new
 ## Todo
 - S3 Select Support
 - Stick to Profile or Workspace
-- If copied 1 item, no new line at the end
 - Add "Calculate Folder Size" Button but folder view and show folder size and object count
 - Show warning when item is more then 1000
 - Drag/Drop files and folders to upload
