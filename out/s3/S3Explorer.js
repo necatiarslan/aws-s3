@@ -37,7 +37,7 @@ class S3Explorer {
     }
     async RenderHtml() {
         ui.logToOutput('S3Explorer.RenderHmtl Started');
-        this._panel.webview.html = this._getWebviewContent(this._panel.webview, this.extensionUri);
+        this._panel.webview.html = await this._getWebviewContent(this._panel.webview, this.extensionUri);
         ui.logToOutput('S3Explorer.RenderHmtl Completed');
     }
     async Load() {
@@ -102,7 +102,7 @@ class S3Explorer {
         }
         return result;
     }
-    _getWebviewContent(webview, extensionUri) {
+    async _getWebviewContent(webview, extensionUri) {
         ui.logToOutput('S3Explorer._getWebviewContent Started');
         //file URIs
         const toolkitUri = ui.getUri(webview, extensionUri, [
@@ -235,6 +235,15 @@ class S3Explorer {
             `;
         }
         if (this.S3ExplorerItem.IsFile()) {
+            let lastModifiedDate = "";
+            let fileSize = "";
+            let resultObject = await api.GetObjectProperties(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key);
+            if (resultObject.isSuccessful && resultObject.result) {
+                if (resultObject.result.LastModified)
+                    lastModifiedDate = resultObject.result.LastModified.toLocaleDateString() + "   " + resultObject.result.LastModified.toLocaleTimeString();
+                if (resultObject.result.ContentLength)
+                    fileSize = ui.bytesToText(resultObject.result.ContentLength);
+            }
             S3RowHtml = `
             <tr style="height:50px; text-align:center;">
             <td colspan="6">
@@ -267,6 +276,16 @@ class S3Explorer {
                 <td>Folder</td>
                 <td>:</td>
                 <td colspan="4">${s3_helper.GetParentFolderKey(this.S3ExplorerItem.Key)}</td>
+            </tr>   
+            <tr>
+                <td>Last Modified</td>
+                <td>:</td>
+                <td colspan="4">${lastModifiedDate}</td>
+            </tr>   
+            <tr>
+                <td>Size</td>
+                <td>:</td>
+                <td colspan="4">${fileSize}</td>
             </tr>                
             <tr>
                 <td>Key</td>

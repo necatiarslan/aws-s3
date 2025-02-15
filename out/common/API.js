@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadFile = exports.DownloadFolder = exports.DownloadObject = exports.RenameObject = exports.RenameFolder = exports.RenameFile = exports.MoveFolder = exports.MoveFile = exports.MoveObject = exports.CopyFolder = exports.CopyFile = exports.CopyObject = exports.UploadFile = exports.UploadFileToFolder = exports.DeleteFolder = exports.DeleteFile = exports.DeleteObject = exports.CreateFolder = exports.Select = exports.SearchObject = exports.GetObjectList = exports.GetFolderList = exports.GetCredentials = exports.GetCredentialProviderName = exports.IsEnvironmentCredentials = exports.IsSharedIniFileCredentials = void 0;
+exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.GetRegionList = exports.TestAwsConnection = exports.GetBucketList = exports.DownloadFile = exports.DownloadFolder = exports.DownloadObject = exports.RenameObject = exports.RenameFolder = exports.RenameFile = exports.MoveFolder = exports.MoveFile = exports.MoveObject = exports.CopyFolder = exports.CopyFile = exports.CopyObject = exports.UploadFile = exports.UploadFileToFolder = exports.DeleteFolder = exports.DeleteFile = exports.DeleteObject = exports.CreateFolder = exports.Select = exports.SearchObject = exports.GetObjectProperties = exports.GetObjectList = exports.GetFolderList = exports.GetCredentials = exports.GetCredentialProviderName = exports.IsEnvironmentCredentials = exports.IsSharedIniFileCredentials = void 0;
 /* eslint-disable @typescript-eslint/naming-convention */
 const AWS = require("aws-sdk");
 const ui = require("./UI");
@@ -130,6 +130,28 @@ async function GetObjectList(Bucket, Key, s3Client) {
     }
 }
 exports.GetObjectList = GetObjectList;
+async function GetObjectProperties(Bucket, Key, s3Client) {
+    let result = new MethodResult_1.MethodResult();
+    try {
+        const s3 = s3Client ? s3Client : await GetS3Client();
+        const params = {
+            Bucket: Bucket,
+            Key: Key
+        };
+        let response = await s3.headObject(params).promise();
+        result.result = response;
+        result.isSuccessful = true;
+        return result;
+    }
+    catch (error) {
+        result.isSuccessful = false;
+        result.error = error;
+        ui.showErrorMessage('api.GetObjectList Error !!!', error);
+        ui.logToOutput("api.GetObjectList Error !!!", error);
+        return result;
+    }
+}
+exports.GetObjectProperties = GetObjectProperties;
 async function SearchObject(Bucket, PrefixKey, FileName, FileExtension, FolderName, MaxResultCount = 100) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];

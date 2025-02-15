@@ -10,6 +10,7 @@ import { ParsedIniData } from "@aws-sdk/types";
 import * as s3_helper from '../s3/S3Helper'
 import * as fs from 'fs';
 import * as S3TreeView from '../s3/S3TreeView';
+import { HeadObjectOutput } from "aws-sdk/clients/s3";
 
 export async function IsSharedIniFileCredentials(credentials:any|undefined=undefined)
 {
@@ -163,6 +164,31 @@ export async function GetObjectList(Bucket:string, Key:string, s3Client?:AWS.S3)
   }
 }
 
+export async function GetObjectProperties(Bucket:string, Key:string, s3Client?:AWS.S3): Promise<MethodResult<HeadObjectOutput | undefined>> {
+  let result:MethodResult<HeadObjectOutput | undefined> = new MethodResult<HeadObjectOutput | undefined>();
+  
+  try 
+  {
+    const s3 = s3Client ? s3Client : await GetS3Client();
+
+    const params = {
+        Bucket:Bucket,
+        Key:Key
+    };
+    let response = await s3.headObject(params).promise();
+    result.result = response;
+    result.isSuccessful = true;
+    return result;
+  } 
+  catch (error:any) 
+  {
+    result.isSuccessful = false;
+    result.error = error;
+    ui.showErrorMessage('api.GetObjectList Error !!!', error);
+    ui.logToOutput("api.GetObjectList Error !!!", error); 
+    return result;
+  }
+}
 export async function SearchObject(Bucket: string, PrefixKey:string, FileName: string | undefined, FileExtension: string | undefined, FolderName: string | undefined, MaxResultCount: number = 100): Promise<MethodResult<AWS.S3.ObjectList | undefined>> {
   let result:MethodResult<AWS.S3.ObjectList | undefined> = new MethodResult<AWS.S3.ObjectList | undefined>();
   result.result = [];

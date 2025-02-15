@@ -329,7 +329,6 @@ class S3TreeView {
         this.AwsProfile = selectedAwsProfile;
         this.SaveState();
         this.SetFilterMessage();
-        this.TestAwsConnection();
     }
     async UpdateAwsEndPoint() {
         ui.logToOutput('S3TreeView.UpdateAwsEndPoint Started');
