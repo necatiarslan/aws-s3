@@ -105,16 +105,10 @@ class S3Explorer {
     async _getWebviewContent(webview, extensionUri) {
         ui.logToOutput('S3Explorer._getWebviewContent Started');
         //file URIs
-        const toolkitUri = ui.getUri(webview, extensionUri, [
-            "node_modules",
-            "@vscode",
-            "webview-ui-toolkit",
-            "dist",
-            "toolkit.js",
-        ]);
+        const vscodeElementsUri = ui.getUri(webview, extensionUri, ["node_modules", "@vscode-elements", "elements", "dist", "bundled.js"]);
         const s3ExplorerJSUri = ui.getUri(webview, extensionUri, ["media", "s3ExplorerJS.js"]);
         const styleUri = ui.getUri(webview, extensionUri, ["media", "style.css"]);
-        const codiconsUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'node_modules', '@vscode/codicons', 'dist', 'codicon.css'));
+        const codiconsUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'node_modules', '@vscode', 'codicons', 'dist', 'codicon.css'));
         const bookmark_yesUri = ui.getUri(webview, extensionUri, ["media", "bookmark_yes.png"]);
         const bookmark_noUri = ui.getUri(webview, extensionUri, ["media", "bookmark_no.png"]);
         const goHomeUri = ui.getUri(webview, extensionUri, ["media", "go-home.png"]);
@@ -134,7 +128,7 @@ class S3Explorer {
         let PathNavigationHtml = "";
         let FolderIsEmpty = true;
         for (var item of this.GetNavigationPath(this.S3ExplorerItem.Key)) {
-            PathNavigationHtml += `&nbsp;<vscode-link style="font-size: 16px; font-weight: bold;" id="go_key_${item[1]}">${item[0]}</vscode-link>`;
+            PathNavigationHtml += `&nbsp;<a style="font-size: 16px; font-weight: bold;" id="go_key_${item[1]}">${item[0]}</a>`;
         }
         let isChecked = this.S3ExplorerItem.IsFile();
         NavigationRowHtml += `
@@ -143,9 +137,11 @@ class S3Explorer {
                 <vscode-checkbox id="checkbox_${this.S3ExplorerItem.Key}" ${isChecked ? "checked" : ""}></vscode-checkbox>
             </td>
             <td style="width:20px">
-                <vscode-button appearance="icon" id="add_shortcut_${this.S3ExplorerItem.Key}">
-                    <span><img src="${S3TreeView_1.S3TreeView.Current?.DoesShortcutExists(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key) ? bookmark_yesUri : bookmark_noUri}"></img></span>
-                </vscode-button>
+                <img 
+                    id="add_shortcut_${this.S3ExplorerItem.Key}" 
+                    src="${S3TreeView_1.S3TreeView.Current?.DoesShortcutExists(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key) ? bookmark_yesUri : bookmark_noUri}"
+                    style="cursor: pointer;">
+                </img>
             </td>
             <td colspan="4">
             ${PathNavigationHtml}
@@ -170,13 +166,15 @@ class S3Explorer {
                             <vscode-checkbox id="checkbox_${folder.Prefix}" ></vscode-checkbox>
                         </td>
                         <td style="width:20px">
-                            <vscode-button appearance="icon" id="add_shortcut_${folder.Prefix}">
-                                <span><img src="${S3TreeView_1.S3TreeView.Current?.DoesShortcutExists(this.S3ExplorerItem.Bucket, folder.Prefix) ? bookmark_yesUri : bookmark_noUri}"></img></span>
-                            </vscode-button>
+                            <img  
+                                id="add_shortcut_${folder.Prefix}" 
+                                src="${S3TreeView_1.S3TreeView.Current?.DoesShortcutExists(this.S3ExplorerItem.Bucket, folder.Prefix) ? bookmark_yesUri : bookmark_noUri}"
+                                style="cursor: pointer;">
+                            </img>
                         </td>
                         <td>
-                            <img src="${folderUri}" id="open_${folder.Prefix}"></img>
-                            <vscode-link id="open_${folder.Prefix}">${folderName}</vscode-link>
+                            <img src="${folderUri}" id="open_${folder.Prefix}" style="cursor: pointer;"></img>
+                            <a id="open_${folder.Prefix}" style="cursor: pointer;">${folderName}</a>
                         </td>
                         <td style="text-align:right; width:100px">Folder</td>
                         <td style="text-align:right; width:100px"><!--modified column--></td>
@@ -202,13 +200,15 @@ class S3Explorer {
                             <vscode-checkbox id="checkbox_${file.Key}"></vscode-checkbox>
                         </td>
                         <td style="width:20px">
-                            <vscode-button appearance="icon" id="add_shortcut_${file.Key}">
-                                <span><img src="${S3TreeView_1.S3TreeView.Current?.DoesShortcutExists(this.S3ExplorerItem.Bucket, file.Key) ? bookmark_yesUri : bookmark_noUri}"></img></span>
-                            </vscode-button>
+                            <img 
+                                id="add_shortcut_${file.Key}" 
+                                src="${S3TreeView_1.S3TreeView.Current?.DoesShortcutExists(this.S3ExplorerItem.Bucket, file.Key) ? bookmark_yesUri : bookmark_noUri}"
+                                style="cursor: pointer;">
+                            </img>
                         </td>
                         <td>
-                            <img src="${fileUri}" id="open_${file.Key}"></img>
-                            <vscode-link id="open_${file.Key}">${fileName}</vscode-link>
+                            <img src="${fileUri}" id="open_${file.Key}" style="cursor: pointer;"></img>
+                            <a id="open_${file.Key}" style="cursor: pointer;">${fileName}</a>
                         </td>
                         <td style="text-align:right; width:100px">${this.GetFileExtension(file.Key)}</td>
                         <td style="text-align:right; width:100px">${file.LastModified ? file.LastModified.toLocaleDateString() : ""}</td>
@@ -225,11 +225,11 @@ class S3Explorer {
             </tr>
             <tr style="height:50px; text-align:center;">
             <td colspan="6">
-                <vscode-button appearance="secondary" id="upload_empty_folder">Upload File</vscode-button>
+                <vscode-button secondary id="upload_empty_folder">Upload File</vscode-button>
                 &nbsp;
-                <vscode-button appearance="secondary" id="create_folder_in_empty_folder">Create Folder</vscode-button>
+                <vscode-button secondary id="create_folder_in_empty_folder">Create Folder</vscode-button>
                 &nbsp;
-                <vscode-button appearance="secondary" id="delete_folder">Delete Folder</vscode-button>
+                <vscode-button secondary id="delete_folder">Delete Folder</vscode-button>
             </td>
             </tr>
             `;
@@ -247,19 +247,19 @@ class S3Explorer {
             S3RowHtml = `
             <tr style="height:50px; text-align:center;">
             <td colspan="6">
-                <vscode-button appearance="secondary" id="preview_current_file">Preview</vscode-button>
+                <vscode-button secondary id="preview_current_file">Preview</vscode-button>
                 &nbsp;
-                <vscode-button appearance="secondary" id="download_current_file">Download</vscode-button>
+                <vscode-button secondary id="download_current_file">Download</vscode-button>
                 &nbsp;
-                <vscode-button appearance="secondary" id="update_file">Upload</vscode-button>
+                <vscode-button secondary id="update_file">Upload</vscode-button>
                 &nbsp;
-                <vscode-button appearance="secondary" id="delete_file">Delete</vscode-button>
+                <vscode-button secondary id="delete_file">Delete</vscode-button>
                 &nbsp;
-                <vscode-button appearance="secondary" id="rename_file">Rename</vscode-button>
+                <vscode-button secondary id="rename_file">Rename</vscode-button>
                 &nbsp;
-                <vscode-button appearance="secondary" id="copy_file">Copy</vscode-button>
+                <vscode-button secondary id="copy_file">Copy</vscode-button>
                 &nbsp;
-                <vscode-button appearance="secondary" id="move_file">Move</vscode-button>
+                <vscode-button secondary id="move_file">Move</vscode-button>
             </td>
             </tr>
             <tr>
@@ -315,9 +315,9 @@ class S3Explorer {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width,initial-scale=1.0">
-        <script type="module" src="${toolkitUri}"></script>
+        <script type="module" src="${vscodeElementsUri}"></script>
         <script type="module" src="${s3ExplorerJSUri}"></script>
-        <link href="${codiconsUri}" rel="stylesheet" />
+        <link href="${codiconsUri}" rel="stylesheet" id="vscode-codicon-stylesheet"/>
         <link rel="stylesheet" href="${styleUri}">
         <title></title>
       </head>
@@ -329,22 +329,22 @@ class S3Explorer {
 
         <table>
             <tr>
-                <td colspan="4" style="text-align:left">
-                <vscode-button appearance="secondary" id="refresh">Refresh</vscode-button>
-                <vscode-button appearance="secondary" id="search" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Search</vscode-button>
-                <vscode-button appearance="secondary" id="download" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Download</vscode-button>
-                <vscode-button appearance="secondary" id="upload" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Upload</vscode-button>
-                <vscode-button appearance="secondary" id="create_folder" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Create Folder</vscode-button>
+                <td colspan="4" style="text-align:left; vertical-align:middle">
+                <vscode-button secondary id="refresh">Refresh</vscode-button>
+                <vscode-button secondary id="search" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Search</vscode-button>
+                <vscode-button secondary id="download" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Download</vscode-button>
+                <vscode-button secondary id="upload" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Upload</vscode-button>
+                <vscode-button secondary id="create_folder" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Create Folder</vscode-button>
 
-                <vscode-dropdown id="edit_dropdown">
+                <vscode-single-select id="edit_dropdown" style="width: 100px" >
                     <vscode-option>Edit</vscode-option>
                     <vscode-option>Delete</vscode-option>
                     <vscode-option>Rename</vscode-option>
                     <vscode-option>Copy</vscode-option>
                     <vscode-option>Move</vscode-option>
-                </vscode-dropdown>
+                </vscode-single-select >
 
-                <vscode-dropdown style="width: 150px" id="copy_dropdown">
+                <vscode-single-select id="copy_dropdown" style="width: 100px" >
                     <vscode-option>Copy</vscode-option>
                     <vscode-option>File Name(s) No Ext</vscode-option>
                     <vscode-option>File Name(s) /w Ext</vscode-option>
@@ -352,12 +352,12 @@ class S3Explorer {
                     <vscode-option>ARN(s)</vscode-option>
                     <vscode-option>S3 URI(s)</vscode-option>
                     <vscode-option>URL(s)</vscode-option>
-                </vscode-dropdown>
+                </vscode-single-select >
                 </td>
-                <td colspan="2" style="text-align:right">
-                    <vscode-text-field id="search_text" placeholder="Search" value="${this.SearchText}" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>
-                        <span slot="start" class="codicon codicon-search"></span>
-                    </vscode-text-field>
+                <td colspan="2" style="text-align:right; vertical-align:middle">
+                    <vscode-textfield id="search_text" placeholder="Search" value="${this.SearchText}" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""} style="width: 20ch; margin: 0;">
+                        <vscode-icon slot="content-before" name="search" title="search"></vscode-icon>
+                    </vscode-textfield>
                 </td>
             </tr>
             </table>
@@ -365,21 +365,21 @@ class S3Explorer {
             <table>
             <tr>
                 <th style="width:20px; text-align:center; vertical-align:middle">
-                    <vscode-link id="go_home"><img src="${goHomeUri}" alt="Go Home"></vscode-link>
+                    <a id="go_home"><img src="${goHomeUri}" title="Go Home" style="cursor: pointer;"></a>
                 </th>
                 <th style="width:20px; text-align:center; vertical-align:middle">
-                    <vscode-link id="go_up"><img src="${goUpUri}" alt="Go Up"></vscode-link>
+                    <a id="go_up"><img src="${goUpUri}" title="Go Back" style="cursor: pointer;"></a>
                 </th>
                 <th style="width:160px; text-align:center; vertical-align:middle">
                     
-                    <vscode-link id="file_download"><img src="${fileDownloadUri}" alt="Delete"></vscode-link>
-                    <vscode-link id="file_upload"><img src="${fileUploadUri}" alt="Rename"></vscode-link>
-                    <vscode-link id="folder_create"><img src="${folderCreateUri}" alt="Copy"></vscode-link>
+                    <a id="file_download"><img src="${fileDownloadUri}" title="Download" style="cursor: pointer;"></a>
+                    <a id="file_upload"><img src="${fileUploadUri}" title="Upload" style="cursor: pointer;"></a>
+                    <a id="folder_create"><img src="${folderCreateUri}" title="Create Folder" style="cursor: pointer;"></a>
                     
-                    <vscode-link id="file_delete"><img src="${fileDeleteUri}" alt="Delete"></vscode-link>
-                    <vscode-link id="file_rename"><img src="${fileRenameUri}" alt="Rename"></vscode-link>
-                    <vscode-link id="file_copy"><img src="${fileCopyUri}" alt="Copy"></vscode-link>
-                    <vscode-link id="file_move"><img src="${fileMoveUri}" alt="Move"></vscode-link>
+                    <a id="file_delete"><img src="${fileDeleteUri}" title="Delete" style="cursor: pointer;"></a>
+                    <a id="file_rename"><img src="${fileRenameUri}" title="Rename" style="cursor: pointer;"></a>
+                    <a id="file_copy"><img src="${fileCopyUri}" title="Copy" style="cursor: pointer;"></a>
+                    <a id="file_move"><img src="${fileMoveUri}" title="Move" style="cursor: pointer;"></a>
                 </th>
                 <th>Name</th>
                 <th style="width:100px; text-align:center; vertical-align:middle">Type</th>
@@ -402,8 +402,8 @@ class S3Explorer {
                     Select
                 </th>
                 <th colspan="2" style="text-align:left">
-                    <vscode-button appearance="secondary" id="select_all">All</vscode-button>
-                    <vscode-button appearance="secondary" id="select_none">None</vscode-button>
+                    <vscode-button secondary id="select_all">All</vscode-button>
+                    <vscode-button secondary id="select_none">None</vscode-button>
                 </th>
                 <th colspan="3" style="text-align:right">
                     ${fileCounter} File(s), ${folderCounter} Folder(s)
@@ -420,21 +420,21 @@ class S3Explorer {
         <table>
             <tr>
                 <td>
-                    <vscode-link href="https://github.com/necatiarslan/aws-s3/issues/new">Bug Report & Feature Request</vscode-link>
+                    <a href="https://github.com/necatiarslan/aws-s3/issues/new" style="cursor: pointer; text-decoration: none;">Bug Report & Feature Request</a>
                 </td>
             </tr>
         </table>
         <table>
             <tr>
                 <td>
-                    <vscode-link href="https://bit.ly/s3-extension-survey">New Feature Survey</vscode-link>
+                    <a href="https://bit.ly/s3-extension-survey" style="cursor: pointer; text-decoration: none;">New Feature Survey</a>
                 </td>
             </tr>
         </table>
         <table>
             <tr>
                 <td>
-                    <vscode-link href="https://github.com/sponsors/necatiarslan">Sponsor me</vscode-link>
+                    <a href="https://github.com/sponsors/necatiarslan" style="cursor: pointer; text-decoration: none;">Sponsor me</a>
                 </td>
             </tr>
         </table>
