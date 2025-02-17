@@ -329,14 +329,14 @@ class S3Explorer {
 
         <table>
             <tr>
-                <td colspan="4" style="text-align:left; vertical-align:middle">
+                <td colspan="4" style="text-align:left">
                 <vscode-button secondary id="refresh">Refresh</vscode-button>
                 <vscode-button secondary id="search" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Search</vscode-button>
                 <vscode-button secondary id="download" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Download</vscode-button>
                 <vscode-button secondary id="upload" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Upload</vscode-button>
                 <vscode-button secondary id="create_folder" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Create Folder</vscode-button>
 
-                <vscode-single-select id="edit_dropdown" style="width: 100px" >
+                <vscode-single-select id="edit_dropdown" style="width: 100px; vertical-align:top" >
                     <vscode-option>Edit</vscode-option>
                     <vscode-option>Delete</vscode-option>
                     <vscode-option>Rename</vscode-option>
@@ -344,7 +344,7 @@ class S3Explorer {
                     <vscode-option>Move</vscode-option>
                 </vscode-single-select >
 
-                <vscode-single-select id="copy_dropdown" style="width: 100px" >
+                <vscode-single-select id="copy_dropdown" style="width: 100px; vertical-align:top" >
                     <vscode-option>Copy</vscode-option>
                     <vscode-option>File Name(s) No Ext</vscode-option>
                     <vscode-option>File Name(s) /w Ext</vscode-option>
@@ -354,8 +354,8 @@ class S3Explorer {
                     <vscode-option>URL(s)</vscode-option>
                 </vscode-single-select >
                 </td>
-                <td colspan="2" style="text-align:right; vertical-align:middle">
-                    <vscode-textfield id="search_text" placeholder="Search" value="${this.SearchText}" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""} style="width: 20ch; margin: 0;">
+                <td colspan="2" style="text-align:right">
+                    <vscode-textfield id="search_text" placeholder="Search" value="${this.SearchText}" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""} style="width: 20ch; vertical-align:top">
                         <vscode-icon slot="content-before" name="search" title="search"></vscode-icon>
                     </vscode-textfield>
                 </td>

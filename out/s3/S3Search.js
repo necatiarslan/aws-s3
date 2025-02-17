@@ -194,22 +194,22 @@ class S3Search {
 
         <table>
             <tr>
-                <td colspan="3" style="text-align:left; vertical-align:middle">
-                    <vscode-textfield id="file_name" placeholder="File Name" value="${this.FileName}" style="width: 20ch;">
+                <td colspan="3">
+                    <vscode-textfield id="file_name" placeholder="File Name" value="${this.FileName}" style="width: 20ch; vertical-align: top;">
                         <vscode-icon slot="content-before" name="search" title="search"></vscode-icon>
                     </vscode-textfield>
 
-                    <vscode-textfield id="file_extension" placeholder="Extension" value="${this.FileExtension}" style="width: 20ch;">
+                    <vscode-textfield id="file_extension" placeholder="Extension" value="${this.FileExtension}" style="width: 20ch; vertical-align: top;">
                         <vscode-icon slot="content-before" name="search" title="search"></vscode-icon>
                     </vscode-textfield>
 
-                    <vscode-textfield id="folder_name" placeholder="Key / Folder" value="${this.FolderName}" style="width: 20ch;">
+                    <vscode-textfield id="folder_name" placeholder="Key / Folder" value="${this.FolderName}" style="width: 20ch; vertical-align: top;">
                         <vscode-icon slot="content-before" name="search" title="search"></vscode-icon>
                     </vscode-textfield>
                 </td>
-                <td colspan="4" style="text-align:right; vertical-align:middle">
-                    <vscode-button secondary id="refresh">Search</vscode-button>
-                    <vscode-single-select style="width: 150px" id="copy_dropdown">
+                <td colspan="4">
+                    <vscode-button secondary id="refresh" style="vertical-align: top;">Search</vscode-button>
+                    <vscode-single-select style="width: 100px; vertical-align: top;" id="copy_dropdown">
                         <vscode-option>Copy</vscode-option>
                         <vscode-option>File Name(s) No Ext</vscode-option>
                         <vscode-option>File Name(s) /w Ext</vscode-option>
