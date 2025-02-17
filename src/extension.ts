@@ -84,8 +84,8 @@ export function activate(context: vscode.ExtensionContext) {
 		treeView.SetAwsRegion();
 	});
 
-	vscode.commands.registerCommand('S3TreeView.AwsCredentialsSetup', () => {
-		treeView.AwsCredentialsSetup();
+	vscode.commands.registerCommand('S3TreeView.TestAwsConnection', () => {
+		treeView.TestAwsConnection();
 	});
 
 	ui.logToOutput('Aws S3 Extension activation completed');

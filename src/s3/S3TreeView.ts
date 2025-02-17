@@ -32,11 +32,31 @@ export class S3TreeView {
 		context.subscriptions.push(this.view);
 		S3TreeView.Current = this;
 		this.SetFilterMessage();
-		this.TestAwsConnection();
 	}
 
-	TestAwsConnection(){
-		api.TestAwsConnection()
+	async TestAwsConnection(){
+		let response = await api.TestAwsCredentials()
+		if(response.isSuccessful && response.result){
+			ui.logToOutput('Aws Credentials Test Successfull');
+			ui.showInfoMessage('Aws Credentials Test Successfull');
+		}
+		else{
+			ui.logToOutput('LambdaTreeView.TestAwsCredentials Error !!!', response.error);
+			ui.showErrorMessage('Aws Credentials Test Error !!!', response.error);
+		}
+		
+		let selectedRegion = await vscode.window.showInputBox({ placeHolder: 'Enter Region Eg: us-east-1', value: 'us-east-1' });
+		if(selectedRegion===undefined){ return; }
+
+		response = await api.TestAwsConnection(selectedRegion)
+		if(response.isSuccessful && response.result){
+			ui.logToOutput('Aws Connection Test Successfull');
+			ui.showInfoMessage('Aws Connection Test Successfull');
+		}
+		else{
+			ui.logToOutput('LambdaTreeView.TestAwsConnection Error !!!', response.error);
+			ui.showErrorMessage('Aws Connection Test Error !!!', response.error);
+		}
 	}
 
 	Refresh(): void {
@@ -374,7 +394,7 @@ export class S3TreeView {
 	async UpdateAwsEndPoint() {
 		ui.logToOutput('S3TreeView.UpdateAwsEndPoint Started');
 
-		let awsEndPointUrl = await vscode.window.showInputBox({ placeHolder: 'Enter Aws End Point URL (Leave Empty To Return To Default)' });
+		let awsEndPointUrl = await vscode.window.showInputBox({ placeHolder: 'Enter Aws End Point URL (Leave Empty To Return To Default)', value: this.AwsEndPoint });
 		if(awsEndPointUrl===undefined){ return; }
 		if(awsEndPointUrl.length===0) { this.AwsEndPoint = undefined; }
 		else
@@ -382,6 +402,7 @@ export class S3TreeView {
 			this.AwsEndPoint = awsEndPointUrl;
 		}
 		this.SaveState();
+		ui.showInfoMessage('Aws End Point Updated');
 	}
 
 	async SetAwsRegion() {
@@ -397,25 +418,5 @@ export class S3TreeView {
 		this.SaveState();
 	}
 
-	async AwsCredentialsSetup() {
-		ui.logToOutput('S3TreeView.AwsCredentialsSetup Started');
-
-		try
-		{
-			let credentials = await api.GetCredentials();
-			if(!credentials){
-				ui.showWarningMessage("Aws Credentails Not Found"); 
-				return; 
-			}
-
-			ui.showWarningMessage("Aws Credentails Access Key : " + credentials.accessKeyId);
-		}
-		catch (error:any) 
-		{
-			ui.showErrorMessage('AwsCredentialsSetup Error !!!', error);
-			ui.logToOutput("AwsCredentialsSetup Error !!!", error);
-		}
-
-	}
 
 }

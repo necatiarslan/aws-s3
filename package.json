@@ -108,8 +108,8 @@
         "title": "Set Aws Region"
       },
       {
-        "command": "S3TreeView.AwsCredentialsSetup",
-        "title": "Aws Credentials Setup"
+        "command": "S3TreeView.TestAwsConnection",
+        "title": "Test Aws Connection"
       }
     ],
     "menus": {
@@ -155,7 +155,7 @@
           "group": "other"
         },
         {
-          "command": "S3TreeView.AwsCredentialsSetup",
+          "command": "S3TreeView.TestAwsConnection",
           "when": "view == S3TreeView",
           "group": "other"
         }
@@ -239,7 +239,7 @@
     "viewsWelcome": [
       {
         "view": "S3TreeView",
-        "contents": "Please click [+] to add your buckets. \n [Add Bucket](command:S3TreeView.AddBucket) \n Leave bucket name empty to get all your buckets. You can enter bucket name partially. \n If you can not connect after a while check your Aws Credentials, Network and Proxy settings. \n\n\n\n To Access Aws, you need to configure aws credentials. \n For more detail on Aws Credentials [Click Here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) \n For a Youtube Tutorial [Click Here](https://www.youtube.com/watch?v=SON8sY1iOBU) \n [Test Aws Credentials](command:S3TreeView.AwsCredentialsSetup) \n [Update Aws EndPoint](command:S3TreeView.UpdateAwsEndPoint)"
+        "contents": "Please click [+] to add your buckets. \n [Add Bucket](command:S3TreeView.AddBucket) \n Leave bucket name empty to get all your buckets. You can enter bucket name partially. \n If you can not connect after a while check your Aws Credentials, Network and Proxy settings. \n\n\n\n To Access Aws, you need to configure aws credentials. \n For more detail on Aws Credentials [Click Here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) \n For a Youtube Tutorial [Click Here](https://www.youtube.com/watch?v=SON8sY1iOBU) \n [Test Aws Connection](command:S3TreeView.TestAwsConnection) \n [Update Aws EndPoint](command:S3TreeView.UpdateAwsEndPoint)"
       }
     ]
   },

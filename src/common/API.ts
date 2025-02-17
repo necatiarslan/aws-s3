@@ -825,6 +825,22 @@ async function GetSTSClient(region: string) {
   return iamClient;
 }
 
+export async function TestAwsCredentials(): Promise<MethodResult<boolean>> {
+  let result: MethodResult<boolean> = new MethodResult<boolean>();
+
+  try {
+    const credentials = await GetCredentials();
+
+    result.isSuccessful = true;
+    result.result = true;
+    return result;
+  } catch (error: any) {
+    result.isSuccessful = false;
+    result.error = error;
+    return result;
+  }
+}
+
 export async function TestAwsConnection(Region: string="us-east-1"): Promise<MethodResult<boolean>> {
   let result: MethodResult<boolean> = new MethodResult<boolean>();
 

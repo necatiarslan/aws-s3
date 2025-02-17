@@ -119,10 +119,6 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Show warning when item is more then 1000
 - Drag/Drop files and folders to upload
 - Show progressbar when uploading, downloading, deleting etc
-- Sunsetting the Webview UI Toolkit, migrate to alternative
-    - https://vscode-elements.github.io/
-    - https://github.com/microsoft/fast
-    - https://code.visualstudio.com/docs/nodejs/vuejs-tutorial
 - NoSuchBucket: The specified bucket does not exist handle error and show error message
 ## Nice To Have
 - Use vscode icons for files and folders

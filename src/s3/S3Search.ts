@@ -239,12 +239,10 @@ export class S3Search {
                         <vscode-icon slot="content-before" name="search" title="search"></vscode-icon>
                     </vscode-textfield>
 
-                    <vscode-textfield id="folder_name" placeholder="Key / Folder" value="${this.FolderName}" style="width: 20ch; vertical-align: top;">
+                    <vscode-textfield id="folder_name" placeholder="Key / Folder" value="${this.FolderName}" style="width: 20ch;">
                         <vscode-icon slot="content-before" name="search" title="search"></vscode-icon>
                     </vscode-textfield>
-                </td>
-                <td colspan="4">
-                    <vscode-button secondary id="refresh" style="vertical-align: top;">Search</vscode-button>
+
                     <vscode-single-select style="width: 100px; vertical-align: top;" id="copy_dropdown">
                         <vscode-option>Copy</vscode-option>
                         <vscode-option>File Name(s) No Ext</vscode-option>
@@ -254,6 +252,9 @@ export class S3Search {
                         <vscode-option>S3 URI(s)</vscode-option>
                         <vscode-option>URL(s)</vscode-option>
                     </vscode-single-select>
+                </td>
+                <td colspan="4" style="text-align:right;">
+                    <vscode-button secondary id="refresh" style="vertical-align: top;">Search</vscode-button>
                 </td>
             </tr>
             </table>
