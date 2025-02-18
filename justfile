@@ -1,10 +1,6 @@
 install_vsce: 
     npm install -g vsce
 
-package:
-    vsce package
-    mv *.vsix ./vsix/
-
 build:
     vsce package
     mv *.vsix ./vsix/
@@ -14,6 +10,7 @@ publish:
 
 npm_outdated:
     npm outdated
+    npx npm-check-updates
 
 npm_upgrade:
     brew upgrade # upgrade homebrew
