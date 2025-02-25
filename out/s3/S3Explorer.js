@@ -128,7 +128,7 @@ class S3Explorer {
         let PathNavigationHtml = "";
         let FolderIsEmpty = true;
         for (var item of this.GetNavigationPath(this.S3ExplorerItem.Key)) {
-            PathNavigationHtml += `&nbsp;<a style="font-size: 16px; font-weight: bold;" id="go_key_${item[1]}">${item[0]}</a>`;
+            PathNavigationHtml += `&nbsp;<a style="font-size: 16px; font-weight: bold; cursor: pointer;" id="go_key_${item[1]}">${item[0]}</a>`;
         }
         let isChecked = this.S3ExplorerItem.IsFile();
         NavigationRowHtml += `
