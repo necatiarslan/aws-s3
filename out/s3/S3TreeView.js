@@ -17,13 +17,13 @@ class S3TreeView {
         this.AwsProfile = "default";
         this.IsSharedIniFileCredentials = false;
         ui.logToOutput('TreeView.constructor Started');
+        S3TreeView.Current = this;
         this.context = context;
         this.treeDataProvider = new S3TreeDataProvider_1.S3TreeDataProvider();
         this.LoadState();
         this.view = vscode.window.createTreeView('S3TreeView', { treeDataProvider: this.treeDataProvider, showCollapseAll: true });
         this.Refresh();
         context.subscriptions.push(this.view);
-        S3TreeView.Current = this;
         this.SetFilterMessage();
     }
     async TestAwsConnection() {
@@ -97,10 +97,28 @@ class S3TreeView {
         if (node.TreeItemType !== S3TreeItem_1.TreeItemType.Bucket) {
             return;
         }
+        if (!node.Bucket) {
+            return;
+        }
         if (this.AwsProfile) {
             node.ProfileToShow = this.AwsProfile;
+            this.treeDataProvider.AddBucketProfile(node.Bucket, node.ProfileToShow);
             this.treeDataProvider.Refresh();
+            this.SaveState();
         }
+    }
+    async ShowInAnyProfile(node) {
+        ui.logToOutput('S3TreeView.ShowInAnyProfile Started');
+        if (node.TreeItemType !== S3TreeItem_1.TreeItemType.Bucket) {
+            return;
+        }
+        if (!node.Bucket) {
+            return;
+        }
+        node.ProfileToShow = "";
+        this.treeDataProvider.RemoveBucketProfile(node.Bucket);
+        this.treeDataProvider.Refresh();
+        this.SaveState();
     }
     async DeleteFromFav(node) {
         ui.logToOutput('S3TreeView.DeleteFromFav Started');
@@ -147,6 +165,7 @@ class S3TreeView {
             this.context.globalState.update('ViewType', this.treeDataProvider.ViewType);
             this.context.globalState.update('AwsEndPoint', this.AwsEndPoint);
             this.context.globalState.update('AwsRegion', this.AwsRegion);
+            this.context.globalState.update('BucketProfileList', this.treeDataProvider.BucketProfileList);
             ui.logToOutput("S3TreeView.saveState Successfull");
         }
         catch (error) {
@@ -171,6 +190,10 @@ class S3TreeView {
             let ShowHiddenNodesTemp = this.context.globalState.get('ShowHiddenNodes');
             if (ShowHiddenNodesTemp) {
                 this.isShowHiddenNodes = ShowHiddenNodesTemp;
+            }
+            let BucketProfileListTemp = this.context.globalState.get('BucketProfileList');
+            if (BucketProfileListTemp) {
+                this.treeDataProvider.BucketProfileList = BucketProfileListTemp;
             }
             let BucketListTemp = this.context.globalState.get('BucketList');
             if (BucketListTemp) {

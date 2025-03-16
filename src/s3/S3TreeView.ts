@@ -24,13 +24,13 @@ export class S3TreeView {
 
 	constructor(context: vscode.ExtensionContext) {
 		ui.logToOutput('TreeView.constructor Started');
+		S3TreeView.Current = this;
 		this.context = context;
 		this.treeDataProvider = new S3TreeDataProvider();
 		this.LoadState();
 		this.view = vscode.window.createTreeView('S3TreeView', { treeDataProvider: this.treeDataProvider, showCollapseAll: true });
 		this.Refresh();
 		context.subscriptions.push(this.view);
-		S3TreeView.Current = this;
 		this.SetFilterMessage();
 	}
 
@@ -117,12 +117,26 @@ export class S3TreeView {
 	async ShowOnlyInThisProfile(node: S3TreeItem) {
 		ui.logToOutput('S3TreeView.ShowOnlyInThisProfile Started');
 		if (node.TreeItemType !== TreeItemType.Bucket) { return; }
+		if (!node.Bucket) { return; }
 		
 		if(this.AwsProfile)
 		{
 			node.ProfileToShow = this.AwsProfile;
+			this.treeDataProvider.AddBucketProfile(node.Bucket, node.ProfileToShow);
 			this.treeDataProvider.Refresh();
+			this.SaveState();
 		}
+	}
+
+	async ShowInAnyProfile(node: S3TreeItem) {
+		ui.logToOutput('S3TreeView.ShowInAnyProfile Started');
+		if (node.TreeItemType !== TreeItemType.Bucket) { return; }
+		if (!node.Bucket) { return; }
+		
+		node.ProfileToShow = "";
+		this.treeDataProvider.RemoveBucketProfile(node.Bucket);
+		this.treeDataProvider.Refresh();
+		this.SaveState();
 	}
 	
 	async DeleteFromFav(node: S3TreeItem) {
@@ -176,6 +190,7 @@ export class S3TreeView {
 			this.context.globalState.update('ViewType', this.treeDataProvider.ViewType);
 			this.context.globalState.update('AwsEndPoint', this.AwsEndPoint);
 			this.context.globalState.update('AwsRegion', this.AwsRegion);
+			this.context.globalState.update('BucketProfileList', this.treeDataProvider.BucketProfileList);
 
 			ui.logToOutput("S3TreeView.saveState Successfull");
 		} catch (error) {
@@ -202,6 +217,11 @@ export class S3TreeView {
 
 			let ShowHiddenNodesTemp: boolean | undefined = this.context.globalState.get('ShowHiddenNodes');
 			if (ShowHiddenNodesTemp) { this.isShowHiddenNodes = ShowHiddenNodesTemp; }
+
+			let BucketProfileListTemp: {Bucket: string, Profile: string}[] | undefined = this.context.globalState.get('BucketProfileList');
+			if (BucketProfileListTemp) {
+				this.treeDataProvider.BucketProfileList = BucketProfileListTemp;
+			}
 
 			let BucketListTemp:string[] | undefined  = this.context.globalState.get('BucketList');
 			if(BucketListTemp)

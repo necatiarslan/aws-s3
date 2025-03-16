@@ -10,7 +10,16 @@ export class S3TreeItem extends vscode.TreeItem {
 	public Parent:S3TreeItem | undefined;
 	public Children:S3TreeItem[] = [];
 	private _isHidden: boolean = false;
-	public ProfileToShow: string = "";
+	private _profileToShow: string = "";
+
+	public set ProfileToShow(value: string) {
+		this._profileToShow = value;
+		this.setContextValue();
+	}
+
+	public get ProfileToShow(): string {
+		return this._profileToShow;
+	}
 
 	public set IsHidden(value: boolean) {
 		this._isHidden = value;
@@ -43,6 +52,7 @@ export class S3TreeItem extends vscode.TreeItem {
 		contextValue += this.IsHidden ? "Hidden#" : "!Hidden#";
 		contextValue += this.TreeItemType === TreeItemType.Bucket ? "Bucket#" : "";
 		contextValue += this.TreeItemType === TreeItemType.Shortcut ? "Shortcut#" : "";
+		contextValue += this.ProfileToShow ? "Profile#" : "NoProfile#";
 
 		this.contextValue = contextValue;
 	}

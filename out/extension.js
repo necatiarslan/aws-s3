@@ -34,6 +34,9 @@ function activate(context) {
     vscode.commands.registerCommand('S3TreeView.ShowOnlyInThisProfile', (node) => {
         treeView.ShowOnlyInThisProfile(node);
     });
+    vscode.commands.registerCommand('S3TreeView.ShowInAnyProfile', (node) => {
+        treeView.ShowInAnyProfile(node);
+    });
     vscode.commands.registerCommand('S3TreeView.AddBucket', () => {
         treeView.AddBucket();
     });

@@ -64,6 +64,10 @@
         "title": "Show Only In This Profile"
       },
       {
+        "command": "S3TreeView.ShowInAnyProfile",
+        "title": "Show In Any Profile"
+      },
+      {
         "command": "S3TreeView.AddBucket",
         "title": "Add Bucket",
         "icon": "$(add)"
@@ -212,7 +216,12 @@
         },
         {
           "command": "S3TreeView.ShowOnlyInThisProfile",
-          "when": "view == S3TreeView",
+          "when": "view == S3TreeView && viewItem =~ /#NoProfile#/",
+          "group": "Filter"
+        },
+        {
+          "command": "S3TreeView.ShowInAnyProfile",
+          "when": "view == S3TreeView && viewItem =~ /#Profile#/",
           "group": "Filter"
         },
         {

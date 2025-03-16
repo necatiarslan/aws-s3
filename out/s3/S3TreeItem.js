@@ -4,6 +4,13 @@ exports.TreeItemType = exports.S3TreeItem = void 0;
 /* eslint-disable @typescript-eslint/naming-convention */
 const vscode = require("vscode");
 class S3TreeItem extends vscode.TreeItem {
+    set ProfileToShow(value) {
+        this._profileToShow = value;
+        this.setContextValue();
+    }
+    get ProfileToShow() {
+        return this._profileToShow;
+    }
     set IsHidden(value) {
         this._isHidden = value;
         this.setContextValue();
@@ -23,7 +30,7 @@ class S3TreeItem extends vscode.TreeItem {
         this._isFav = false;
         this.Children = [];
         this._isHidden = false;
-        this.ProfileToShow = "";
+        this._profileToShow = "";
         this.Text = text;
         this.TreeItemType = treeItemType;
         this.refreshUI();
@@ -34,6 +41,7 @@ class S3TreeItem extends vscode.TreeItem {
         contextValue += this.IsHidden ? "Hidden#" : "!Hidden#";
         contextValue += this.TreeItemType === TreeItemType.Bucket ? "Bucket#" : "";
         contextValue += this.TreeItemType === TreeItemType.Shortcut ? "Shortcut#" : "";
+        contextValue += this.ProfileToShow ? "Profile#" : "NoProfile#";
         this.contextValue = contextValue;
     }
     refreshUI() {

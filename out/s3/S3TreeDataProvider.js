@@ -12,8 +12,9 @@ class S3TreeDataProvider {
         this.BucketNodeList = [];
         this.ShortcutNodeList = [];
         this.BucketList = [];
-        this.ShortcutList = [["???", "???"]];
+        this.ShortcutList = [["???", "???"]]; //TODO fix
         this.ViewType = ViewType.Bucket_Shortcut;
+        this.BucketProfileList = [];
         this.ShortcutList.splice(0, 1);
     }
     Refresh() {
@@ -32,6 +33,35 @@ class S3TreeDataProvider {
     SetShortcutList(ShortcutList) {
         this.ShortcutList = ShortcutList;
         this.LoadShortcutNodeList();
+    }
+    AddBucketProfile(Bucket, Profile) {
+        if (!Bucket || !Profile) {
+            return;
+        }
+        let profile = this.GetBucketProfile(Bucket);
+        if (profile === Profile) {
+            return;
+        }
+        if (profile && profile !== Profile) {
+            this.RemoveBucketProfile(Bucket);
+        }
+        this.BucketProfileList.push({ Bucket: Bucket, Profile: Profile });
+    }
+    RemoveBucketProfile(Bucket) {
+        for (let i = 0; i < this.BucketProfileList.length; i++) {
+            if (this.BucketProfileList[i].Bucket === Bucket) {
+                this.BucketProfileList.splice(i, 1);
+                i--;
+            }
+        }
+    }
+    GetBucketProfile(Bucket) {
+        for (let i = 0; i < this.BucketProfileList.length; i++) {
+            if (this.BucketProfileList[i].Bucket === Bucket) {
+                return this.BucketProfileList[i].Profile;
+            }
+        }
+        return "";
     }
     AddBucket(Bucket) {
         if (this.BucketList.includes(Bucket)) {
@@ -115,6 +145,7 @@ class S3TreeDataProvider {
             let treeItem = new S3TreeItem_1.S3TreeItem(bucket, S3TreeItem_1.TreeItemType.Bucket);
             treeItem.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
             treeItem.Bucket = bucket;
+            treeItem.ProfileToShow = this.GetBucketProfile(bucket);
             this.BucketNodeList.push(treeItem);
         }
     }

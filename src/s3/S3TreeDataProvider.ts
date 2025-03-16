@@ -2,6 +2,7 @@
 import * as vscode from 'vscode';
 import { S3TreeItem, TreeItemType } from './S3TreeItem';
 import { S3TreeView } from './S3TreeView';
+import * as ui from '../common/UI';
 
 export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 {
@@ -12,8 +13,9 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 	ShortcutNodeList: S3TreeItem[] = [];
 
 	public BucketList: string[] = [];
-	public ShortcutList: [[string,string]] = [["???","???"]];
+	public ShortcutList: [[string,string]] = [["???","???"]]; //TODO fix
 	public ViewType:ViewType = ViewType.Bucket_Shortcut;
+	public BucketProfileList: { Bucket:string, Profile:string }[] = [];
 
 	constructor() {
 		this.ShortcutList.splice(0,1);
@@ -39,6 +41,38 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 	public SetShortcutList(ShortcutList: [[string,string]]){
 		this.ShortcutList = ShortcutList;
 		this.LoadShortcutNodeList();
+	}
+
+	public AddBucketProfile(Bucket:string, Profile:string){
+		if(!Bucket || !Profile) { return; }
+		
+		let profile = this.GetBucketProfile(Bucket);
+		if(profile === Profile){ return; }
+		if(profile && profile !== Profile){ this.RemoveBucketProfile(Bucket); }
+
+		this.BucketProfileList.push({Bucket:Bucket, Profile:Profile});
+	}
+
+	public RemoveBucketProfile(Bucket:string){
+		for(let i = 0; i < this.BucketProfileList.length; i++)
+		{
+			if(this.BucketProfileList[i].Bucket === Bucket)
+			{
+				this.BucketProfileList.splice(i, 1);
+				i--;
+			}
+		}
+	}
+
+	public GetBucketProfile(Bucket:string){
+		for(let i = 0; i < this.BucketProfileList.length; i++)
+		{
+			if(this.BucketProfileList[i].Bucket === Bucket)
+			{
+				return this.BucketProfileList[i].Profile;
+			}
+		}
+		return "";
 	}
 
 	AddBucket(Bucket:string){
@@ -144,6 +178,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 			let treeItem = new S3TreeItem(bucket, TreeItemType.Bucket);
 			treeItem.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
 			treeItem.Bucket = bucket;
+			treeItem.ProfileToShow = this.GetBucketProfile(bucket);
 			this.BucketNodeList.push(treeItem);
 		}
 	}
