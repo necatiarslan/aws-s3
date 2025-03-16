@@ -114,6 +114,17 @@ export class S3TreeView {
 		this.treeDataProvider.Refresh();
 	}
 
+	async ShowOnlyInThisProfile(node: S3TreeItem) {
+		ui.logToOutput('S3TreeView.ShowOnlyInThisProfile Started');
+		if (node.TreeItemType !== TreeItemType.Bucket) { return; }
+		
+		if(this.AwsProfile)
+		{
+			node.ProfileToShow = this.AwsProfile;
+			this.treeDataProvider.Refresh();
+		}
+	}
+	
 	async DeleteFromFav(node: S3TreeItem) {
 		ui.logToOutput('S3TreeView.DeleteFromFav Started');
 		node.IsFav = false;
@@ -390,6 +401,7 @@ export class S3TreeView {
 		this.AwsProfile = selectedAwsProfile;
 		this.SaveState();
 		this.SetFilterMessage();
+		this.treeDataProvider.Refresh();
 	}
 
 	async UpdateAwsEndPoint() {

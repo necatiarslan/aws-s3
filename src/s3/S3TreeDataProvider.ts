@@ -198,7 +198,8 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 			if (S3TreeView.Current && S3TreeView.Current.FilterString && !node.IsFilterStringMatch(S3TreeView.Current.FilterString)) { continue; }
 			if (S3TreeView.Current && S3TreeView.Current.isShowOnlyFavorite && !(node.IsFav || node.IsAnyChidrenFav())) { continue; }
 			if (S3TreeView.Current && !S3TreeView.Current.isShowHiddenNodes && (node.IsHidden)) { continue; }
-
+			if (S3TreeView.Current && !S3TreeView.Current.isShowHiddenNodes && (node.ProfileToShow && node.ProfileToShow !== S3TreeView.Current.AwsProfile)) { continue; }
+			
 			result.push(node);
 		}
 		return result;
@@ -211,6 +212,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 			if (S3TreeView.Current && S3TreeView.Current.FilterString && !node.IsFilterStringMatch(S3TreeView.Current.FilterString)) { continue; }
 			if (S3TreeView.Current && S3TreeView.Current.isShowOnlyFavorite && !(node.IsFav || node.IsAnyChidrenFav())) { continue; }
 			if (S3TreeView.Current && !S3TreeView.Current.isShowHiddenNodes && (node.IsHidden)) { continue; }
+			if (S3TreeView.Current && !S3TreeView.Current.isShowHiddenNodes && (node.ProfileToShow && node.ProfileToShow !== S3TreeView.Current.AwsProfile)) { continue; }
 
 			node.Parent = BucketNode;
 			if(BucketNode.Children.indexOf(node) === -1)

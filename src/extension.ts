@@ -40,6 +40,10 @@ export function activate(context: vscode.ExtensionContext) {
 		treeView.UnHideNode(node);
 	});
 
+	vscode.commands.registerCommand('S3TreeView.ShowOnlyInThisProfile', (node: S3TreeItem) => {
+		treeView.ShowOnlyInThisProfile(node);
+	});
+
 	vscode.commands.registerCommand('S3TreeView.AddBucket', () => {
 		treeView.AddBucket();
 	});

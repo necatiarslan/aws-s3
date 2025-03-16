@@ -161,6 +161,9 @@ class S3TreeDataProvider {
             if (S3TreeView_1.S3TreeView.Current && !S3TreeView_1.S3TreeView.Current.isShowHiddenNodes && (node.IsHidden)) {
                 continue;
             }
+            if (S3TreeView_1.S3TreeView.Current && !S3TreeView_1.S3TreeView.Current.isShowHiddenNodes && (node.ProfileToShow && node.ProfileToShow !== S3TreeView_1.S3TreeView.Current.AwsProfile)) {
+                continue;
+            }
             result.push(node);
         }
         return result;
@@ -178,6 +181,9 @@ class S3TreeDataProvider {
                 continue;
             }
             if (S3TreeView_1.S3TreeView.Current && !S3TreeView_1.S3TreeView.Current.isShowHiddenNodes && (node.IsHidden)) {
+                continue;
+            }
+            if (S3TreeView_1.S3TreeView.Current && !S3TreeView_1.S3TreeView.Current.isShowHiddenNodes && (node.ProfileToShow && node.ProfileToShow !== S3TreeView_1.S3TreeView.Current.AwsProfile)) {
                 continue;
             }
             node.Parent = BucketNode;

@@ -60,6 +60,10 @@
         "title": "UnHide"
       },
       {
+        "command": "S3TreeView.ShowOnlyInThisProfile",
+        "title": "Show Only In This Profile"
+      },
+      {
         "command": "S3TreeView.AddBucket",
         "title": "Add Bucket",
         "icon": "$(add)"
@@ -204,6 +208,11 @@
         {
           "command": "S3TreeView.UnHideNode",
           "when": "view == S3TreeView && viewItem =~ /#Hidden#/",
+          "group": "Filter"
+        },
+        {
+          "command": "S3TreeView.ShowOnlyInThisProfile",
+          "when": "view == S3TreeView",
           "group": "Filter"
         },
         {

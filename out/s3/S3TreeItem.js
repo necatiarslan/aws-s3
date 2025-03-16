@@ -23,6 +23,7 @@ class S3TreeItem extends vscode.TreeItem {
         this._isFav = false;
         this.Children = [];
         this._isHidden = false;
+        this.ProfileToShow = "";
         this.Text = text;
         this.TreeItemType = treeItemType;
         this.refreshUI();

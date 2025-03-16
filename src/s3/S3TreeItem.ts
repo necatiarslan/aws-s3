@@ -10,6 +10,8 @@ export class S3TreeItem extends vscode.TreeItem {
 	public Parent:S3TreeItem | undefined;
 	public Children:S3TreeItem[] = [];
 	private _isHidden: boolean = false;
+	public ProfileToShow: string = "";
+
 	public set IsHidden(value: boolean) {
 		this._isHidden = value;
 		this.setContextValue();
