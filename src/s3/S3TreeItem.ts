@@ -2,14 +2,31 @@
 import * as vscode from 'vscode';
 
 export class S3TreeItem extends vscode.TreeItem {
-	public IsFav: boolean = false;
+	private _isFav: boolean = false;
 	public TreeItemType:TreeItemType;
 	public Text:string;
 	public Bucket:string | undefined;
 	public Shortcut:string | undefined;
 	public Parent:S3TreeItem | undefined;
 	public Children:S3TreeItem[] = [];
-	public IsHidden: boolean = false;
+	private _isHidden: boolean = false;
+	public set IsHidden(value: boolean) {
+		this._isHidden = value;
+		this.setContextValue();
+	}
+
+	public get IsHidden(): boolean {
+		return this._isHidden;
+	}
+
+	public set IsFav(value: boolean) {
+		this._isFav = value;
+		this.setContextValue();
+	}
+
+	public get IsFav(): boolean {
+		return this._isFav;
+	}
 
 	constructor(text:string, treeItemType:TreeItemType) {
 		super(text);
@@ -18,23 +35,31 @@ export class S3TreeItem extends vscode.TreeItem {
 		this.refreshUI();
 	}
 
+	public setContextValue(){
+		let contextValue = "#";
+		contextValue += this.IsFav ? "Fav#" : "!Fav#";
+		contextValue += this.IsHidden ? "Hidden#" : "!Hidden#";
+		contextValue += this.TreeItemType === TreeItemType.Bucket ? "Bucket#" : "";
+		contextValue += this.TreeItemType === TreeItemType.Shortcut ? "Shortcut#" : "";
+
+		this.contextValue = contextValue;
+	}
+
 	public refreshUI() {
 
 		if(this.TreeItemType === TreeItemType.Bucket)
 		{
 			this.iconPath = new vscode.ThemeIcon('package');
-			this.contextValue = "Bucket"
 		}
 		else if(this.TreeItemType === TreeItemType.Shortcut)
 		{
 			this.iconPath = new vscode.ThemeIcon('file-symlink-directory');
-			this.contextValue = "Shortcut"
 		}
 		else
 		{
 			this.iconPath = new vscode.ThemeIcon('circle-outline');
-			this.contextValue = "Other"
 		}
+		this.setContextValue();
 	}
 
 	public IsAnyChidrenFav(){

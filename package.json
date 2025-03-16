@@ -2,7 +2,7 @@
   "name": "aws-s3-vscode-extension",
   "displayName": "Aws S3",
   "description": "Browse Your AWS S3 Buckets, Upload, Download, Delete Files",
-  "version": "1.7.3",
+  "version": "1.8.0",
   "publisher": "NecatiARSLAN",
   "repository": {
     "type": "git",
@@ -162,26 +162,6 @@
       ],
       "view/item/context": [
         {
-          "command": "S3TreeView.AddToFav",
-          "when": "view == S3TreeView",
-          "group": "Filter"
-        },
-        {
-          "command": "S3TreeView.DeleteFromFav",
-          "when": "view == S3TreeView",
-          "group": "Filter"
-        },
-        {
-          "command": "S3TreeView.HideNode",
-          "when": "view == S3TreeView",
-          "group": "Filter"
-        },
-        {
-          "command": "S3TreeView.UnHideNode",
-          "when": "view == S3TreeView",
-          "group": "Filter"
-        },
-        {
           "command": "S3TreeView.RemoveBucket",
           "when": "view == S3TreeView && viewItem == Bucket",
           "group": "Bucket"
@@ -198,13 +178,33 @@
         },
         {
           "command": "S3TreeView.AddShortcut",
-          "when": "view == S3TreeView && viewItem == Bucket",
+          "when": "view == S3TreeView && viewItem =~ /#Bucket#/",
           "group": "Shortcut"
         },
         {
           "command": "S3TreeView.CopyShortcut",
-          "when": "view == S3TreeView && viewItem == Shortcut",
+          "when": "view == S3TreeView && viewItem =~ /#Shortcut#/",
           "group": "Shortcut"
+        },
+        {
+          "command": "S3TreeView.AddToFav",
+          "when": "view == S3TreeView && viewItem =~ /#!Fav#/",
+          "group": "Filter"
+        },
+        {
+          "command": "S3TreeView.DeleteFromFav",
+          "when": "view == S3TreeView && viewItem =~ /#Fav#/",
+          "group": "Filter"
+        },
+        {
+          "command": "S3TreeView.HideNode",
+          "when": "view == S3TreeView && viewItem =~ /#!Hidden#/",
+          "group": "Filter"
+        },
+        {
+          "command": "S3TreeView.UnHideNode",
+          "when": "view == S3TreeView && viewItem =~ /#Hidden#/",
+          "group": "Filter"
         },
         {
           "command": "S3TreeView.ShowS3Explorer",

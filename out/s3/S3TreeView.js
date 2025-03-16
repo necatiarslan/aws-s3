@@ -80,7 +80,7 @@ class S3TreeView {
     async AddToFav(node) {
         ui.logToOutput('S3TreeView.AddToFav Started');
         node.IsFav = true;
-        node.refreshUI();
+        this.treeDataProvider.Refresh();
     }
     async HideNode(node) {
         ui.logToOutput('S3TreeView.HideNode Started');
@@ -90,11 +90,12 @@ class S3TreeView {
     async UnHideNode(node) {
         ui.logToOutput('S3TreeView.UnHideNode Started');
         node.IsHidden = false;
+        this.treeDataProvider.Refresh();
     }
     async DeleteFromFav(node) {
         ui.logToOutput('S3TreeView.DeleteFromFav Started');
         node.IsFav = false;
-        node.refreshUI();
+        this.treeDataProvider.Refresh();
     }
     async Filter() {
         ui.logToOutput('S3TreeView.Filter Started');

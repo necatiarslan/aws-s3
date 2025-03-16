@@ -121,6 +121,7 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Drag/Drop files and folders to upload
 - Show progressbar when uploading, downloading, deleting etc
 - NoSuchBucket: The specified bucket does not exist handle error and show error message
+- Save IsFav and IsHidden node properties
 ## Nice To Have
 - Use vscode icons for files and folders
 - Auto refresh option
