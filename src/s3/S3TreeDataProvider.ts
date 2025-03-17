@@ -13,12 +13,12 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 	ShortcutNodeList: S3TreeItem[] = [];
 
 	public BucketList: string[] = [];
-	public ShortcutList: [[string,string]] = [["???","???"]]; //TODO fix
+	public ShortcutList: { Bucket:string, Shortcut:string }[] = [];
 	public ViewType:ViewType = ViewType.Bucket_Shortcut;
 	public BucketProfileList: { Bucket:string, Profile:string }[] = [];
 
 	constructor() {
-		this.ShortcutList.splice(0,1);
+		
 	}
 
 	Refresh(): void {
@@ -38,7 +38,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 		this.LoadBucketNodeList();
 	}
 
-	public SetShortcutList(ShortcutList: [[string,string]]){
+	public SetShortcutList(ShortcutList: { Bucket:string, Shortcut:string }[]){
 		this.ShortcutList = ShortcutList;
 		this.LoadShortcutNodeList();
 	}
@@ -86,7 +86,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 	RemoveBucket(Bucket:string){
 		for(let i = 0; i < this.ShortcutList.length; i++)
 		{
-			if(this.ShortcutList[i][0] === Bucket)
+			if(this.ShortcutList[i]["Bucket"] === Bucket)
 			{
 				this.ShortcutList.splice(i, 1);
 				i--;
@@ -109,7 +109,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 	RemoveAllShortcuts(Bucket:string){
 		for(let i = 0; i < this.ShortcutList.length; i++)
 		{
-			if(this.ShortcutList[i][0] === Bucket)
+			if(this.ShortcutList[i]["Bucket"] === Bucket)
 			{
 				this.ShortcutList.splice(i, 1);
 				i--;
@@ -124,7 +124,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 
 		for(var ls of this.ShortcutList)
 		{
-			if(ls[0] === Bucket && ls[1] === Key)
+			if(ls["Bucket"] === Bucket && ls["Shortcut"] === Key)
 			{
 				return true;
 			}
@@ -140,7 +140,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 			return;
 		}
 
-		this.ShortcutList.push([Bucket, Key]);
+		this.ShortcutList.push({Bucket:Bucket, Shortcut:Key});
 		this.LoadShortcutNodeList();
 		this.Refresh();
 	}
@@ -148,7 +148,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 	RemoveShortcut(Bucket:string, Shortcut:string){
 		for(let i = 0; i < this.ShortcutList.length; i++)
 		{
-			if(this.ShortcutList[i][0] === Bucket && this.ShortcutList[i][1] === Shortcut)
+			if(this.ShortcutList[i]["Bucket"] === Bucket && this.ShortcutList[i]["Shortcut"] === Shortcut)
 			{
 				this.ShortcutList.splice(i, 1);
 				i--;
@@ -161,9 +161,9 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 	UpdateShortcut(Bucket:string, Shortcut:string, NewShortcut:string){
 		for(let i = 0; i < this.ShortcutList.length; i++)
 		{
-			if(this.ShortcutList[i][0] === Bucket && this.ShortcutList[i][1] === Shortcut)
+			if(this.ShortcutList[i]["Bucket"] === Bucket && this.ShortcutList[i]["Shortcut"] === Shortcut)
 			{
-				this.ShortcutList[i][1] = NewShortcut
+				this.ShortcutList[i]["Shortcut"] = NewShortcut
 			}
 		}
 		this.LoadShortcutNodeList();
@@ -188,9 +188,9 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 		
 		for(var lg of this.ShortcutList)
 		{
-			let treeItem = new S3TreeItem(lg[1], TreeItemType.Shortcut);
-			treeItem.Bucket = lg[0];
-			treeItem.Shortcut = lg[1];
+			let treeItem = new S3TreeItem(lg["Shortcut"], TreeItemType.Shortcut);
+			treeItem.Bucket = lg["Bucket"];
+			treeItem.Shortcut = lg["Shortcut"];
 			this.ShortcutNodeList.push(treeItem);
 		}
 	}

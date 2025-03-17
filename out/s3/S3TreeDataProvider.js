@@ -12,10 +12,9 @@ class S3TreeDataProvider {
         this.BucketNodeList = [];
         this.ShortcutNodeList = [];
         this.BucketList = [];
-        this.ShortcutList = [["???", "???"]]; //TODO fix
+        this.ShortcutList = [];
         this.ViewType = ViewType.Bucket_Shortcut;
         this.BucketProfileList = [];
-        this.ShortcutList.splice(0, 1);
     }
     Refresh() {
         this._onDidChangeTreeData.fire();
@@ -73,7 +72,7 @@ class S3TreeDataProvider {
     }
     RemoveBucket(Bucket) {
         for (let i = 0; i < this.ShortcutList.length; i++) {
-            if (this.ShortcutList[i][0] === Bucket) {
+            if (this.ShortcutList[i]["Bucket"] === Bucket) {
                 this.ShortcutList.splice(i, 1);
                 i--;
             }
@@ -90,7 +89,7 @@ class S3TreeDataProvider {
     }
     RemoveAllShortcuts(Bucket) {
         for (let i = 0; i < this.ShortcutList.length; i++) {
-            if (this.ShortcutList[i][0] === Bucket) {
+            if (this.ShortcutList[i]["Bucket"] === Bucket) {
                 this.ShortcutList.splice(i, 1);
                 i--;
             }
@@ -103,7 +102,7 @@ class S3TreeDataProvider {
             return false;
         }
         for (var ls of this.ShortcutList) {
-            if (ls[0] === Bucket && ls[1] === Key) {
+            if (ls["Bucket"] === Bucket && ls["Shortcut"] === Key) {
                 return true;
             }
         }
@@ -116,13 +115,13 @@ class S3TreeDataProvider {
         if (this.DoesShortcutExists(Bucket, Key)) {
             return;
         }
-        this.ShortcutList.push([Bucket, Key]);
+        this.ShortcutList.push({ Bucket: Bucket, Shortcut: Key });
         this.LoadShortcutNodeList();
         this.Refresh();
     }
     RemoveShortcut(Bucket, Shortcut) {
         for (let i = 0; i < this.ShortcutList.length; i++) {
-            if (this.ShortcutList[i][0] === Bucket && this.ShortcutList[i][1] === Shortcut) {
+            if (this.ShortcutList[i]["Bucket"] === Bucket && this.ShortcutList[i]["Shortcut"] === Shortcut) {
                 this.ShortcutList.splice(i, 1);
                 i--;
             }
@@ -132,8 +131,8 @@ class S3TreeDataProvider {
     }
     UpdateShortcut(Bucket, Shortcut, NewShortcut) {
         for (let i = 0; i < this.ShortcutList.length; i++) {
-            if (this.ShortcutList[i][0] === Bucket && this.ShortcutList[i][1] === Shortcut) {
-                this.ShortcutList[i][1] = NewShortcut;
+            if (this.ShortcutList[i]["Bucket"] === Bucket && this.ShortcutList[i]["Shortcut"] === Shortcut) {
+                this.ShortcutList[i]["Shortcut"] = NewShortcut;
             }
         }
         this.LoadShortcutNodeList();
@@ -152,9 +151,9 @@ class S3TreeDataProvider {
     LoadShortcutNodeList() {
         this.ShortcutNodeList = [];
         for (var lg of this.ShortcutList) {
-            let treeItem = new S3TreeItem_1.S3TreeItem(lg[1], S3TreeItem_1.TreeItemType.Shortcut);
-            treeItem.Bucket = lg[0];
-            treeItem.Shortcut = lg[1];
+            let treeItem = new S3TreeItem_1.S3TreeItem(lg["Shortcut"], S3TreeItem_1.TreeItemType.Shortcut);
+            treeItem.Bucket = lg["Bucket"];
+            treeItem.Shortcut = lg["Shortcut"];
             this.ShortcutNodeList.push(treeItem);
         }
     }

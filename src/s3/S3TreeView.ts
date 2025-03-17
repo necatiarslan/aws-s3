@@ -228,8 +228,29 @@ export class S3TreeView {
 			{
 				this.treeDataProvider.SetBucketList(BucketListTemp);
 			}
-
-			let ShortcutListTemp:[[string,string]] | undefined  = this.context.globalState.get('ShortcutList');
+			
+			let ShortcutListTemp: {Bucket: string, Shortcut: string}[] | undefined
+			//TODO: Remove this legacy code after 1 year
+			try
+			{
+				let legacyShortcutListTemp:[[string,string]] | undefined
+				legacyShortcutListTemp  = this.context.globalState.get('ShortcutList');
+				if(legacyShortcutListTemp && Array.isArray(legacyShortcutListTemp) && legacyShortcutListTemp[0] && Array.isArray(legacyShortcutListTemp[0]))
+				{
+					ShortcutListTemp = [];
+					for(let i = 0; i < legacyShortcutListTemp.length; i++)
+					{
+						ShortcutListTemp.push({Bucket: legacyShortcutListTemp[i][0], Shortcut: legacyShortcutListTemp[i][1]});
+					}
+				}
+			}
+			catch {}
+			
+			if(!ShortcutListTemp)
+			{
+				ShortcutListTemp  = this.context.globalState.get('ShortcutList');
+			}
+			
 			if(ShortcutListTemp)
 			{
 				this.treeDataProvider.SetShortcutList(ShortcutListTemp);
