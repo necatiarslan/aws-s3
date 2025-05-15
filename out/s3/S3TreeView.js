@@ -29,12 +29,12 @@ class S3TreeView {
     async TestAwsConnection() {
         let response = await api.TestAwsCredentials();
         if (response.isSuccessful && response.result) {
-            ui.logToOutput('Aws Credentials Test Successfull');
-            ui.showInfoMessage('Aws Credentials Test Successfull');
+            ui.logToOutput('Aws Credentials Found, Test Successfull');
+            ui.showInfoMessage('Aws Credentials Found, Test Successfull');
         }
         else {
-            ui.logToOutput('LambdaTreeView.TestAwsCredentials Error !!!', response.error);
-            ui.showErrorMessage('Aws Credentials Test Error !!!', response.error);
+            ui.logToOutput('S3TreeView.TestAwsConnection Error !!!', response.error);
+            ui.showErrorMessage('Aws Credentials Can Not Be Found !!!', response.error);
         }
         let selectedRegion = await vscode.window.showInputBox({ placeHolder: 'Enter Region Eg: us-east-1', value: 'us-east-1' });
         if (selectedRegion === undefined) {
@@ -46,7 +46,7 @@ class S3TreeView {
             ui.showInfoMessage('Aws Connection Test Successfull');
         }
         else {
-            ui.logToOutput('LambdaTreeView.TestAwsConnection Error !!!', response.error);
+            ui.logToOutput('S3TreeView.TestAwsConnection Error !!!', response.error);
             ui.showErrorMessage('Aws Connection Test Error !!!', response.error);
         }
     }

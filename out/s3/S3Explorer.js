@@ -831,7 +831,7 @@ class S3Explorer {
             return;
         }
         for (var key of keyList) {
-            api.DownloadObject(this.S3ExplorerItem.Bucket, key, selectedFolder[0].path);
+            api.DownloadObject(this.S3ExplorerItem.Bucket, key, selectedFolder[0].fsPath);
         }
         ui.showInfoMessage("File(s) are downloaded");
     }
