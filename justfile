@@ -13,13 +13,16 @@ npm_outdated:
     npx npm-check-updates
 
 npm_upgrade:
+    npm update # update all packages used in the project
+    npm upgrade # update installed packages in your node_modules folder and optionally update the versions listed in your package.json file.
+    # these will not update packages in your package.json file
+
+npm_reinstall:
     brew upgrade # upgrade homebrew
     brew install node # install the latest node version
     npm install -g npm@latest # upgrade to the latest version
     nvm alias default node # set the default node version
     nvm install node # install the latest node version
-
-    npm upgrade # upgrade all packages used in the project
 
 npm_doctor:
     node -v
