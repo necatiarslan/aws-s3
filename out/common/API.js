@@ -592,7 +592,9 @@ const client_s3_7 = require("@aws-sdk/client-s3");
 const fs_1 = require("fs");
 async function DownloadFile(Bucket, Key, TargetPath, s3Client) {
     let result = new MethodResult_1.MethodResult();
-    const TargetFilePath = (0, path_2.join)(TargetPath, s3_helper.GetFileNameWithExtension(Key));
+    let fileName = s3_helper.GetFileNameWithExtension(Key);
+    fileName = ui.SanitizeFileName(fileName);
+    const TargetFilePath = (0, path_2.join)(TargetPath, fileName);
     try {
         const s3 = s3Client || await GetS3Client(); // If no s3Client provided, get a new one
         const params = {

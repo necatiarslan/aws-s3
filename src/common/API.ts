@@ -726,7 +726,9 @@ export async function DownloadFile(
   s3Client?: S3Client
 ): Promise<MethodResult<string>> {
   let result = new MethodResult<string>();
-  const TargetFilePath = join(TargetPath, s3_helper.GetFileNameWithExtension(Key));
+  let fileName = s3_helper.GetFileNameWithExtension(Key);
+  fileName = ui.SanitizeFileName(fileName);
+  const TargetFilePath = join(TargetPath, fileName);
 
   try {
     const s3 = s3Client || await GetS3Client(); // If no s3Client provided, get a new one

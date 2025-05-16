@@ -952,10 +952,10 @@ export class S3Explorer {
 
         for(var file of selectedFileList)
         {
-            let result = await api.UploadFileToFolder(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, file.path);
+            let result = await api.UploadFileToFolder(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, file.fsPath);
             if(result.isSuccessful)
             {
-                ui.showInfoMessage(s3_helper.GetFileNameWithExtension(file.path) + " is uploaded");
+                ui.showInfoMessage(s3_helper.GetFileNameWithExtension(file.fsPath) + " is uploaded");
             }
         }
 
@@ -977,10 +977,10 @@ export class S3Explorer {
 
         let file = selectedFileList[0];
 
-        let result = await api.UploadFile(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, file.path);
+        let result = await api.UploadFile(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, file.fsPath);
         if(result.isSuccessful)
         {
-            ui.showInfoMessage(s3_helper.GetFileNameWithExtension(file.path) + " is replaced");
+            ui.showInfoMessage(s3_helper.GetFileNameWithExtension(file.fsPath) + " is replaced");
             this.Load();
         }
     }
