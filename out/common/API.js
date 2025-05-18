@@ -19,7 +19,7 @@ async function GetCredentials() {
             process.env.AWS_PROFILE = S3TreeView.S3TreeView.Current.AwsProfile;
         }
         // Get credentials using the default provider chain.
-        const provider = (0, credential_providers_1.fromNodeProviderChain)();
+        const provider = (0, credential_providers_1.fromNodeProviderChain)({ ignoreCache: true });
         credentials = await provider();
         if (!credentials) {
             throw new Error("Aws credentials not found !!!");
