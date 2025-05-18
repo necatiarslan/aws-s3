@@ -12,9 +12,8 @@ npm_outdated:
     npm outdated
     npx npm-check-updates
 
-npm_upgrade:
-    npm update # update all packages used in the project
-    npm upgrade # update installed packages in your node_modules folder and optionally update the versions listed in your package.json file.
+npm_update:
+    npm update # update node_nodules and package-lock.json
     # these will not update packages in your package.json file
 
 npm_reinstall:
