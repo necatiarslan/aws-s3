@@ -313,7 +313,7 @@ export class S3Search {
         <table>
             <tr>
                 <td>
-                    <a href="https://github.com/sponsors/necatiarslan" style="cursor: pointer; text-decoration: none;">Sponsor me</a>
+                    <a href="https://github.com/sponsors/necatiarslan" style="cursor: pointer; text-decoration: none;">Donate to support this extension</a>
                 </td>
             </tr>
         </table>
