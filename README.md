@@ -36,7 +36,7 @@ With this extension, you can efficiently perform a wide range of tasks, includin
 Whether you’re a developer, data scientist, or system administrator, the **AWS S3** extension simplifies your workflow with an intuitive, user-friendly interface designed to make S3 resource management faster and more convenient.
 
 ## Sponsor Me
-If you find this extension useful, you can [sponsor me on GitHub](https://github.com/sponsors/necatiarslan).
+If you find this extension useful, you can [donate on GitHub](https://github.com/sponsors/necatiarslan).
 
 ## Survey
 Please take this survey to help me make the extension better.\
@@ -115,20 +115,13 @@ https://github.com/necatiarslan/aws-s3/issues/new
 ## Todo
 - S3 Select Support
 - Stick to Profile or Workspace
+- Share active profile with other extensions
 - Add "Calculate Folder Size" Button but folder view and show folder size and object count
 - Show warning when item is more then 1000
 - Drag/Drop files and folders to upload
 - Show progressbar when uploading, downloading, deleting etc
-- (node:59796) NOTE: The AWS SDK for JavaScript (v2) is in maintenance mode.
-SDK releases are limited to address critical bug fixes and security issues only.
-Please migrate your code to use AWS SDK for JavaScript (v3).
-For more information, check the blog post at https://a.co/cUPnyil
-(Use `Code Helper (Plugin) --trace-warnings ...` to show where the warning was created)
-- Sunsetting the Webview UI Toolkit, migrate to alternative
-    - https://vscode-elements.github.io/
-    - https://github.com/microsoft/fast
-    - https://code.visualstudio.com/docs/nodejs/vuejs-tutorial
 - NoSuchBucket: The specified bucket does not exist handle error and show error message
+- Save IsFav and IsHidden node properties
 ## Nice To Have
 - Use vscode icons for files and folders
 - Auto refresh option
@@ -139,7 +132,6 @@ For more information, check the blog post at https://a.co/cUPnyil
 - Multiple S3 Explorer
 - Highlight Icons On Hover
 - Freeze top bar
-- Fix: Cannot read properties of null (reading '_panel')
 - S3.getBucketAcl to get permissions and enable/disable command buttons
 - Local folder sync
 

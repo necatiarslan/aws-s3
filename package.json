@@ -2,7 +2,7 @@
   "name": "aws-s3-vscode-extension",
   "displayName": "Aws S3",
   "description": "Browse Your AWS S3 Buckets, Upload, Download, Delete Files",
-  "version": "1.7.3",
+  "version": "1.8.0",
   "publisher": "NecatiARSLAN",
   "repository": {
     "type": "git",
@@ -60,6 +60,14 @@
         "title": "UnHide"
       },
       {
+        "command": "S3TreeView.ShowOnlyInThisProfile",
+        "title": "Show Only In This Profile"
+      },
+      {
+        "command": "S3TreeView.ShowInAnyProfile",
+        "title": "Show In Any Profile"
+      },
+      {
         "command": "S3TreeView.AddBucket",
         "title": "Add Bucket",
         "icon": "$(add)"
@@ -108,8 +116,8 @@
         "title": "Set Aws Region"
       },
       {
-        "command": "S3TreeView.AwsCredentialsSetup",
-        "title": "Aws Credentials Setup"
+        "command": "S3TreeView.TestAwsConnection",
+        "title": "Test Aws Connection"
       }
     ],
     "menus": {
@@ -155,56 +163,66 @@
           "group": "other"
         },
         {
-          "command": "S3TreeView.AwsCredentialsSetup",
+          "command": "S3TreeView.TestAwsConnection",
           "when": "view == S3TreeView",
           "group": "other"
         }
       ],
       "view/item/context": [
         {
-          "command": "S3TreeView.AddToFav",
-          "when": "view == S3TreeView",
-          "group": "Filter"
-        },
-        {
-          "command": "S3TreeView.DeleteFromFav",
-          "when": "view == S3TreeView",
-          "group": "Filter"
-        },
-        {
-          "command": "S3TreeView.HideNode",
-          "when": "view == S3TreeView",
-          "group": "Filter"
-        },
-        {
-          "command": "S3TreeView.UnHideNode",
-          "when": "view == S3TreeView",
-          "group": "Filter"
-        },
-        {
           "command": "S3TreeView.RemoveBucket",
-          "when": "view == S3TreeView && viewItem == Bucket",
+          "when": "view == S3TreeView && viewItem =~ /#Bucket#/",
           "group": "Bucket"
         },
         {
           "command": "S3TreeView.Goto",
-          "when": "view == S3TreeView && viewItem == Bucket",
+          "when": "view == S3TreeView && viewItem =~ /#Bucket#/",
           "group": "Bucket"
         },
         {
           "command": "S3TreeView.RemoveShortcut",
-          "when": "view == S3TreeView && viewItem == Shortcut",
+          "when": "view == S3TreeView && viewItem =~ /#Shortcut#/",
           "group": "Shortcut"
         },
         {
           "command": "S3TreeView.AddShortcut",
-          "when": "view == S3TreeView && viewItem == Bucket",
+          "when": "view == S3TreeView && viewItem =~ /#Bucket#/",
           "group": "Shortcut"
         },
         {
           "command": "S3TreeView.CopyShortcut",
-          "when": "view == S3TreeView && viewItem == Shortcut",
+          "when": "view == S3TreeView && viewItem =~ /#Shortcut#/",
           "group": "Shortcut"
+        },
+        {
+          "command": "S3TreeView.AddToFav",
+          "when": "view == S3TreeView && viewItem =~ /#!Fav#/",
+          "group": "Filter"
+        },
+        {
+          "command": "S3TreeView.DeleteFromFav",
+          "when": "view == S3TreeView && viewItem =~ /#Fav#/",
+          "group": "Filter"
+        },
+        {
+          "command": "S3TreeView.HideNode",
+          "when": "view == S3TreeView && viewItem =~ /#!Hidden#/",
+          "group": "Filter"
+        },
+        {
+          "command": "S3TreeView.UnHideNode",
+          "when": "view == S3TreeView && viewItem =~ /#Hidden#/",
+          "group": "Filter"
+        },
+        {
+          "command": "S3TreeView.ShowOnlyInThisProfile",
+          "when": "view == S3TreeView && viewItem =~ /#NoProfile#/",
+          "group": "Filter"
+        },
+        {
+          "command": "S3TreeView.ShowInAnyProfile",
+          "when": "view == S3TreeView && viewItem =~ /#Profile#/",
+          "group": "Filter"
         },
         {
           "command": "S3TreeView.ShowS3Explorer",
@@ -239,7 +257,7 @@
     "viewsWelcome": [
       {
         "view": "S3TreeView",
-        "contents": "Please click [+] to add your buckets. \n [Add Bucket](command:S3TreeView.AddBucket) \n Leave bucket name empty to get all your buckets. You can enter bucket name partially. \n If you can not connect after a while check your Aws Credentials, Network and Proxy settings. \n\n\n\n To Access Aws, you need to configure aws credentials. \n For more detail on Aws Credentials [Click Here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) \n For a Youtube Tutorial [Click Here](https://www.youtube.com/watch?v=SON8sY1iOBU) \n [Test Aws Credentials](command:S3TreeView.AwsCredentialsSetup) \n [Update Aws EndPoint](command:S3TreeView.UpdateAwsEndPoint)"
+        "contents": "Please click [+] to add your buckets. \n [Add Bucket](command:S3TreeView.AddBucket) \n Leave bucket name empty to get all your buckets. You can enter bucket name partially. \n If you can not connect after a while check your Aws Credentials, Network and Proxy settings. \n\n\n\n To Access Aws, you need to configure aws credentials. \n For more detail on Aws Credentials [Click Here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) \n For a Youtube Tutorial [Click Here](https://www.youtube.com/watch?v=SON8sY1iOBU) \n [Test Aws Connection](command:S3TreeView.TestAwsConnection) \n [Update Aws EndPoint](command:S3TreeView.UpdateAwsEndPoint)"
       }
     ]
   },
@@ -263,9 +281,12 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@aws-sdk/credential-provider-node": "^3.181.0",
-    "@vscode/webview-ui-toolkit": "^1.4.0",
-    "aws-sdk": "^2.1271.0",
-    "tmp": "^0.2.1"
+    "@aws-sdk/client-iam": "^3.750.0",
+    "@aws-sdk/client-s3": "^3.750.0",
+    "@aws-sdk/client-sts": "^3.750.0",
+    "@aws-sdk/credential-providers": "^3.750.0",
+    "@vscode-elements/elements": "^1.13.1",
+    "@vscode/codicons": "^0.0.36",
+    "tmp": "^0.2.3"
   }
 }

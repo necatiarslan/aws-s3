@@ -206,3 +206,8 @@ export function CopyListToClipboard(textList:string[]): MethodResult<boolean>
   
   return CopyToClipboard(text);
 }
+
+export function SanitizeFileName(filename: string): string {
+  // Replace invalid characters with underscores
+  return filename.replace(/[<>:"/\\|?*\x00-\x1F]/g, '_').replace(/[\u{80}-\u{9F}]/gu, '_');
+}

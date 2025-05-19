@@ -114,13 +114,7 @@ class S3Search {
     _getWebviewContent(webview, extensionUri) {
         ui.logToOutput('S3Search._getWebviewContent Started');
         //file URIs
-        const toolkitUri = ui.getUri(webview, extensionUri, [
-            "node_modules",
-            "@vscode",
-            "webview-ui-toolkit",
-            "dist",
-            "toolkit.js",
-        ]);
+        const vscodeElementsUri = ui.getUri(webview, extensionUri, ["node_modules", "@vscode-elements", "elements", "dist", "bundled.js"]);
         const s3SearchJSUri = ui.getUri(webview, extensionUri, ["media", "s3SearchJS.js"]);
         const styleUri = ui.getUri(webview, extensionUri, ["media", "style.css"]);
         const codiconsUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'node_modules', '@vscode/codicons', 'dist', 'codicon.css'));
@@ -153,13 +147,14 @@ class S3Search {
                             <vscode-checkbox id="checkbox_${file.Key}" ></vscode-checkbox>
                         </td>
                         <td style="width:20px">
-                            <vscode-button appearance="icon" id="add_shortcut_${file.Key}">
-                                <span><img src="${S3TreeView_1.S3TreeView.Current?.DoesShortcutExists(this.S3ExplorerItem.Bucket, file.Key) ? bookmark_yesUri : bookmark_noUri}"></img></span>
-                            </vscode-button>
+                            <img 
+                                id="add_shortcut_${file.Key}"
+                                src="${S3TreeView_1.S3TreeView.Current?.DoesShortcutExists(this.S3ExplorerItem.Bucket, file.Key) ? bookmark_yesUri : bookmark_noUri}">
+                            </img>
                         </td>
                         <td style="white-space:nowrap;">
                             <img src="${isFile ? fileUri : folderUri}"></img>
-                            <vscode-link id="open_${file.Key}">${isFile ? fileName : folderName}</vscode-link>
+                            <a id="open_${file.Key}">${isFile ? fileName : folderName}</a>
                         </td>
                         <td style="white-space:nowrap;">
                             ${s3_helper.GetParentFolderKey(file.Key)}
@@ -185,9 +180,9 @@ class S3Search {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width,initial-scale=1.0">
-        <script type="module" src="${toolkitUri}"></script>
+        <script type="module" src="${vscodeElementsUri}"></script>
         <script type="module" src="${s3SearchJSUri}"></script>
-        <link href="${codiconsUri}" rel="stylesheet" />
+        <link href="${codiconsUri}" rel="stylesheet" id="vscode-codicon-stylesheet"/>
         <link rel="stylesheet" href="${styleUri}">
         <title></title>
       </head>
@@ -199,30 +194,31 @@ class S3Search {
 
         <table>
             <tr>
-                <td colspan="3" style="text-align:left">
-                    <vscode-text-field id="file_name" placeholder="File Name" value="${this.FileName}">
-                        <span slot="start" class="codicon codicon-search"></span>
-                    </vscode-text-field>
+                <td colspan="3">
+                    <vscode-textfield id="file_name" placeholder="File Name" value="${this.FileName}" style="width: 20ch; vertical-align: top;">
+                        <vscode-icon slot="content-before" name="search" title="search"></vscode-icon>
+                    </vscode-textfield>
 
-                    <vscode-text-field id="file_extension" placeholder="Extension" value="${this.FileExtension}">
-                        <span slot="start" class="codicon codicon-search"></span>
-                    </vscode-text-field>
+                    <vscode-textfield id="file_extension" placeholder="Extension" value="${this.FileExtension}" style="width: 20ch; vertical-align: top;">
+                        <vscode-icon slot="content-before" name="search" title="search"></vscode-icon>
+                    </vscode-textfield>
 
-                    <vscode-text-field id="folder_name" placeholder="Key / Folder" value="${this.FolderName}">
-                        <span slot="start" class="codicon codicon-search"></span>
-                    </vscode-text-field>
+                    <vscode-textfield id="folder_name" placeholder="Key / Folder" value="${this.FolderName}" style="width: 20ch;">
+                        <vscode-icon slot="content-before" name="search" title="search"></vscode-icon>
+                    </vscode-textfield>
+
+                    <vscode-single-select style="width: 100px; vertical-align: top;" id="copy_dropdown">
+                        <vscode-option>Copy</vscode-option>
+                        <vscode-option>File Name(s) No Ext</vscode-option>
+                        <vscode-option>File Name(s) /w Ext</vscode-option>
+                        <vscode-option>Key(s)</vscode-option>
+                        <vscode-option>ARN(s)</vscode-option>
+                        <vscode-option>S3 URI(s)</vscode-option>
+                        <vscode-option>URL(s)</vscode-option>
+                    </vscode-single-select>
                 </td>
-                <td colspan="4" style="text-align:right">
-                <vscode-button appearance="secondary" id="refresh">Search</vscode-button>
-                <vscode-dropdown style="width: 200px" id="copy_dropdown">
-                    <vscode-option>Copy</vscode-option>
-                    <vscode-option>File Name(s) No Ext</vscode-option>
-                    <vscode-option>File Name(s) /w Ext</vscode-option>
-                    <vscode-option>Key(s)</vscode-option>
-                    <vscode-option>ARN(s)</vscode-option>
-                    <vscode-option>S3 URI(s)</vscode-option>
-                    <vscode-option>URL(s)</vscode-option>
-                </vscode-dropdown>
+                <td colspan="4" style="text-align:right;">
+                    <vscode-button secondary id="refresh" style="vertical-align: top;">Search</vscode-button>
                 </td>
             </tr>
             </table>
@@ -249,8 +245,8 @@ class S3Search {
                     Select
                 </th>
                 <th colspan="2" style="text-align:left">
-                    <vscode-button appearance="secondary" id="select_all">All</vscode-button>
-                    <vscode-button appearance="secondary" id="select_none">None</vscode-button>
+                    <vscode-button secondary id="select_all">All</vscode-button>
+                    <vscode-button secondary id="select_none">None</vscode-button>
                 </th>
                 <th colspan="4" style="text-align:right">
                     ${fileCounter} File(s), ${folderCounter} Folder(s) 
@@ -267,21 +263,21 @@ class S3Search {
         <table>
             <tr>
                 <td>
-                    <vscode-link href="https://github.com/necatiarslan/aws-s3/issues/new">Bug Report & Feature Request</vscode-link>
+                    <a href="https://github.com/necatiarslan/aws-s3/issues/new" style="cursor: pointer; text-decoration: none;">Bug Report & Feature Request</a>
                 </td>
             </tr>
         </table>
         <table>
             <tr>
                 <td>
-                    <vscode-link href="https://bit.ly/s3-extension-survey">New Feature Survey</vscode-link>
+                    <a href="https://bit.ly/s3-extension-survey" style="cursor: pointer; text-decoration: none;">New Feature Survey</a>
                 </td>
             </tr>
         </table>
         <table>
             <tr>
                 <td>
-                    <vscode-link href="https://github.com/sponsors/necatiarslan">Sponsor me</vscode-link>
+                    <a href="https://github.com/sponsors/necatiarslan" style="cursor: pointer; text-decoration: none;">Donate to support this extension</a>
                 </td>
             </tr>
         </table>

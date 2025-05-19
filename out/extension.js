@@ -31,6 +31,12 @@ function activate(context) {
     vscode.commands.registerCommand('S3TreeView.UnHideNode', (node) => {
         treeView.UnHideNode(node);
     });
+    vscode.commands.registerCommand('S3TreeView.ShowOnlyInThisProfile', (node) => {
+        treeView.ShowOnlyInThisProfile(node);
+    });
+    vscode.commands.registerCommand('S3TreeView.ShowInAnyProfile', (node) => {
+        treeView.ShowInAnyProfile(node);
+    });
     vscode.commands.registerCommand('S3TreeView.AddBucket', () => {
         treeView.AddBucket();
     });
@@ -64,8 +70,8 @@ function activate(context) {
     vscode.commands.registerCommand('S3TreeView.SetAwsRegion', () => {
         treeView.SetAwsRegion();
     });
-    vscode.commands.registerCommand('S3TreeView.AwsCredentialsSetup', () => {
-        treeView.AwsCredentialsSetup();
+    vscode.commands.registerCommand('S3TreeView.TestAwsConnection', () => {
+        treeView.TestAwsConnection();
     });
     ui.logToOutput('Aws S3 Extension activation completed');
 }

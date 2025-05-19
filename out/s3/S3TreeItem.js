@@ -4,28 +4,57 @@ exports.TreeItemType = exports.S3TreeItem = void 0;
 /* eslint-disable @typescript-eslint/naming-convention */
 const vscode = require("vscode");
 class S3TreeItem extends vscode.TreeItem {
+    set ProfileToShow(value) {
+        this._profileToShow = value;
+        this.setContextValue();
+    }
+    get ProfileToShow() {
+        return this._profileToShow;
+    }
+    set IsHidden(value) {
+        this._isHidden = value;
+        this.setContextValue();
+    }
+    get IsHidden() {
+        return this._isHidden;
+    }
+    set IsFav(value) {
+        this._isFav = value;
+        this.setContextValue();
+    }
+    get IsFav() {
+        return this._isFav;
+    }
     constructor(text, treeItemType) {
         super(text);
-        this.IsFav = false;
+        this._isFav = false;
         this.Children = [];
-        this.IsHidden = false;
+        this._isHidden = false;
+        this._profileToShow = "";
         this.Text = text;
         this.TreeItemType = treeItemType;
         this.refreshUI();
     }
+    setContextValue() {
+        let contextValue = "#";
+        contextValue += this.IsFav ? "Fav#" : "!Fav#";
+        contextValue += this.IsHidden ? "Hidden#" : "!Hidden#";
+        contextValue += this.TreeItemType === TreeItemType.Bucket ? "Bucket#" : "";
+        contextValue += this.TreeItemType === TreeItemType.Shortcut ? "Shortcut#" : "";
+        contextValue += this.ProfileToShow ? "Profile#" : "NoProfile#";
+        this.contextValue = contextValue;
+    }
     refreshUI() {
         if (this.TreeItemType === TreeItemType.Bucket) {
             this.iconPath = new vscode.ThemeIcon('package');
-            this.contextValue = "Bucket";
         }
         else if (this.TreeItemType === TreeItemType.Shortcut) {
             this.iconPath = new vscode.ThemeIcon('file-symlink-directory');
-            this.contextValue = "Shortcut";
         }
         else {
             this.iconPath = new vscode.ThemeIcon('circle-outline');
-            this.contextValue = "Other";
         }
+        this.setContextValue();
     }
     IsAnyChidrenFav() {
         return this.IsAnyChidrenFavInternal(this);

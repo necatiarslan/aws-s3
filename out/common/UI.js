@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CopyListToClipboard = exports.CopyToClipboard = exports.bytesToText = exports.isValidDate = exports.isJsonString = exports.convertMsToTime = exports.getDuration = exports.getSeconds = exports.getMilliSeconds = exports.openFile = exports.getExtensionVersion = exports.showErrorMessage = exports.showWarningMessage = exports.showInfoMessage = exports.logToOutput = exports.showOutputMessage = exports.getUri = void 0;
+exports.SanitizeFileName = exports.CopyListToClipboard = exports.CopyToClipboard = exports.bytesToText = exports.isValidDate = exports.isJsonString = exports.convertMsToTime = exports.getDuration = exports.getSeconds = exports.getMilliSeconds = exports.openFile = exports.getExtensionVersion = exports.showErrorMessage = exports.showWarningMessage = exports.showInfoMessage = exports.logToOutput = exports.showOutputMessage = exports.getUri = void 0;
 const vscode = require("vscode");
 const fs_1 = require("fs");
 const path_1 = require("path");
@@ -176,4 +176,9 @@ function CopyListToClipboard(textList) {
     return CopyToClipboard(text);
 }
 exports.CopyListToClipboard = CopyListToClipboard;
+function SanitizeFileName(filename) {
+    // Replace invalid characters with underscores
+    return filename.replace(/[<>:"/\\|?*\x00-\x1F]/g, '_').replace(/[\u{80}-\u{9F}]/gu, '_');
+}
+exports.SanitizeFileName = SanitizeFileName;
 //# sourceMappingURL=UI.js.map

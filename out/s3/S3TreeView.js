@@ -17,18 +17,38 @@ class S3TreeView {
         this.AwsProfile = "default";
         this.IsSharedIniFileCredentials = false;
         ui.logToOutput('TreeView.constructor Started');
+        S3TreeView.Current = this;
         this.context = context;
         this.treeDataProvider = new S3TreeDataProvider_1.S3TreeDataProvider();
         this.LoadState();
         this.view = vscode.window.createTreeView('S3TreeView', { treeDataProvider: this.treeDataProvider, showCollapseAll: true });
         this.Refresh();
         context.subscriptions.push(this.view);
-        S3TreeView.Current = this;
         this.SetFilterMessage();
-        this.TestAwsConnection();
     }
-    TestAwsConnection() {
-        api.TestAwsConnection();
+    async TestAwsConnection() {
+        let response = await api.TestAwsCredentials();
+        if (response.isSuccessful && response.result) {
+            ui.logToOutput('Aws Credentials Found, Test Successfull');
+            ui.showInfoMessage('Aws Credentials Found, Test Successfull');
+        }
+        else {
+            ui.logToOutput('S3TreeView.TestAwsConnection Error !!!', response.error);
+            ui.showErrorMessage('Aws Credentials Can Not Be Found !!!', response.error);
+        }
+        let selectedRegion = await vscode.window.showInputBox({ placeHolder: 'Enter Region Eg: us-east-1', value: 'us-east-1' });
+        if (selectedRegion === undefined) {
+            return;
+        }
+        response = await api.TestAwsConnection(selectedRegion);
+        if (response.isSuccessful && response.result) {
+            ui.logToOutput('Aws Connection Test Successfull');
+            ui.showInfoMessage('Aws Connection Test Successfull');
+        }
+        else {
+            ui.logToOutput('S3TreeView.TestAwsConnection Error !!!', response.error);
+            ui.showErrorMessage('Aws Connection Test Error !!!', response.error);
+        }
     }
     Refresh() {
         ui.logToOutput('S3TreeView.refresh Started');
@@ -60,7 +80,7 @@ class S3TreeView {
     async AddToFav(node) {
         ui.logToOutput('S3TreeView.AddToFav Started');
         node.IsFav = true;
-        node.refreshUI();
+        this.treeDataProvider.Refresh();
     }
     async HideNode(node) {
         ui.logToOutput('S3TreeView.HideNode Started');
@@ -70,11 +90,40 @@ class S3TreeView {
     async UnHideNode(node) {
         ui.logToOutput('S3TreeView.UnHideNode Started');
         node.IsHidden = false;
+        this.treeDataProvider.Refresh();
+    }
+    async ShowOnlyInThisProfile(node) {
+        ui.logToOutput('S3TreeView.ShowOnlyInThisProfile Started');
+        if (node.TreeItemType !== S3TreeItem_1.TreeItemType.Bucket) {
+            return;
+        }
+        if (!node.Bucket) {
+            return;
+        }
+        if (this.AwsProfile) {
+            node.ProfileToShow = this.AwsProfile;
+            this.treeDataProvider.AddBucketProfile(node.Bucket, node.ProfileToShow);
+            this.treeDataProvider.Refresh();
+            this.SaveState();
+        }
+    }
+    async ShowInAnyProfile(node) {
+        ui.logToOutput('S3TreeView.ShowInAnyProfile Started');
+        if (node.TreeItemType !== S3TreeItem_1.TreeItemType.Bucket) {
+            return;
+        }
+        if (!node.Bucket) {
+            return;
+        }
+        node.ProfileToShow = "";
+        this.treeDataProvider.RemoveBucketProfile(node.Bucket);
+        this.treeDataProvider.Refresh();
+        this.SaveState();
     }
     async DeleteFromFav(node) {
         ui.logToOutput('S3TreeView.DeleteFromFav Started');
         node.IsFav = false;
-        node.refreshUI();
+        this.treeDataProvider.Refresh();
     }
     async Filter() {
         ui.logToOutput('S3TreeView.Filter Started');
@@ -116,6 +165,7 @@ class S3TreeView {
             this.context.globalState.update('ViewType', this.treeDataProvider.ViewType);
             this.context.globalState.update('AwsEndPoint', this.AwsEndPoint);
             this.context.globalState.update('AwsRegion', this.AwsRegion);
+            this.context.globalState.update('BucketProfileList', this.treeDataProvider.BucketProfileList);
             ui.logToOutput("S3TreeView.saveState Successfull");
         }
         catch (error) {
@@ -141,11 +191,30 @@ class S3TreeView {
             if (ShowHiddenNodesTemp) {
                 this.isShowHiddenNodes = ShowHiddenNodesTemp;
             }
+            let BucketProfileListTemp = this.context.globalState.get('BucketProfileList');
+            if (BucketProfileListTemp) {
+                this.treeDataProvider.BucketProfileList = BucketProfileListTemp;
+            }
             let BucketListTemp = this.context.globalState.get('BucketList');
             if (BucketListTemp) {
                 this.treeDataProvider.SetBucketList(BucketListTemp);
             }
-            let ShortcutListTemp = this.context.globalState.get('ShortcutList');
+            let ShortcutListTemp;
+            //TODO: Remove this legacy code after 1 year
+            try {
+                let legacyShortcutListTemp;
+                legacyShortcutListTemp = this.context.globalState.get('ShortcutList');
+                if (legacyShortcutListTemp && Array.isArray(legacyShortcutListTemp) && legacyShortcutListTemp[0] && Array.isArray(legacyShortcutListTemp[0])) {
+                    ShortcutListTemp = [];
+                    for (let i = 0; i < legacyShortcutListTemp.length; i++) {
+                        ShortcutListTemp.push({ Bucket: legacyShortcutListTemp[i][0], Shortcut: legacyShortcutListTemp[i][1] });
+                    }
+                }
+            }
+            catch { }
+            if (!ShortcutListTemp) {
+                ShortcutListTemp = this.context.globalState.get('ShortcutList');
+            }
             if (ShortcutListTemp) {
                 this.treeDataProvider.SetShortcutList(ShortcutListTemp);
             }
@@ -176,10 +245,7 @@ class S3TreeView {
         }
     }
     async GetFilterProfilePrompt() {
-        if (await api.IsSharedIniFileCredentials) {
-            return "Profile:" + this.AwsProfile + " ";
-        }
-        return "";
+        return "Profile:" + this.AwsProfile + " ";
     }
     GetBoolenSign(variable) {
         return variable ? "✓" : "𐄂";
@@ -313,11 +379,6 @@ class S3TreeView {
     }
     async SelectAwsProfile(node) {
         ui.logToOutput('S3TreeView.SelectAwsProfile Started');
-        if (!api.IsSharedIniFileCredentials()) {
-            let credentialProvider = await api.GetCredentialProviderName();
-            ui.showWarningMessage("Your Aws Access method is not credentials file. It is " + credentialProvider);
-            return;
-        }
         var result = await api.GetAwsProfileList();
         if (!result.isSuccessful) {
             return;
@@ -329,10 +390,11 @@ class S3TreeView {
         this.AwsProfile = selectedAwsProfile;
         this.SaveState();
         this.SetFilterMessage();
+        this.treeDataProvider.Refresh();
     }
     async UpdateAwsEndPoint() {
         ui.logToOutput('S3TreeView.UpdateAwsEndPoint Started');
-        let awsEndPointUrl = await vscode.window.showInputBox({ placeHolder: 'Enter Aws End Point URL (Leave Empty To Return To Default)' });
+        let awsEndPointUrl = await vscode.window.showInputBox({ placeHolder: 'Enter Aws End Point URL (Leave Empty To Return To Default)', value: this.AwsEndPoint });
         if (awsEndPointUrl === undefined) {
             return;
         }
@@ -343,6 +405,7 @@ class S3TreeView {
             this.AwsEndPoint = awsEndPointUrl;
         }
         this.SaveState();
+        ui.showInfoMessage('Aws End Point Updated');
     }
     async SetAwsRegion() {
         ui.logToOutput('S3TreeView.UpdateAwsRegion Started');
@@ -357,22 +420,6 @@ class S3TreeView {
             this.AwsRegion = awsRegion;
         }
         this.SaveState();
-    }
-    async AwsCredentialsSetup() {
-        ui.logToOutput('S3TreeView.AwsCredentialsSetup Started');
-        try {
-            let credentials = await api.GetCredentials();
-            if (!credentials) {
-                return;
-            }
-            let credentialProvider = await api.GetCredentialProviderName(credentials);
-            ui.showWarningMessage("Aws Credentails Provider : " + credentialProvider);
-            ui.showWarningMessage("Aws Credentails Access Key : " + credentials.accessKeyId);
-        }
-        catch (error) {
-            ui.showErrorMessage('AwsCredentialsSetup Error !!!', error);
-            ui.logToOutput("AwsCredentialsSetup Error !!!", error);
-        }
     }
 }
 exports.S3TreeView = S3TreeView;

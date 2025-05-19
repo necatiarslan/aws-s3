@@ -2,6 +2,7 @@
 import * as vscode from 'vscode';
 import { S3TreeItem, TreeItemType } from './S3TreeItem';
 import { S3TreeView } from './S3TreeView';
+import * as ui from '../common/UI';
 
 export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 {
@@ -12,11 +13,12 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 	ShortcutNodeList: S3TreeItem[] = [];
 
 	public BucketList: string[] = [];
-	public ShortcutList: [[string,string]] = [["???","???"]];
+	public ShortcutList: { Bucket:string, Shortcut:string }[] = [];
 	public ViewType:ViewType = ViewType.Bucket_Shortcut;
+	public BucketProfileList: { Bucket:string, Profile:string }[] = [];
 
 	constructor() {
-		this.ShortcutList.splice(0,1);
+		
 	}
 
 	Refresh(): void {
@@ -36,9 +38,41 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 		this.LoadBucketNodeList();
 	}
 
-	public SetShortcutList(ShortcutList: [[string,string]]){
+	public SetShortcutList(ShortcutList: { Bucket:string, Shortcut:string }[]){
 		this.ShortcutList = ShortcutList;
 		this.LoadShortcutNodeList();
+	}
+
+	public AddBucketProfile(Bucket:string, Profile:string){
+		if(!Bucket || !Profile) { return; }
+		
+		let profile = this.GetBucketProfile(Bucket);
+		if(profile === Profile){ return; }
+		if(profile && profile !== Profile){ this.RemoveBucketProfile(Bucket); }
+
+		this.BucketProfileList.push({Bucket:Bucket, Profile:Profile});
+	}
+
+	public RemoveBucketProfile(Bucket:string){
+		for(let i = 0; i < this.BucketProfileList.length; i++)
+		{
+			if(this.BucketProfileList[i].Bucket === Bucket)
+			{
+				this.BucketProfileList.splice(i, 1);
+				i--;
+			}
+		}
+	}
+
+	public GetBucketProfile(Bucket:string){
+		for(let i = 0; i < this.BucketProfileList.length; i++)
+		{
+			if(this.BucketProfileList[i].Bucket === Bucket)
+			{
+				return this.BucketProfileList[i].Profile;
+			}
+		}
+		return "";
 	}
 
 	AddBucket(Bucket:string){
@@ -52,7 +86,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 	RemoveBucket(Bucket:string){
 		for(let i = 0; i < this.ShortcutList.length; i++)
 		{
-			if(this.ShortcutList[i][0] === Bucket)
+			if(this.ShortcutList[i]["Bucket"] === Bucket)
 			{
 				this.ShortcutList.splice(i, 1);
 				i--;
@@ -75,7 +109,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 	RemoveAllShortcuts(Bucket:string){
 		for(let i = 0; i < this.ShortcutList.length; i++)
 		{
-			if(this.ShortcutList[i][0] === Bucket)
+			if(this.ShortcutList[i]["Bucket"] === Bucket)
 			{
 				this.ShortcutList.splice(i, 1);
 				i--;
@@ -90,7 +124,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 
 		for(var ls of this.ShortcutList)
 		{
-			if(ls[0] === Bucket && ls[1] === Key)
+			if(ls["Bucket"] === Bucket && ls["Shortcut"] === Key)
 			{
 				return true;
 			}
@@ -106,7 +140,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 			return;
 		}
 
-		this.ShortcutList.push([Bucket, Key]);
+		this.ShortcutList.push({Bucket:Bucket, Shortcut:Key});
 		this.LoadShortcutNodeList();
 		this.Refresh();
 	}
@@ -114,7 +148,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 	RemoveShortcut(Bucket:string, Shortcut:string){
 		for(let i = 0; i < this.ShortcutList.length; i++)
 		{
-			if(this.ShortcutList[i][0] === Bucket && this.ShortcutList[i][1] === Shortcut)
+			if(this.ShortcutList[i]["Bucket"] === Bucket && this.ShortcutList[i]["Shortcut"] === Shortcut)
 			{
 				this.ShortcutList.splice(i, 1);
 				i--;
@@ -127,9 +161,9 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 	UpdateShortcut(Bucket:string, Shortcut:string, NewShortcut:string){
 		for(let i = 0; i < this.ShortcutList.length; i++)
 		{
-			if(this.ShortcutList[i][0] === Bucket && this.ShortcutList[i][1] === Shortcut)
+			if(this.ShortcutList[i]["Bucket"] === Bucket && this.ShortcutList[i]["Shortcut"] === Shortcut)
 			{
-				this.ShortcutList[i][1] = NewShortcut
+				this.ShortcutList[i]["Shortcut"] = NewShortcut
 			}
 		}
 		this.LoadShortcutNodeList();
@@ -144,6 +178,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 			let treeItem = new S3TreeItem(bucket, TreeItemType.Bucket);
 			treeItem.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
 			treeItem.Bucket = bucket;
+			treeItem.ProfileToShow = this.GetBucketProfile(bucket);
 			this.BucketNodeList.push(treeItem);
 		}
 	}
@@ -153,9 +188,9 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 		
 		for(var lg of this.ShortcutList)
 		{
-			let treeItem = new S3TreeItem(lg[1], TreeItemType.Shortcut);
-			treeItem.Bucket = lg[0];
-			treeItem.Shortcut = lg[1];
+			let treeItem = new S3TreeItem(lg["Shortcut"], TreeItemType.Shortcut);
+			treeItem.Bucket = lg["Bucket"];
+			treeItem.Shortcut = lg["Shortcut"];
 			this.ShortcutNodeList.push(treeItem);
 		}
 	}
@@ -198,7 +233,8 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 			if (S3TreeView.Current && S3TreeView.Current.FilterString && !node.IsFilterStringMatch(S3TreeView.Current.FilterString)) { continue; }
 			if (S3TreeView.Current && S3TreeView.Current.isShowOnlyFavorite && !(node.IsFav || node.IsAnyChidrenFav())) { continue; }
 			if (S3TreeView.Current && !S3TreeView.Current.isShowHiddenNodes && (node.IsHidden)) { continue; }
-
+			if (S3TreeView.Current && !S3TreeView.Current.isShowHiddenNodes && (node.ProfileToShow && node.ProfileToShow !== S3TreeView.Current.AwsProfile)) { continue; }
+			
 			result.push(node);
 		}
 		return result;
@@ -211,6 +247,7 @@ export class S3TreeDataProvider implements vscode.TreeDataProvider<S3TreeItem>
 			if (S3TreeView.Current && S3TreeView.Current.FilterString && !node.IsFilterStringMatch(S3TreeView.Current.FilterString)) { continue; }
 			if (S3TreeView.Current && S3TreeView.Current.isShowOnlyFavorite && !(node.IsFav || node.IsAnyChidrenFav())) { continue; }
 			if (S3TreeView.Current && !S3TreeView.Current.isShowHiddenNodes && (node.IsHidden)) { continue; }
+			if (S3TreeView.Current && !S3TreeView.Current.isShowHiddenNodes && (node.ProfileToShow && node.ProfileToShow !== S3TreeView.Current.AwsProfile)) { continue; }
 
 			node.Parent = BucketNode;
 			if(BucketNode.Children.indexOf(node) === -1)

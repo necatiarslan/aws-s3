@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import * as AWS from "aws-sdk";
 import * as ui from "./UI";
 import { MethodResult } from './MethodResult';
 import { homedir } from "os";
@@ -10,400 +9,276 @@ import { ParsedIniData } from "@aws-sdk/types";
 import * as s3_helper from '../s3/S3Helper'
 import * as fs from 'fs';
 import * as S3TreeView from '../s3/S3TreeView';
-import { HeadObjectOutput } from "aws-sdk/clients/s3";
 
-export async function IsSharedIniFileCredentials(credentials:any|undefined=undefined)
-{
-  let result = await GetCredentialProviderName(credentials) === "SharedIniFileCredentials";
-  if(S3TreeView.S3TreeView.Current)
-  {
-    S3TreeView.S3TreeView.Current.IsSharedIniFileCredentials = result;
-  }
-  return result;
-}
 
-export async function IsEnvironmentCredentials(credentials:any|undefined=undefined)
-{
-  return await GetCredentialProviderName(credentials) === "EnvironmentCredentials"
-}
+import { fromNodeProviderChain } from "@aws-sdk/credential-providers";
+export async function GetCredentials() {
+  let credentials;
 
-export async function GetCredentialProviderName(credentials:any|undefined=undefined){
-  if(!credentials)
-  {
-    credentials = await GetCredentials();
-  }
-  if(S3TreeView.S3TreeView.Current)
-  {
-    S3TreeView.S3TreeView.Current.CredentialProviderName = credentials.constructor.name;
-  }
-  return credentials.constructor.name;
-}
-
-export async function GetCredentials()
-{
-  let credentials:AWS.Credentials|undefined;
-
-  try
-  {
-    const provider = new AWS.CredentialProviderChain();
-    credentials = await provider.resolvePromise();
-    
-    if(!credentials)
-    {
-      throw new Error("Aws credentials not found !!!")
+  try {
+    if (S3TreeView.S3TreeView.Current) {
+      process.env.AWS_PROFILE = S3TreeView.S3TreeView.Current.AwsProfile ;
     }
-  
-    if(await IsSharedIniFileCredentials(credentials))
-    {
-      if(S3TreeView.S3TreeView.Current && S3TreeView.S3TreeView.Current?.AwsProfile != "default")
-      {
-        credentials = new AWS.SharedIniFileCredentials({ profile: S3TreeView.S3TreeView.Current?.AwsProfile });
-      }
+    // Get credentials using the default provider chain.
+    const provider = fromNodeProviderChain({ignoreCache: true});
+    credentials = await provider();
+
+    if (!credentials) {
+      throw new Error("Aws credentials not found !!!");
     }
-    ui.logToOutput("Aws credentials provider " + await GetCredentialProviderName(credentials));
-    ui.logToOutput("Aws credentials AccessKeyId=" + credentials?.accessKeyId)
-    return credentials    
-  }
-  catch (error:any) 
-  {
-    ui.showErrorMessage('Aws Credentials Not Found !!!', error);
+
+    ui.logToOutput("Aws credentials AccessKeyId=" + credentials.accessKeyId);
+    return credentials;
+  } catch (error: any) {
+    ui.showErrorMessage("Aws Credentials Not Found !!!", error);
     ui.logToOutput("GetCredentials Error !!!", error);
     return credentials;
   }
-
 }
 
-async function GetS3Client() {
-  let s3 = undefined; 
+import { S3, S3Client, SelectObjectContentCommandOutput } from "@aws-sdk/client-s3";
 
+export async function GetS3Client() {
   let credentials = await GetCredentials();
-  s3 = new AWS.S3({ credentials: credentials, endpoint:S3TreeView.S3TreeView.Current?.AwsEndPoint, s3ForcePathStyle: true, region: S3TreeView.S3TreeView.Current?.AwsRegion });
-  
-  return s3;
+  return new S3Client({
+    credentials: credentials,
+    endpoint: S3TreeView.S3TreeView.Current?.AwsEndPoint,
+    forcePathStyle: true,
+    region: S3TreeView.S3TreeView.Current?.AwsRegion,
+  });
 }
 
-async function GetIAMClient()
-{
+import { IAMClient } from "@aws-sdk/client-iam";
+export async function GetIAMClient() {
   let credentials = await GetCredentials();
-  const iam = new AWS.IAM({credentials:credentials});
-  return iam;
+  return new IAMClient({ credentials: credentials });
 }
 
-async function GetEC2Client()
-{
-  let credentials = await GetCredentials();
-  const ec2 = new AWS.EC2({region: 'us-east-1', credentials:credentials});
-  return ec2;
-}
 
-export async function GetFolderList(Bucket:string, Key:string): Promise<MethodResult<AWS.S3.ListObjectsV2Output | undefined>> {
-  let result:MethodResult<AWS.S3.ListObjectsV2Output | undefined> = new MethodResult<AWS.S3.ListObjectsV2Output | undefined>();
-  
-  try 
-  {
+import { ListObjectsV2Command, ListObjectsV2CommandOutput } from "@aws-sdk/client-s3";
+
+export async function GetFolderList(Bucket: string, Key: string): Promise<MethodResult<ListObjectsV2CommandOutput>> {
+  let result: MethodResult<ListObjectsV2CommandOutput> = new MethodResult<ListObjectsV2CommandOutput>();
+
+  try {
     const s3 = await GetS3Client();
-
-    let param = {
-      Bucket:Bucket,
-      Prefix:Key,
+    
+    const params = {
+      Bucket: Bucket,
+      Prefix: Key,
       Delimiter: "/",
-    }
+    };
 
-    let response = await s3.listObjectsV2(param).promise();
+    const command = new ListObjectsV2Command(params);
+    const response = await s3.send(command);
+
     result.isSuccessful = true;
     result.result = response;
     return result;
-  } 
-  catch (error:any) 
-  {
+  } catch (error: any) {
     result.isSuccessful = false;
     result.error = error;
-    ui.showErrorMessage('api.GetFolderList Error !!!', error);
-    ui.logToOutput("api.GetFolderList Error !!!", error); 
+    ui.showErrorMessage("api.GetFolderList Error !!!", error);
+    ui.logToOutput("api.GetFolderList Error !!!", error);
     return result;
   }
 }
 
-export async function GetObjectList(Bucket:string, Key:string, s3Client?:AWS.S3): Promise<MethodResult<string[] | undefined>> {
-  let result:MethodResult<string[] | undefined> = new MethodResult<string[] | undefined>();
-  
-  try 
-  {
-    const s3 = s3Client ? s3Client : await GetS3Client();
 
-    let continuationToken: any;
-    let keys:string[] = [];
+export async function GetObjectList(Bucket: string, Key: string): Promise<MethodResult<string[]>> {
+  let result: MethodResult<string[]> = new MethodResult<string[]>();
+  let keys: string[] = [];
+  let continuationToken: string | undefined;
+
+  try {
+    const s3 = await GetS3Client();
     do {
-        const params = {
-            Bucket:Bucket,
-            Prefix:Key,
-            ContinuationToken: continuationToken,
-        };
-        let response = await s3.listObjectsV2(params).promise();
-        continuationToken = response.NextContinuationToken;
-        if(response.Contents)
-        {
-          for(var file of response.Contents)
-          {
-            keys.push(file.Key as string);
-          }
-        }
+      const params = { Bucket, Prefix: Key, ContinuationToken: continuationToken };
+      const command = new ListObjectsV2Command(params);
+      const response = await s3.send(command);
+      continuationToken = response.NextContinuationToken;
+      response.Contents?.forEach((file) => keys.push(file.Key!));
     } while (continuationToken);
-    
+
     result.isSuccessful = true;
     result.result = keys;
     return result;
-  } 
-  catch (error:any) 
-  {
+  } catch (error: any) {
     result.isSuccessful = false;
     result.error = error;
-    ui.showErrorMessage('api.GetObjectList Error !!!', error);
-    ui.logToOutput("api.GetObjectList Error !!!", error); 
+    ui.showErrorMessage("api.GetObjectList Error !!!", error);
+    ui.logToOutput("api.GetObjectList Error !!!", error);
     return result;
   }
 }
 
-export async function GetObjectProperties(Bucket:string, Key:string, s3Client?:AWS.S3): Promise<MethodResult<HeadObjectOutput | undefined>> {
-  let result:MethodResult<HeadObjectOutput | undefined> = new MethodResult<HeadObjectOutput | undefined>();
-  
-  try 
-  {
-    const s3 = s3Client ? s3Client : await GetS3Client();
+import { HeadObjectCommand } from "@aws-sdk/client-s3";
+export async function GetObjectProperties(Bucket: string, Key: string): Promise<MethodResult<any>> {
+  let result: MethodResult<any> = new MethodResult<any>();
 
-    const params = {
-        Bucket:Bucket,
-        Key:Key
-    };
-    let response = await s3.headObject(params).promise();
-    result.result = response;
+  try {
+    const s3 = await GetS3Client();
+    const command = new HeadObjectCommand({ Bucket, Key });
+    const response = await s3.send(command);
     result.isSuccessful = true;
+    result.result = response;
     return result;
-  } 
-  catch (error:any) 
-  {
+  } catch (error: any) {
     result.isSuccessful = false;
     result.error = error;
-    ui.showErrorMessage('api.GetObjectList Error !!!', error);
-    ui.logToOutput("api.GetObjectList Error !!!", error); 
+    ui.showErrorMessage("api.GetObjectProperties Error !!!", error);
+    ui.logToOutput("api.GetObjectProperties Error !!!", error);
     return result;
   }
 }
-export async function SearchObject(Bucket: string, PrefixKey:string, FileName: string | undefined, FileExtension: string | undefined, FolderName: string | undefined, MaxResultCount: number = 100): Promise<MethodResult<AWS.S3.ObjectList | undefined>> {
-  let result:MethodResult<AWS.S3.ObjectList | undefined> = new MethodResult<AWS.S3.ObjectList | undefined>();
+
+import { _Object } from "@aws-sdk/client-s3";
+export async function SearchObject(
+  Bucket: string,
+  PrefixKey: string,
+  FileName: string | undefined,
+  FileExtension: string | undefined,
+  FolderName: string | undefined,
+  MaxResultCount: number = 100
+): Promise<MethodResult<_Object[] | undefined>> {
+  let result: MethodResult<_Object[] | undefined> = new MethodResult<_Object[] | undefined>();
   result.result = [];
-  
+
   FileName = FileName?.toLowerCase();
   FileExtension = FileExtension?.toLowerCase();
   FolderName = FolderName?.toLowerCase();
 
-  try 
-  {
+  try {
     const s3 = await GetS3Client();
-  
-    let continuationToken: any;
+    
+    let continuationToken: string | undefined;
     do {
-        const params = {
-            Bucket: Bucket,
-            Prefix:PrefixKey,
-            ContinuationToken: continuationToken,
-            MaxKeys:100
-        };
-        const response = await s3.listObjectsV2(params).promise();
-        continuationToken = response.NextContinuationToken;
-        if(response.Contents)
-        {
-          for(var file of response.Contents)
-          {
-            let fileKey = file.Key?.toLowerCase();
-            let currentFileName = s3_helper.GetFileNameWithExtension(fileKey)
-            if(
-                (!FolderName || FolderName.length===0 || (FolderName && FolderName.length>0 && fileKey && fileKey.includes(FolderName)))
-                &&
-                (!FileName || FileName.length===0 || (FileName && FileName.length>0 && currentFileName.includes(FileName)))
-                &&
-                (!FileExtension || FileExtension.length===0 || (FileExtension && FileExtension.length>0 && s3_helper.GetFileExtension(currentFileName) === FileExtension))
-              )
-            {
-              result.result.push(file);
-              continue;
-            }
+      const params = {
+        Bucket: Bucket,
+        Prefix: PrefixKey,
+        ContinuationToken: continuationToken,
+        MaxKeys: 100,
+      };
+
+      const command = new ListObjectsV2Command(params);
+      const response = await s3.send(command);
+      continuationToken = response.NextContinuationToken;
+
+      if (response.Contents) {
+        for (let file of response.Contents) {
+          let fileKey = file.Key?.toLowerCase();
+          let currentFileName = s3_helper.GetFileNameWithExtension(fileKey);
+
+          if (
+            (!FolderName || FolderName.length === 0 || (FolderName && fileKey && fileKey.includes(FolderName))) &&
+            (!FileName || FileName.length === 0 || (FileName && currentFileName.includes(FileName))) &&
+            (!FileExtension || FileExtension.length === 0 || (FileExtension && s3_helper.GetFileExtension(currentFileName) === FileExtension))
+          ) {
+            result.result.push(file);
+          }
+
+          if (MaxResultCount > 0 && result.result.length >= MaxResultCount) {
+            break;
           }
         }
-        if(MaxResultCount > 0 && result.result.length >= MaxResultCount) { break; }
+      }
+
+      if (MaxResultCount > 0 && result.result.length >= MaxResultCount) {
+        break;
+      }
     } while (continuationToken);
+
     result.isSuccessful = true;
     return result;
-  } 
-  catch (error:any) {
+  } catch (error: any) {
     result.isSuccessful = false;
     result.error = error;
     ui.showErrorMessage('api.SearchObject Error !!!', error);
-    ui.logToOutput("api.SearchObject Error !!!", error); 
-    return result;    
-  }
-}
-
-export async function Select(Bucket: string, Key:string, Sql: string, MaxResultCount: number = 100): Promise<MethodResult<AWS.S3.SelectObjectContentEventStream | undefined>> {
-  let result:MethodResult<AWS.S3.SelectObjectContentEventStream | undefined> = new MethodResult<AWS.S3.SelectObjectContentEventStream | undefined>();
-  result.result = [];
-  
-
-  try 
-  {
-    const s3 = await GetS3Client();
-  
-    let extension = s3_helper.GetFileExtension(Key);
-    if(!["csv", "json", "parquet"].includes(extension))
-    {
-      result.isSuccessful = false;
-      result.error = new Error('Invalid Extension !!! File=' + Key);
-      return result;
-    }
-
-    let inputSerialization = {};
-    switch (extension) {
-      case "csv":
-        inputSerialization = {
-          CSV: {
-            FileHeaderInfo: 'USE',
-            RecordDelimiter: '\n',
-            FieldDelimiter: ','
-          }
-        };
-        break;
-      case "json":
-        inputSerialization = {
-          JSON: {
-            Type: 'DOCUMENT'
-          }
-        };
-        break;
-      case "parquet":
-        inputSerialization = {
-          Parquet: {}
-        };
-        break;
-      default:
-        throw new Error('Unsupported file extension');
-    }
-
-    let params = {
-      Bucket: Bucket,
-      Key: Key,
-      Expression: Sql,
-      ExpressionType: 'SQL',
-      InputSerialization: inputSerialization,
-      OutputSerialization: {
-        JSON: {
-          RecordDelimiter: ','
-        }
-      }
-    };
-
-    let response = await s3.selectObjectContent(params).promise();
-    result.result = response.Payload;
-    
-    result.isSuccessful = true;
+    ui.logToOutput('api.SearchObject Error !!!', error);
     return result;
-  } 
-  catch (error:any) {
-    result.isSuccessful = false;
-    result.error = error;
-    ui.showErrorMessage('api.Select Error !!!', error);
-    ui.logToOutput("api.Select Error !!!", error); 
-    return result;    
   }
 }
 
-export async function CreateFolder(Bucket:string, Key:string, FolderName:string): Promise<MethodResult<string>> {
+
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+export async function CreateFolder(Bucket: string, Key: string, FolderName: string): Promise<MethodResult<string>> {
   let result = new MethodResult<string>();
-  let TargetKey = join(Key, FolderName + "/");
+  let TargetKey = `${Key}${FolderName}/`;
 
-  try 
-  {
+  try {
     const s3 = await GetS3Client();
-
-    let param = {
-      Bucket:Bucket,
-      Key:TargetKey
-    }
-
-    let response = await s3.putObject(param).promise();
+    const param = { Bucket, Key: TargetKey };
+    const command = new PutObjectCommand(param);
+    await s3.send(command);
     result.isSuccessful = true;
     result.result = TargetKey;
     return result;
-  } 
-  catch (error:any) 
-  {
+  } catch (error: any) {
     result.isSuccessful = false;
     result.error = error;
-    ui.showErrorMessage('api.CreateS3Folder Error !!!', error);
-    ui.logToOutput("api.CreateS3Folder Error !!!", error); 
+    ui.showErrorMessage("api.CreateFolder Error !!!", error);
+    ui.logToOutput("api.CreateFolder Error !!!", error);
     return result;
   }
 }
 
-export async function DeleteObject(Bucket:string, Key:string, s3Client?:AWS.S3 | undefined): Promise<MethodResult<string[]>> {
-  if (s3_helper.IsFolder(Key)) {
-    return await DeleteFolder(Bucket, Key, s3Client);
-  } else {
-    return await DeleteFile(Bucket, Key, s3Client);
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
+export async function DeleteObject(Bucket: string, Key: string): Promise<MethodResult<string>> {
+  let result = new MethodResult<string>();
+
+  try {
+    const s3 = await GetS3Client();
+    const command = new DeleteObjectCommand({ Bucket, Key });
+    await s3.send(command);
+    result.isSuccessful = true;
+    result.result = `Deleted: ${Key}`;
+    return result;
+  } catch (error: any) {
+    result.isSuccessful = false;
+    result.error = error;
+    ui.showErrorMessage("api.DeleteObject Error !!!", error);
+    ui.logToOutput("api.DeleteObject Error !!!", error);
+    return result;
   }
 }
 
-export async function DeleteFile(Bucket:string, Key:string, s3Client?:AWS.S3 | undefined): Promise<MethodResult<string[]>> {
+export async function DeleteFile(Bucket: string, Key: string): Promise<MethodResult<string[]>> {
   let result = new MethodResult<string[]>();
   result.result = [];
-  try 
-  {
-    const s3 = s3Client ? s3Client : await GetS3Client();
-
-    let param = {
-      Bucket:Bucket,
-      Key:Key
-    }
-
-    let response = await s3.deleteObject(param).promise();
+  try {
+    const s3 = await GetS3Client();
+    const command = new DeleteObjectCommand({ Bucket, Key });
+    await s3.send(command);
     ui.logToOutput("Delete File " + Key);
     result.result.push(Key);
     result.isSuccessful = true;
     return result;
-  }
-  catch (error:any) 
-  {
+  } catch (error: any) {
     result.isSuccessful = false;
     result.error = error;
-    ui.showErrorMessage('api.DeleteObject Error !!! File=' + Key, error);
-    ui.logToOutput("api.DeleteObject Error !!! File=" + Key, error); 
+    ui.showErrorMessage("api.DeleteFile Error !!! File=" + Key, error);
+    ui.logToOutput("api.DeleteFile Error !!! File=" + Key, error);
     return result;
   }
 }
 
-export async function DeleteFolder(Bucket:string, Key:string, s3Client?:AWS.S3 | undefined): Promise<MethodResult<string[]>> {
+export async function DeleteFolder(Bucket: string, Key: string): Promise<MethodResult<string[]>> {
   let result = new MethodResult<string[]>();
   result.result = [];
-  try 
-  {
-    if(!s3_helper.IsFolder(Key))
-    {
-      throw new Error('api.DeleteFolder Error !!! File=' + Key);
+  try {
+    if (!s3_helper.IsFolder(Key)) {
+      throw new Error("api.DeleteFolder Error !!! File=" + Key);
     }
 
-    const s3 = s3Client ? s3Client : await GetS3Client();
+    const s3 = await GetS3Client();
     let result_objects = await GetObjectList(Bucket, Key);
 
-    if(result_objects.isSuccessful)
-    {
-      for(var file of result_objects.result as string[])
-      {
-        let result_delete = await DeleteFile(Bucket, file, s3);
-        if(result_delete.isSuccessful)
-        {
+    if (result_objects.isSuccessful) {
+      for (const file of result_objects.result as string[]) {
+        let result_delete = await DeleteFile(Bucket, file);
+        if (result_delete.isSuccessful) {
           result.result.push(file);
-        }
-        else
-        {
+        } else {
           throw result_delete.error;
         }
       }
@@ -411,74 +286,50 @@ export async function DeleteFolder(Bucket:string, Key:string, s3Client?:AWS.S3 |
 
     result.isSuccessful = true;
     return result;
-  }
-  catch (error:any) 
-  {
+  } catch (error: any) {
     result.isSuccessful = false;
     result.error = error;
-    ui.showErrorMessage('api.DeleteObject Error !!! File=' + Key, error);
-    ui.logToOutput("api.DeleteObject Error !!! File=" + Key, error); 
+    ui.showErrorMessage("api.DeleteFolder Error !!! File=" + Key, error);
+    ui.logToOutput("api.DeleteFolder Error !!! File=" + Key, error);
     return result;
   }
 }
 
-export async function UploadFileToFolder(Bucket:string, FolderKey:string, SourcePath:string) : Promise<MethodResult<string>>
-{
+export async function UploadFileToFolder(Bucket: string, FolderKey: string, SourcePath: string): Promise<MethodResult<string>> {
   let result = new MethodResult<string>();
-  if(!s3_helper.IsFolder(FolderKey))
-  {
-    result.isSuccessful = false;
-    return result;
-  }
-
-  let TargetKey = join(FolderKey, s3_helper.GetFileNameWithExtension(SourcePath));
-
+  let TargetKey = `${FolderKey}${s3_helper.GetFileNameWithExtension(SourcePath)}`;
   return UploadFile(Bucket, TargetKey, SourcePath);
 }
 
-export async function UploadFile(Bucket:string, TargetKey:string, SourcePath:string) : Promise<MethodResult<string>>
-{
+export async function UploadFile(Bucket: string, TargetKey: string, SourcePath: string): Promise<MethodResult<string>> {
   let result = new MethodResult<string>();
-  if(!s3_helper.IsFile(TargetKey))
-  {
-    result.isSuccessful = false;
-    return result;
-  }
-
-  if(s3_helper.GetFileExtension(TargetKey) !== s3_helper.GetFileExtension(SourcePath))
-  {
-    result.isSuccessful = false;
-    return result;
-  }
-
-  try 
-  {
+  try {
     const s3 = await GetS3Client();
-
     const stream = fs.createReadStream(SourcePath);
+    
     const param = {
-      Bucket: Bucket,
+      Bucket,
       Key: TargetKey,
-      Body: stream
+      Body: stream,
     };
 
-    let response = await s3.upload(param).promise();
+    const command = new PutObjectCommand(param);
+    await s3.send(command);
 
-    result.result = response.Key;
+    result.result = TargetKey;
     result.isSuccessful = true;
     return result;
-  } 
-  catch (error:any) 
-  {
+  } catch (error: any) {
     result.isSuccessful = false;
     result.error = error;
-    ui.showErrorMessage('api.UploadS3File Error !!! File=' + SourcePath, error);
-    ui.logToOutput("api.UploadS3File Error !!! File=" + SourcePath, error); 
+    ui.showErrorMessage("api.UploadS3File Error !!! File=" + SourcePath, error);
+    ui.logToOutput("api.UploadS3File Error !!! File=" + SourcePath, error);
     return result;
   }
-} 
+}
 
-export async function CopyObject(Bucket:string, SourceKey:string, TargetKey:string, s3Client?:AWS.S3 | undefined) : Promise<MethodResult<string[] | undefined>>
+
+export async function CopyObject(Bucket:string, SourceKey:string, TargetKey:string, s3Client?:S3Client | undefined) : Promise<MethodResult<string[] | undefined>>
 {
   let result = new MethodResult<string[] | undefined>();
   result.result = [];
@@ -501,50 +352,55 @@ export async function CopyObject(Bucket:string, SourceKey:string, TargetKey:stri
 
 }
 
-export async function CopyFile(Bucket:string, SourceKey:string, TargetKey:string, s3Client?:AWS.S3 | undefined) : Promise<MethodResult<string[] | undefined>>
-{
+import { CopyObjectCommand } from '@aws-sdk/client-s3';
+
+export async function CopyFile(
+  Bucket: string,
+  SourceKey: string,
+  TargetKey: string,
+  s3Client?: S3Client
+): Promise<MethodResult<string[] | undefined>> {
   let result = new MethodResult<string[] | undefined>();
   result.result = [];
-  const s3 = s3Client ? s3Client : await GetS3Client();
 
-  if(s3_helper.IsFolder(TargetKey))
-  {
-    TargetKey = TargetKey === "/" ? "" : TargetKey;
+  const s3 = s3Client || await GetS3Client(); // If no s3Client provided, get a new one
+
+  if (s3_helper.IsFolder(TargetKey)) {
+    TargetKey = TargetKey === '/' ? '' : TargetKey;
     TargetKey = TargetKey + s3_helper.GetFileNameWithExtension(SourceKey);
   }
 
-  if(SourceKey === TargetKey)
-  {
+  if (SourceKey === TargetKey) {
     result.isSuccessful = false;
     result.error = new Error('SourceKey and TargetKey are the same, SourceKey=' + SourceKey);
     return result;
   }
-    
-  try 
-  {
-    const param = {
+
+  try {
+    const params = {
       Bucket: Bucket,
       CopySource: `/${Bucket}/${SourceKey}`,
       Key: TargetKey,
     };
 
-    let response = await s3.copyObject(param).promise();
-    ui.logToOutput("Copy File " + SourceKey + " to " + TargetKey);
+    const command = new CopyObjectCommand(params);
+    const response = await s3.send(command);
+
+    ui.logToOutput(`Copy File ${SourceKey} to ${TargetKey}`);
     result.result.push(TargetKey);
     result.isSuccessful = true;
     return result;
-  } 
-  catch (error:any) 
-  {
+  } catch (error: any) {
     result.isSuccessful = false;
     result.error = error;
     ui.showErrorMessage('api.CopyFile Error !!! File=' + SourceKey, error);
-    ui.logToOutput("api.CopyFile Error !!! File=" + SourceKey, error); 
+    ui.logToOutput('api.CopyFile Error !!! File=' + SourceKey, error);
     return result;
   }
 }
 
-export async function CopyFolder(Bucket:string, SourceKey:string, TargetKey:string, s3Client?:AWS.S3 | undefined) : Promise<MethodResult<string[] | undefined>>
+
+export async function CopyFolder(Bucket:string, SourceKey:string, TargetKey:string, s3Client?:S3Client | undefined) : Promise<MethodResult<string[] | undefined>>
 {
   let result = new MethodResult<string[] | undefined>();
   result.result = [];
@@ -602,7 +458,7 @@ export async function CopyFolder(Bucket:string, SourceKey:string, TargetKey:stri
   
 }
 
-export async function MoveObject(Bucket:string, SourceKey:string, TargetKey:string, s3Client?:AWS.S3 | undefined) : Promise<MethodResult<string[] | undefined>>
+export async function MoveObject(Bucket:string, SourceKey:string, TargetKey:string, s3Client?:S3Client | undefined) : Promise<MethodResult<string[] | undefined>>
 {
   let result = new MethodResult<string[] | undefined>();
   result.result = [];
@@ -635,7 +491,7 @@ export async function MoveObject(Bucket:string, SourceKey:string, TargetKey:stri
 
 }
 
-export async function MoveFile(Bucket:string, SourceKey:string, TargetKey:string, s3Client?:AWS.S3 | undefined) : Promise<MethodResult<string[] | undefined>>
+export async function MoveFile(Bucket:string, SourceKey:string, TargetKey:string, s3Client?:S3Client | undefined) : Promise<MethodResult<string[] | undefined>>
 {
   let result = new MethodResult<string[] | undefined>();
   result.result = [];
@@ -657,7 +513,7 @@ export async function MoveFile(Bucket:string, SourceKey:string, TargetKey:string
     return result;
   }
   
-  let delete_result = await DeleteFile(Bucket, SourceKey, s3);
+  let delete_result = await DeleteFile(Bucket, SourceKey);
   if(!delete_result.isSuccessful)
   {
     result.error = delete_result.error;
@@ -670,7 +526,7 @@ export async function MoveFile(Bucket:string, SourceKey:string, TargetKey:string
   return result;
 }
 
-export async function MoveFolder(Bucket:string, SourceKey:string, TargetKey:string, s3Client?:AWS.S3 | undefined) : Promise<MethodResult<string[] | undefined>>
+export async function MoveFolder(Bucket:string, SourceKey:string, TargetKey:string, s3Client?:S3Client | undefined) : Promise<MethodResult<string[] | undefined>>
 {
   let result = new MethodResult<string[] | undefined>();
   result.result = [];
@@ -706,7 +562,7 @@ export async function MoveFolder(Bucket:string, SourceKey:string, TargetKey:stri
     return result;
   }
   
-  let delete_result = await DeleteFolder(Bucket, SourceKey, s3);
+  let delete_result = await DeleteFolder(Bucket, SourceKey);
   if(!delete_result.isSuccessful)
   {
     result.error = delete_result.error;
@@ -808,7 +664,7 @@ export async function RenameObject(Bucket:string, SourceKey:string, TargetName:s
 
 }
 
-export async function DownloadObject(Bucket:string, Key:string, TargetPath:string, s3Client?:AWS.S3 | undefined) : Promise<MethodResult<string>>
+export async function DownloadObject(Bucket:string, Key:string, TargetPath:string, s3Client?:S3Client | undefined) : Promise<MethodResult<string>>
 {
   if(s3_helper.IsFolder(Key))
   {
@@ -821,7 +677,7 @@ export async function DownloadObject(Bucket:string, Key:string, TargetPath:strin
   
 }
 
-export async function DownloadFolder(Bucket:string, Key:string, TargetPath:string, s3Client?:AWS.S3 | undefined) : Promise<MethodResult<string>>
+export async function DownloadFolder(Bucket:string, Key:string, TargetPath:string, s3Client?:S3Client | undefined) : Promise<MethodResult<string>>
 {
   let result = new MethodResult<string>();
   try 
@@ -859,142 +715,149 @@ export async function DownloadFolder(Bucket:string, Key:string, TargetPath:strin
   }
 } 
 
-export async function DownloadFile(Bucket:string, Key:string, TargetPath:string, s3Client?:AWS.S3 | undefined) : Promise<MethodResult<string>>
-{
+import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { createWriteStream } from 'fs';
+import { Readable } from 'stream';
+
+export async function DownloadFile(
+  Bucket: string,
+  Key: string,
+  TargetPath: string,
+  s3Client?: S3Client
+): Promise<MethodResult<string>> {
   let result = new MethodResult<string>();
-  let TargetFilePath = join(TargetPath, s3_helper.GetFileNameWithExtension(Key))
+  let fileName = s3_helper.GetFileNameWithExtension(Key);
+  fileName = ui.SanitizeFileName(fileName);
+  const TargetFilePath = join(TargetPath, fileName);
 
-  try 
-  {
-    const s3 = s3Client ? s3Client : await GetS3Client();
+  try {
+    const s3 = s3Client || await GetS3Client(); // If no s3Client provided, get a new one
 
-    const param = {
+    const params = {
       Bucket: Bucket,
-      Key: Key
+      Key: Key,
     };
 
-    let readStream = s3.getObject(param).createReadStream();
-    let writeStream = fs.createWriteStream(TargetFilePath);
+    const command = new GetObjectCommand(params);
+    const data = await s3.send(command);
+
+    // Pipe the data from the S3 object to a local file
+    const readStream: Readable = data.Body as Readable;
+    const writeStream = createWriteStream(TargetFilePath);
     readStream.pipe(writeStream);
 
-    ui.logToOutput("Download File=" + Key + " to " + TargetFilePath); 
-    result.result = TargetFilePath;
-    result.isSuccessful = true;
+    writeStream.on('finish', () => {
+      ui.logToOutput(`Download File=${Key} to ${TargetFilePath}`);
+      result.result = TargetFilePath;
+      result.isSuccessful = true;
+    });
+
+    // Handle stream error
+    writeStream.on('error', (error) => {
+      result.isSuccessful = false;
+      result.error = error;
+      ui.showErrorMessage('api.DownloadS3File Error !!! File=' + Key, error);
+      ui.logToOutput('api.DownloadS3File Error !!! File=' + Key, error);
+    });
+
     return result;
-  } 
-  catch (error:any) 
-  {
+  } catch (error: any) {
     result.isSuccessful = false;
     result.error = error;
     ui.showErrorMessage('api.DownloadS3File Error !!! File=' + Key, error);
-    ui.logToOutput("api.DownloadS3File Error !!! File=" + Key, error); 
+    ui.logToOutput('api.DownloadS3File Error !!! File=' + Key, error);
     return result;
   }
-} 
+}
 
-export async function GetBucketList(BucketName?:string): Promise<MethodResult<string[]>> {
-  let result:MethodResult<string[]> = new MethodResult<string[]>();
+
+import { HeadBucketCommand, ListBucketsCommand } from '@aws-sdk/client-s3';
+export async function GetBucketList(BucketName?: string): Promise<MethodResult<string[]>> {
+  let result: MethodResult<string[]> = new MethodResult<string[]>();
   result.result = [];
 
-  try 
-  {
+  try {
     const s3 = await GetS3Client();
 
-    if (BucketName)
-    {
-      try
-      {
-        let is_bucket_response = await s3.headBucket({ Bucket: BucketName }).promise();
-        //bucket exists, so return it
+    if (BucketName) {
+      try {
+        const command = new HeadBucketCommand({ Bucket: BucketName });
+        await s3.send(command);
+        // bucket exists, so return it
         result.result.push(BucketName);
         result.isSuccessful = true;
         return result;
+      } catch {
+        // Ignore error if the bucket doesn't exist
       }
-      catch {}
     }
-    
-    let response = await s3.listBuckets().promise();
+
+    const command = new ListBucketsCommand({});
+    const response = await s3.send(command);
+
     result.isSuccessful = true;
-    if(response.Buckets)
-    {
-      for(var bucket of response.Buckets)
-      {
-        if(bucket.Name && (BucketName === undefined  || BucketName === "" || bucket.Name.includes(BucketName)))
-        {
+    if (response.Buckets) {
+      for (const bucket of response.Buckets) {
+        if (bucket.Name && (BucketName === undefined || BucketName === '' || bucket.Name.includes(BucketName))) {
           result.result.push(bucket.Name);
         }
       }
     }
     return result;
-  } 
-  catch (error:any) 
-  {
+  } catch (error: any) {
     result.isSuccessful = false;
     result.error = error;
     ui.showErrorMessage('api.GetBucketList Error !!!', error);
-    ui.logToOutput("api.GetBucketList Error !!!", error); 
+    ui.logToOutput('api.GetBucketList Error !!!', error);
     return result;
   }
 }
 
-export async function TestAwsConnection(): Promise<MethodResult<boolean>> {
-  let result:MethodResult<boolean> = new MethodResult<boolean>();
 
-  try 
-  {
-    const iam = await GetIAMClient()
+import { STSClient, GetCallerIdentityCommand } from "@aws-sdk/client-sts";
+async function GetSTSClient(region: string) {
+  const credentials = await GetCredentials();
+  const iamClient = new STSClient(
+    {
+      region,
+      credentials,
+      endpoint: S3TreeView.S3TreeView.Current?.AwsEndPoint,
+    }
+  );
+  return iamClient;
+}
 
-    let response = await iam.getUser().promise();
+export async function TestAwsCredentials(): Promise<MethodResult<boolean>> {
+  let result: MethodResult<boolean> = new MethodResult<boolean>();
+
+  try {
+    const credentials = await GetCredentials();
+
     result.isSuccessful = true;
     result.result = true;
     return result;
-  } 
-  catch (error:any) 
-  {
-    if (error.name.includes("Signature"))
-    {
-      result.isSuccessful = false;
-      result.error = error;
-      ui.showErrorMessage('api.TestAwsConnection Error !!!', error);
-      ui.logToOutput("api.TestAwsConnection Error !!!", error); 
-    }
-    else
-    {
-      result.isSuccessful = true;
-      result.result = true;
-    }
-    
+  } catch (error: any) {
+    result.isSuccessful = false;
+    result.error = error;
     return result;
   }
 }
 
-export async function GetRegionList(): Promise<MethodResult<string[]>> {
-  let result:MethodResult<string[]> = new MethodResult<string[]>();
-  result.result = [];
+export async function TestAwsConnection(Region: string="us-east-1"): Promise<MethodResult<boolean>> {
+  let result: MethodResult<boolean> = new MethodResult<boolean>();
 
-  try 
-  {
-    const ec2 = await GetEC2Client()
-    let response = await ec2.describeRegions().promise();
+  try {
+    const sts = await GetSTSClient(Region);
+
+    const command = new GetCallerIdentityCommand({});
+    const data = await sts.send(command);
 
     result.isSuccessful = true;
-    if(response.Regions)
-    {
-      for(var r of response.Regions)
-      {
-        if(r.RegionName)
-        {
-          result.result.push(r.RegionName);
-        }
-      }
-    }
+    result.result = true;
     return result;
-  } catch (error:any) 
-  {
+  } catch (error: any) {
     result.isSuccessful = false;
     result.error = error;
-    ui.showErrorMessage('api.GetRegionList Error !!!', error);
-    ui.logToOutput("api.GetRegionList Error !!!", error); 
     return result;
   }
 }

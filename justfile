@@ -1,10 +1,6 @@
 install_vsce: 
     npm install -g vsce
 
-package:
-    vsce package
-    mv *.vsix ./vsix/
-
 build:
     vsce package
     mv *.vsix ./vsix/
@@ -14,15 +10,18 @@ publish:
 
 npm_outdated:
     npm outdated
+    npx npm-check-updates
 
-npm_upgrade:
+npm_update:
+    npm update # update node_nodules and package-lock.json
+    # these will not update packages in your package.json file
+
+npm_reinstall:
     brew upgrade # upgrade homebrew
     brew install node # install the latest node version
     npm install -g npm@latest # upgrade to the latest version
     nvm alias default node # set the default node version
     nvm install node # install the latest node version
-
-    npm upgrade # upgrade all packages used in the project
 
 npm_doctor:
     node -v
