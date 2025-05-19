@@ -171,17 +171,17 @@
       "view/item/context": [
         {
           "command": "S3TreeView.RemoveBucket",
-          "when": "view == S3TreeView && viewItem == Bucket",
+          "when": "view == S3TreeView && viewItem =~ /#Bucket#/",
           "group": "Bucket"
         },
         {
           "command": "S3TreeView.Goto",
-          "when": "view == S3TreeView && viewItem == Bucket",
+          "when": "view == S3TreeView && viewItem =~ /#Bucket#/",
           "group": "Bucket"
         },
         {
           "command": "S3TreeView.RemoveShortcut",
-          "when": "view == S3TreeView && viewItem == Shortcut",
+          "when": "view == S3TreeView && viewItem =~ /#Shortcut#/",
           "group": "Shortcut"
         },
         {
