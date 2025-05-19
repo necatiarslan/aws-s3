@@ -1,3 +1,9 @@
+# v1.8.1
+    - Aws JS SDK v3 Migration
+    - Vscode-elements Migration
+    - TestAwsCredentials button
+    - ShowOnlyInThisProfile
+    - Dynamic Context Menu
 # v1.7.3
     - Fix Aws Profile change button
 # v1.7.2
