@@ -65,5 +65,8 @@ create_bucket:
 list_buckets:
     aws --endpoint-url=http://localhost:4566 s3 ls
 
+list_bucket_content:
+    aws --endpoint-url=http://localhost:4566 s3 ls s3://my-bucket
+
 upload_file:
     aws --endpoint-url=http://localhost:4566 s3 cp README.md s3://my-bucket

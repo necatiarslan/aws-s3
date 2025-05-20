@@ -70,6 +70,11 @@ export function showWarningMessage(message: string): void {
 }
 
 export function showErrorMessage(message: string, error: Error): void {
+  if(error instanceof AggregateError)
+  {
+    error = error.errors[0];
+  }
+
   if (error) {
     vscode.window.showErrorMessage(message + NEW_LINE + error.name + NEW_LINE + error.message);
   }
