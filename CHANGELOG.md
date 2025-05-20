@@ -1,3 +1,5 @@
+# v1.8.2
+    - Fix Preview File
 # v1.8.1
     - Aws JS SDK v3 Migration
     - Vscode-elements Migration

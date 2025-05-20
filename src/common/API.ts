@@ -760,6 +760,12 @@ export async function DownloadFile(
       ui.logToOutput('api.DownloadS3File Error !!! File=' + Key, error);
     });
 
+    // Wait for writeStream to complete
+    await new Promise((resolve, reject) => {
+      writeStream.on('finish', resolve);
+      writeStream.on('error', reject);
+    });
+
     return result;
   } catch (error: any) {
     result.isSuccessful = false;

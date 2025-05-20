@@ -846,6 +846,10 @@ class S3Explorer {
             if (result.isSuccessful) {
                 ui.openFile(result.result);
             }
+            else {
+                ui.logToOutput("File is not downloaded", result.error);
+                ui.showInfoMessage("File is not downloaded");
+            }
         }
     }
     async UploadFile() {

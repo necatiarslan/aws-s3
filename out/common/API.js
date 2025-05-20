@@ -619,6 +619,11 @@ async function DownloadFile(Bucket, Key, TargetPath, s3Client) {
             ui.showErrorMessage('api.DownloadS3File Error !!! File=' + Key, error);
             ui.logToOutput('api.DownloadS3File Error !!! File=' + Key, error);
         });
+        // Wait for writeStream to complete
+        await new Promise((resolve, reject) => {
+            writeStream.on('finish', resolve);
+            writeStream.on('error', reject);
+        });
         return result;
     }
     catch (error) {

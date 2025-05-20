@@ -934,6 +934,11 @@ export class S3Explorer {
             {
                 ui.openFile(result.result);
             }
+            else
+            {
+                ui.logToOutput("File is not downloaded", result.error);
+                ui.showInfoMessage("File is not downloaded");
+            }
         }
     }
     
