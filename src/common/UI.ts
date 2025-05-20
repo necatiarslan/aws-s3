@@ -51,6 +51,11 @@ export function logToOutput(message: any, error?: Error): void {
     logsOutputChannel.appendLine("[" + now + "] " + message);
   }
 
+  if(error instanceof AggregateError)
+  {
+    error = error.errors[0];
+  }
+
   if (error) {
     logsOutputChannel.appendLine(error.name);
     logsOutputChannel.appendLine(error.message);
