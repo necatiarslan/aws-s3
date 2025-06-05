@@ -783,6 +783,7 @@ export class S3Explorer {
         if(targetKey.startsWith("/")){ ui.showInfoMessage("No / at the start"); return; }
 
         let results: string[] = [];
+        await api.StartConnection();
         for(var key of keyList)
         {
             let result = await api.MoveObject(this.S3ExplorerItem.Bucket, key, targetKey);
@@ -791,6 +792,7 @@ export class S3Explorer {
                 results = results.concat(result.result || []);
             }
         }
+        await api.StopConnection();
         if(results.length > 0)
         {
             this.S3ExplorerItem.Key = targetKey;
@@ -810,6 +812,7 @@ export class S3Explorer {
         if(targetKey.startsWith("/")){ ui.showInfoMessage("No / at the start"); return; }
 
         let results: string[] = [];
+        await api.StartConnection();
         for(var key of keyList)
         {
             let result = await api.CopyObject(this.S3ExplorerItem.Bucket, key, targetKey);
@@ -818,6 +821,7 @@ export class S3Explorer {
                 results = results.concat(result.result || []);
             }
         }
+        await api.StopConnection();
 
         if(results.length > 0)
         {
@@ -837,6 +841,7 @@ export class S3Explorer {
         let goto_parent_folder = false;
 
         let deleteCounter = 0;
+        await api.StartConnection();
         for(var key of keyList)
         {
             let response = await api.DeleteObject(this.S3ExplorerItem.Bucket, key);
@@ -856,6 +861,7 @@ export class S3Explorer {
                 ui.showInfoMessage(key + " is not deleted");
             }
         }
+        await api.StopConnection();
 
         //go up if current file/folder is deleted
         if(goto_parent_folder)
@@ -876,7 +882,10 @@ export class S3Explorer {
         let targetName = await vscode.window.showInputBox({ placeHolder: 'New File/Folder Name (Without Ext)' });
 		if(targetName===undefined){ return; }
 
+        await api.StartConnection();
         let result = await api.RenameObject(this.S3ExplorerItem.Bucket, key, targetName);
+        await api.StopConnection();
+        
         if(result.isSuccessful)
         {
             if(s3_helper.IsFile(key) && result.result && result.result.length > 0 && key === this.S3ExplorerItem.Key)
@@ -913,11 +922,12 @@ export class S3Explorer {
         let selectedFolder = await vscode.window.showOpenDialog(param);
         if(!selectedFolder){ return; }
 
+        await api.StartConnection();
         for(var key of keyList)
         {
-            api.DownloadObject(this.S3ExplorerItem.Bucket, key,selectedFolder[0].fsPath);
+            await api.DownloadObject(this.S3ExplorerItem.Bucket, key,selectedFolder[0].fsPath);
         }
-
+        await api.StopConnection();
         ui.showInfoMessage("File(s) are downloaded");
     }
     
@@ -955,6 +965,7 @@ export class S3Explorer {
         let selectedFileList = await vscode.window.showOpenDialog(param);
         if(!selectedFileList || selectedFileList.length == 0){ return; }
 
+        await api.StartConnection();
         for(var file of selectedFileList)
         {
             let result = await api.UploadFileToFolder(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, file.fsPath);
@@ -963,6 +974,7 @@ export class S3Explorer {
                 ui.showInfoMessage(s3_helper.GetFileNameWithExtension(file.fsPath) + " is uploaded");
             }
         }
+        await api.StopConnection();
 
         this.Load();
     }

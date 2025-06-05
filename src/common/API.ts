@@ -11,9 +11,14 @@ import * as fs from 'fs';
 import * as S3TreeView from '../s3/S3TreeView';
 
 
+
 import { fromNodeProviderChain } from "@aws-sdk/credential-providers";
 export async function GetCredentials() {
   let credentials;
+  if (CurrentCredentials !== undefined) { 
+    ui.logToOutput("Aws credentials From Pool AccessKeyId=" + CurrentCredentials.accessKeyId);
+    return CurrentCredentials; 
+  }
 
   try {
     if (S3TreeView.S3TreeView.Current) {
@@ -36,10 +41,30 @@ export async function GetCredentials() {
   }
 }
 
-import { S3, S3Client, SelectObjectContentCommandOutput } from "@aws-sdk/client-s3";
+import { S3Client } from "@aws-sdk/client-s3";
+import { AwsCredentialIdentity } from "@aws-sdk/types";
+
+let CurrentS3Client: S3Client | undefined
+let CurrentCredentials: AwsCredentialIdentity | undefined
+
+export async function StartConnection() {
+  ui.logToOutput("Starting Connection");
+  CurrentCredentials = await GetCredentials();
+  CurrentS3Client = await GetS3Client();
+  ui.logToOutput("Connection Started");
+}
+
+export async function StopConnection() {
+  ui.logToOutput("Stopping Connection");
+  CurrentCredentials = undefined
+  CurrentS3Client = undefined;
+  ui.logToOutput("Connection Stopped");
+}
 
 export async function GetS3Client() {
   let credentials = await GetCredentials();
+  if (CurrentS3Client !== undefined) { return CurrentS3Client; }
+
   return new S3Client({
     credentials: credentials,
     endpoint: S3TreeView.S3TreeView.Current?.AwsEndPoint,
@@ -212,6 +237,7 @@ export async function CreateFolder(Bucket: string, Key: string, FolderName: stri
     await s3.send(command);
     result.isSuccessful = true;
     result.result = TargetKey;
+    ui.logToOutput("api.CreateFolder Success Key=" + TargetKey);
     return result;
   } catch (error: any) {
     result.isSuccessful = false;
@@ -232,6 +258,7 @@ export async function DeleteObject(Bucket: string, Key: string): Promise<MethodR
     await s3.send(command);
     result.isSuccessful = true;
     result.result = `Deleted: ${Key}`;
+    ui.logToOutput("api.DeleteObject Success Key=" + Key);
     return result;
   } catch (error: any) {
     result.isSuccessful = false;
@@ -249,9 +276,9 @@ export async function DeleteFile(Bucket: string, Key: string): Promise<MethodRes
     const s3 = await GetS3Client();
     const command = new DeleteObjectCommand({ Bucket, Key });
     await s3.send(command);
-    ui.logToOutput("Delete File " + Key);
     result.result.push(Key);
     result.isSuccessful = true;
+    ui.logToOutput("api.DeleteFile Success Key=" + Key);
     return result;
   } catch (error: any) {
     result.isSuccessful = false;
@@ -285,6 +312,7 @@ export async function DeleteFolder(Bucket: string, Key: string): Promise<MethodR
     }
 
     result.isSuccessful = true;
+    ui.logToOutput("api.DeleteFolder Success Key=" + Key);
     return result;
   } catch (error: any) {
     result.isSuccessful = false;
@@ -318,12 +346,13 @@ export async function UploadFile(Bucket: string, TargetKey: string, SourcePath: 
 
     result.result = TargetKey;
     result.isSuccessful = true;
+    ui.logToOutput("api.UploadFile Success File=" + TargetKey);
     return result;
   } catch (error: any) {
     result.isSuccessful = false;
     result.error = error;
-    ui.showErrorMessage("api.UploadS3File Error !!! File=" + SourcePath, error);
-    ui.logToOutput("api.UploadS3File Error !!! File=" + SourcePath, error);
+    ui.showErrorMessage("api.UploadFile Error !!! File=" + SourcePath, error);
+    ui.logToOutput("api.UploadFile Error !!! File=" + SourcePath, error);
     return result;
   }
 }
@@ -523,6 +552,7 @@ export async function MoveFile(Bucket:string, SourceKey:string, TargetKey:string
 
   result.result = copy_result.result;
   result.isSuccessful = true;
+  ui.logToOutput("api.MoveFile Success SourceKey=" + SourceKey + " TargetKey=" + TargetKey);
   return result;
 }
 
@@ -572,6 +602,7 @@ export async function MoveFolder(Bucket:string, SourceKey:string, TargetKey:stri
 
   result.result = copy_result.result;
   result.isSuccessful = true;
+  ui.logToOutput("api.MoveFolder Success SourceKey=" + SourceKey + " TargetKey=" + TargetKey);
   return result;
 }
 
@@ -593,6 +624,7 @@ export async function RenameFile(Bucket:string, SourceKey:string, TargetName:str
   result.result = move_result.result;
   result.isSuccessful = move_result.isSuccessful;
   result.error = move_result.error;
+  ui.logToOutput("api.RenameFile Success SourceKey=" + SourceKey + " TargetKey=" + TargetKey);
   return result;
 }
 
@@ -635,6 +667,7 @@ export async function RenameFolder(Bucket:string, SourceKey:string, TargetName:s
   }
 
   result.isSuccessful = true;
+  ui.logToOutput("api.RenameFolder Success SourceKey=" + SourceKey + " TargetKey=" + TargetFolderKey);
   return result;
 }
 
@@ -756,8 +789,8 @@ export async function DownloadFile(
     writeStream.on('error', (error) => {
       result.isSuccessful = false;
       result.error = error;
-      ui.showErrorMessage('api.DownloadS3File Error !!! File=' + Key, error);
-      ui.logToOutput('api.DownloadS3File Error !!! File=' + Key, error);
+      ui.showErrorMessage('api.DownloadFile Error !!! File=' + Key, error);
+      ui.logToOutput('api.DownloadFile Error !!! File=' + Key, error);
     });
 
     // Wait for writeStream to complete
@@ -765,13 +798,13 @@ export async function DownloadFile(
       writeStream.on('finish', resolve);
       writeStream.on('error', reject);
     });
-
+    ui.logToOutput('api.DownloadFile Success File=' + Key);
     return result;
   } catch (error: any) {
     result.isSuccessful = false;
     result.error = error;
-    ui.showErrorMessage('api.DownloadS3File Error !!! File=' + Key, error);
-    ui.logToOutput('api.DownloadS3File Error !!! File=' + Key, error);
+    ui.showErrorMessage('api.DownloadFile Error !!! File=' + Key, error);
+    ui.logToOutput('api.DownloadFile Error !!! File=' + Key, error);
     return result;
   }
 }

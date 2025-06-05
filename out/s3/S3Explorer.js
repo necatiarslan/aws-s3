@@ -705,12 +705,14 @@ class S3Explorer {
             return;
         }
         let results = [];
+        await api.StartConnection();
         for (var key of keyList) {
             let result = await api.MoveObject(this.S3ExplorerItem.Bucket, key, targetKey);
             if (result.isSuccessful) {
                 results = results.concat(result.result || []);
             }
         }
+        await api.StopConnection();
         if (results.length > 0) {
             this.S3ExplorerItem.Key = targetKey;
             this.Load();
@@ -736,12 +738,14 @@ class S3Explorer {
             return;
         }
         let results = [];
+        await api.StartConnection();
         for (var key of keyList) {
             let result = await api.CopyObject(this.S3ExplorerItem.Bucket, key, targetKey);
             if (result.isSuccessful) {
                 results = results.concat(result.result || []);
             }
         }
+        await api.StopConnection();
         if (results.length > 0) {
             this.S3ExplorerItem.Key = targetKey;
             this.Load();
@@ -760,6 +764,7 @@ class S3Explorer {
         }
         let goto_parent_folder = false;
         let deleteCounter = 0;
+        await api.StartConnection();
         for (var key of keyList) {
             let response = await api.DeleteObject(this.S3ExplorerItem.Bucket, key);
             if (response.isSuccessful) {
@@ -775,6 +780,7 @@ class S3Explorer {
                 ui.showInfoMessage(key + " is not deleted");
             }
         }
+        await api.StopConnection();
         //go up if current file/folder is deleted
         if (goto_parent_folder) {
             this.S3ExplorerItem.Key = this.S3ExplorerItem.GetParentFolderKey();
@@ -796,7 +802,9 @@ class S3Explorer {
         if (targetName === undefined) {
             return;
         }
+        await api.StartConnection();
         let result = await api.RenameObject(this.S3ExplorerItem.Bucket, key, targetName);
+        await api.StopConnection();
         if (result.isSuccessful) {
             if (s3_helper.IsFile(key) && result.result && result.result.length > 0 && key === this.S3ExplorerItem.Key) {
                 this.S3ExplorerItem.Key = result.result[0];
@@ -830,9 +838,11 @@ class S3Explorer {
         if (!selectedFolder) {
             return;
         }
+        await api.StartConnection();
         for (var key of keyList) {
-            api.DownloadObject(this.S3ExplorerItem.Bucket, key, selectedFolder[0].fsPath);
+            await api.DownloadObject(this.S3ExplorerItem.Bucket, key, selectedFolder[0].fsPath);
         }
+        await api.StopConnection();
         ui.showInfoMessage("File(s) are downloaded");
     }
     async PreviewFile(key) {
@@ -867,12 +877,14 @@ class S3Explorer {
         if (!selectedFileList || selectedFileList.length == 0) {
             return;
         }
+        await api.StartConnection();
         for (var file of selectedFileList) {
             let result = await api.UploadFileToFolder(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, file.fsPath);
             if (result.isSuccessful) {
                 ui.showInfoMessage(s3_helper.GetFileNameWithExtension(file.fsPath) + " is uploaded");
             }
         }
+        await api.StopConnection();
         this.Load();
     }
     async UpdateFile() {

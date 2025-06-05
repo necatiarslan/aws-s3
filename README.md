@@ -113,6 +113,7 @@ https://github.com/necatiarslan/aws-s3/issues/new
 
 
 ## Todo
+- AWS S3 Extension News mail ditribution 
 - S3 Select Support
 - Stick to Profile or Workspace
 - Share active profile with other extensions
