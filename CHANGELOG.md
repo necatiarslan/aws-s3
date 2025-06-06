@@ -1,3 +1,6 @@
+# v1.8.3
+    - Fix Download File async to sync
+    - Connection pooling
 # v1.8.2
     - Fix Preview File
 # v1.8.1
