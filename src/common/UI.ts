@@ -8,6 +8,13 @@ var logsOutputChannel: vscode.OutputChannel;
 
 var NEW_LINE:string = " | ";
 
+export function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+export function withProgress<T>(task: (progress: vscode.Progress<{ increment: number; message?: string }>) => Promise<T>): Promise<T> {
+  return Promise.resolve(vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, cancellable: false }, task));
+}
+
 export function getUri(webview: vscode.Webview, extensionUri: vscode.Uri, pathList: string[]) {
   return webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, ...pathList));
 }

@@ -921,14 +921,20 @@ export class S3Explorer {
         }
         let selectedFolder = await vscode.window.showOpenDialog(param);
         if(!selectedFolder){ return; }
-
-        await api.StartConnection();
-        for(var key of keyList)
-        {
-            await api.DownloadObject(this.S3ExplorerItem.Bucket, key,selectedFolder[0].fsPath);
-        }
-        await api.StopConnection();
-        ui.showInfoMessage("File(s) are downloaded");
+    
+        await ui.withProgress(async (progress: vscode.Progress<{ increment: number; message?: string }>) => {
+            progress.report({ increment: 0 });
+            await api.StartConnection();
+            
+            for(var key of keyList)
+            {
+                await api.DownloadFile(this.S3ExplorerItem.Bucket, key,selectedFolder[0].fsPath);
+                progress.report({ increment: 100 / keyList.length, message: `Downloading ${key}` });
+            }
+            await api.StopConnection();
+        });
+        
+        ui.showInfoMessage(keyList.length.toString() + " File(s) are downloaded to " + selectedFolder[0].fsPath);
     }
     
     async PreviewFile(key: string) {
