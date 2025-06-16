@@ -8,6 +8,8 @@ import { S3ExplorerItem } from "./S3ExplorerItem";
 import * as s3_helper from "./S3Helper";
 import { S3Search } from "./S3Search";
 import { ListObjectsV2CommandOutput } from "@aws-sdk/client-s3";
+import { MethodResult } from '../common/MethodResult';
+
 export class S3Explorer {
     public static Current: S3Explorer | undefined;
     private _panel: vscode.WebviewPanel;
@@ -783,16 +785,24 @@ export class S3Explorer {
         if(targetKey.startsWith("/")){ ui.showInfoMessage("No / at the start"); return; }
 
         let results: string[] = [];
-        await api.StartConnection();
-        for(var key of keyList)
-        {
-            let result = await api.MoveObject(this.S3ExplorerItem.Bucket, key, targetKey);
-            if(result.isSuccessful)
+
+        await ui.withProgress(async (progress: vscode.Progress<{ increment: number; message?: string }>) => {
+            if(targetKey===undefined){ return; }
+            progress.report({ increment: 0 });
+            await api.StartConnection();
+            for(var key of keyList)
             {
-                results = results.concat(result.result || []);
+                let result = await api.MoveObject(this.S3ExplorerItem.Bucket, key, targetKey);
+                progress.report({ increment: 100 / keyList.length, message: `Moved ${key}` });
+                if(result.isSuccessful)
+                {
+                    results = results.concat(result.result || []);
+                }
             }
-        }
-        await api.StopConnection();
+            await api.StopConnection();
+        });
+
+
         if(results.length > 0)
         {
             this.S3ExplorerItem.Key = targetKey;
@@ -812,16 +822,23 @@ export class S3Explorer {
         if(targetKey.startsWith("/")){ ui.showInfoMessage("No / at the start"); return; }
 
         let results: string[] = [];
-        await api.StartConnection();
-        for(var key of keyList)
-        {
-            let result = await api.CopyObject(this.S3ExplorerItem.Bucket, key, targetKey);
-            if(result.isSuccessful)
+        
+        await ui.withProgress(async (progress: vscode.Progress<{ increment: number; message?: string }>) => {
+            if(targetKey===undefined){ return; }
+            progress.report({ increment: 0 });
+
+            await api.StartConnection();
+            for(var key of keyList)
             {
-                results = results.concat(result.result || []);
+                let result = await api.CopyObject(this.S3ExplorerItem.Bucket, key, targetKey);
+                progress.report({ increment: 100 / keyList.length, message: `Copied ${key}` });
+                if(result.isSuccessful)
+                {
+                    results = results.concat(result.result || []);
+                }
             }
-        }
-        await api.StopConnection();
+            await api.StopConnection();
+        });
 
         if(results.length > 0)
         {
@@ -840,28 +857,35 @@ export class S3Explorer {
 
         let goto_parent_folder = false;
 
-        let deleteCounter = 0;
-        await api.StartConnection();
-        for(var key of keyList)
-        {
-            let response = await api.DeleteObject(this.S3ExplorerItem.Bucket, key);
-            if(response.isSuccessful)
+        await ui.withProgress(async (progress: vscode.Progress<{ increment: number; message?: string }>) => {
+            progress.report({ increment: 0 });
+
+            let deleteCounter = 0;
+            await api.StartConnection();
+            for(var key of keyList)
             {
-                let fileCountDeleted = response.result.length;
-                ui.showInfoMessage(key + " is deleted " + fileCountDeleted.toString() + " object(s)");
-                deleteCounter++;
-                S3TreeView.Current?.RemoveShortcutByKey(this.S3ExplorerItem.Bucket, key);
-                if(this.S3ExplorerItem.Key === key)
+                let response = await api.DeleteObject(this.S3ExplorerItem.Bucket, key);
+                
+                if(response.isSuccessful)
                 {
-                    goto_parent_folder = true;
+                    let fileCountDeleted = response.result.length;
+                    //ui.showInfoMessage(key + " is deleted " + fileCountDeleted.toString() + " object(s)");
+                    progress.report({ increment: 100 / keyList.length, message: `Deleted ${key}` });
+                    deleteCounter++;
+                    S3TreeView.Current?.RemoveShortcutByKey(this.S3ExplorerItem.Bucket, key);
+                    if(this.S3ExplorerItem.Key === key)
+                    {
+                        goto_parent_folder = true;
+                    }
+                }
+                else
+                {
+                    //ui.showInfoMessage(key + " is not deleted");
+                    progress.report({ increment: 100 / keyList.length, message: `Delete Failed ${key}` });
                 }
             }
-            else
-            {
-                ui.showInfoMessage(key + " is not deleted");
-            }
-        }
-        await api.StopConnection();
+            await api.StopConnection();
+        });
 
         //go up if current file/folder is deleted
         if(goto_parent_folder)
@@ -882,11 +906,17 @@ export class S3Explorer {
         let targetName = await vscode.window.showInputBox({ placeHolder: 'New File/Folder Name (Without Ext)' });
 		if(targetName===undefined){ return; }
 
-        await api.StartConnection();
-        let result = await api.RenameObject(this.S3ExplorerItem.Bucket, key, targetName);
-        await api.StopConnection();
+        let result : MethodResult<string[] | undefined> | undefined;
+        await ui.withProgress(async (progress: vscode.Progress<{ increment: number; message?: string }>) => {
+            
+            progress.report({ increment: 0 });
+            await api.StartConnection();
+            result = await api.RenameObject(this.S3ExplorerItem.Bucket, key, targetName);
+            progress.report({ increment: 100, message: `Renamed ${key}` });
+            await api.StopConnection();
+        });
         
-        if(result.isSuccessful)
+        if(result && result.isSuccessful)
         {
             if(s3_helper.IsFile(key) && result.result && result.result.length > 0 && key === this.S3ExplorerItem.Key)
             {
@@ -923,12 +953,13 @@ export class S3Explorer {
         if(!selectedFolder){ return; }
     
         await ui.withProgress(async (progress: vscode.Progress<{ increment: number; message?: string }>) => {
+            if(!selectedFolder){ return; }
             progress.report({ increment: 0 });
             await api.StartConnection();
             
             for(var key of keyList)
             {
-                await api.DownloadFile(this.S3ExplorerItem.Bucket, key,selectedFolder[0].fsPath);
+                await api.DownloadFile(this.S3ExplorerItem.Bucket, key, selectedFolder[0].fsPath);
                 progress.report({ increment: 100 / keyList.length, message: `Downloading ${key}` });
             }
             await api.StopConnection();
@@ -971,16 +1002,26 @@ export class S3Explorer {
         let selectedFileList = await vscode.window.showOpenDialog(param);
         if(!selectedFileList || selectedFileList.length == 0){ return; }
 
-        await api.StartConnection();
-        for(var file of selectedFileList)
-        {
-            let result = await api.UploadFileToFolder(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, file.fsPath);
-            if(result.isSuccessful)
+        await ui.withProgress(async (progress: vscode.Progress<{ increment: number; message?: string }>) => {
+            progress.report({ increment: 0 });
+
+            await api.StartConnection();
+            for(var file of selectedFileList)
             {
-                ui.showInfoMessage(s3_helper.GetFileNameWithExtension(file.fsPath) + " is uploaded");
+                let fileNameWithExt = s3_helper.GetFileNameWithExtension(file.fsPath);
+
+                let result = await api.UploadFileToFolder(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key, file.fsPath);
+                if(result.isSuccessful)
+                {
+                    progress.report({ increment: 100 / selectedFileList.length, message: `Uploaded ${fileNameWithExt}` });
+                }
+                else{
+                    ui.showInfoMessage(fileNameWithExt + " is not uploaded");
+                    progress.report({ increment: 100 / selectedFileList.length, message: `Upload Failed ${fileNameWithExt}` });
+                }
             }
-        }
-        await api.StopConnection();
+            await api.StopConnection();
+        });
 
         this.Load();
     }
