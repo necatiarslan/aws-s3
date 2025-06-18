@@ -282,11 +282,13 @@ export class S3Explorer {
         {
             let lastModifiedDate = "";
             let fileSize = "";
+            let fileMetaData : Record<string, string> | undefined;
             let resultObject = await api.GetObjectProperties(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key);
             if(resultObject.isSuccessful && resultObject.result)
             {
                 if(resultObject.result.LastModified) lastModifiedDate = resultObject.result.LastModified.toLocaleDateString() + "   " + resultObject.result.LastModified.toLocaleTimeString();
                 if (resultObject.result.ContentLength) fileSize = ui.bytesToText(resultObject.result.ContentLength);
+                fileMetaData = resultObject.result.Metadata;
             }
             S3RowHtml = `
             <tr style="height:50px; text-align:center;">
@@ -352,6 +354,19 @@ export class S3Explorer {
                 <td colspan="4">${s3_helper.GetURL(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key)}</td>
             </tr>
             `;
+            if(fileMetaData)
+            {
+                for(var key in fileMetaData)
+                {
+                    S3RowHtml += `
+                    <tr>
+                        <td>${key}</td>
+                        <td>:</td>
+                        <td colspan="4">${fileMetaData[key]}</td>
+                    </tr>
+                    `;
+                }
+            }
         }
 
         let result = /*html*/ `
@@ -782,12 +797,13 @@ export class S3Explorer {
         let targetKey = await vscode.window.showInputBox({ placeHolder: 'Target Path with / at the end (Move)' });
 		if(targetKey===undefined){ return; }
         if(!targetKey.endsWith("/")){ ui.showInfoMessage("Add / at the end"); return; }
-        if(targetKey.startsWith("/")){ ui.showInfoMessage("No / at the start"); return; }
+        if(targetKey !=="/" && targetKey.startsWith("/")){ ui.showInfoMessage("No / at the start"); return; }
 
         let results: string[] = [];
 
         await ui.withProgress(async (progress: vscode.Progress<{ increment: number; message?: string }>) => {
             if(targetKey===undefined){ return; }
+            if(targetKey === "/"){ targetKey = ""; }
             progress.report({ increment: 0 });
             await api.StartConnection();
             for(var key of keyList)
@@ -819,12 +835,13 @@ export class S3Explorer {
         let targetKey = await vscode.window.showInputBox({ placeHolder: 'Target Path with / at the end (Copy)' });
 		if(targetKey===undefined){ return; }
         if(!targetKey.endsWith("/")){ ui.showInfoMessage("Add / at the end"); return; }
-        if(targetKey.startsWith("/")){ ui.showInfoMessage("No / at the start"); return; }
+        if(targetKey !=="/" && targetKey.startsWith("/")){ ui.showInfoMessage("No / at the start"); return; }
 
         let results: string[] = [];
         
         await ui.withProgress(async (progress: vscode.Progress<{ increment: number; message?: string }>) => {
             if(targetKey===undefined){ return; }
+            if(targetKey === "/"){ targetKey = ""; }
             progress.report({ increment: 0 });
 
             await api.StartConnection();
@@ -885,6 +902,7 @@ export class S3Explorer {
                 }
             }
             await api.StopConnection();
+            ui.showInfoMessage(deleteCounter.toString() + " File/Folder(s) are deleted");
         });
 
         //go up if current file/folder is deleted
@@ -908,7 +926,7 @@ export class S3Explorer {
 
         let result : MethodResult<string[] | undefined> | undefined;
         await ui.withProgress(async (progress: vscode.Progress<{ increment: number; message?: string }>) => {
-            
+            if(targetName===undefined){ return; }
             progress.report({ increment: 0 });
             await api.StartConnection();
             result = await api.RenameObject(this.S3ExplorerItem.Bucket, key, targetName);
@@ -1003,6 +1021,7 @@ export class S3Explorer {
         if(!selectedFileList || selectedFileList.length == 0){ return; }
 
         await ui.withProgress(async (progress: vscode.Progress<{ increment: number; message?: string }>) => {
+            if (!selectedFileList || selectedFileList.length == 0){ return; }
             progress.report({ increment: 0 });
 
             await api.StartConnection();
@@ -1022,7 +1041,7 @@ export class S3Explorer {
             }
             await api.StopConnection();
         });
-
+        ui.showInfoMessage(selectedFileList.length.toString() + " File(s) are uploaded");
         this.Load();
     }
     

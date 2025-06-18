@@ -220,20 +220,20 @@ exports.CreateFolder = CreateFolder;
 const client_s3_5 = require("@aws-sdk/client-s3");
 async function DeleteObject(Bucket, Key) {
     let result = new MethodResult_1.MethodResult();
+    result.result = [];
     try {
-        const s3 = await GetS3Client();
-        const command = new client_s3_5.DeleteObjectCommand({ Bucket, Key });
-        await s3.send(command);
-        result.isSuccessful = true;
-        result.result = `Deleted: ${Key}`;
-        ui.logToOutput("api.DeleteObject Success Key=" + Key);
-        return result;
+        if (s3_helper.IsFolder(Key)) {
+            return await DeleteFolder(Bucket, Key);
+        }
+        else {
+            return await DeleteFile(Bucket, Key);
+        }
     }
     catch (error) {
         result.isSuccessful = false;
         result.error = error;
-        ui.showErrorMessage("api.DeleteObject Error !!!", error);
-        ui.logToOutput("api.DeleteObject Error !!!", error);
+        ui.showErrorMessage('api.DeleteObject Error !!! SourceKey=' + Key, error);
+        ui.logToOutput("api.DeleteObject Error !!! SourceKey=" + Key, error);
         return result;
     }
 }
@@ -351,7 +351,9 @@ async function CopyFile(Bucket, SourceKey, TargetKey, s3Client) {
     const s3 = s3Client || await GetS3Client(); // If no s3Client provided, get a new one
     if (s3_helper.IsFolder(TargetKey)) {
         TargetKey = TargetKey === '/' ? '' : TargetKey;
-        TargetKey = TargetKey + s3_helper.GetFileNameWithExtension(SourceKey);
+        if (s3_helper.IsFile(SourceKey)) {
+            TargetKey = TargetKey + s3_helper.GetFileNameWithExtension(SourceKey);
+        }
     }
     if (SourceKey === TargetKey) {
         result.isSuccessful = false;
@@ -393,6 +395,9 @@ async function CopyFolder(Bucket, SourceKey, TargetKey, s3Client) {
             result.isSuccessful = false;
             result.error = new Error('Target Is a File, TargetKey=' + SourceKey);
             return result;
+        }
+        if (TargetKey === "/") {
+            TargetKey = "";
         }
         const s3 = s3Client ? s3Client : await GetS3Client();
         let result_objects = await GetObjectList(Bucket, SourceKey);
@@ -541,7 +546,7 @@ async function RenameFolder(Bucket, SourceKey, TargetName) {
     if (result_objects.isSuccessful) {
         for (var ObjectKey of result_objects.result) {
             let TargetKey = ObjectKey.replace(SourceKey, TargetFolderKey);
-            let move_result = await MoveObject(Bucket, ObjectKey, TargetKey);
+            let move_result = await MoveFile(Bucket, ObjectKey, TargetKey);
             if (move_result.isSuccessful) {
                 result.result.push(TargetKey);
             }

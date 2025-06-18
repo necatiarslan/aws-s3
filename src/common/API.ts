@@ -137,9 +137,9 @@ export async function GetObjectList(Bucket: string, Key: string): Promise<Method
   }
 }
 
-import { HeadObjectCommand } from "@aws-sdk/client-s3";
-export async function GetObjectProperties(Bucket: string, Key: string): Promise<MethodResult<any>> {
-  let result: MethodResult<any> = new MethodResult<any>();
+import { HeadObjectCommand, HeadObjectCommandOutput } from "@aws-sdk/client-s3";
+export async function GetObjectProperties(Bucket: string, Key: string): Promise<MethodResult<HeadObjectCommandOutput>> {
+  let result: MethodResult<HeadObjectCommandOutput> = new MethodResult<HeadObjectCommandOutput>();
 
   try {
     const s3 = await GetS3Client();
@@ -249,22 +249,24 @@ export async function CreateFolder(Bucket: string, Key: string, FolderName: stri
 }
 
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
-export async function DeleteObject(Bucket: string, Key: string): Promise<MethodResult<string>> {
-  let result = new MethodResult<string>();
+export async function DeleteObject(Bucket: string, Key: string): Promise<MethodResult<string[]>> {
 
-  try {
-    const s3 = await GetS3Client();
-    const command = new DeleteObjectCommand({ Bucket, Key });
-    await s3.send(command);
-    result.isSuccessful = true;
-    result.result = `Deleted: ${Key}`;
-    ui.logToOutput("api.DeleteObject Success Key=" + Key);
-    return result;
-  } catch (error: any) {
+  let result = new MethodResult<string[]>();
+  result.result = [];
+  try 
+  {
+    if (s3_helper.IsFolder(Key)) {
+      return await DeleteFolder(Bucket, Key);
+    } else {
+      return await DeleteFile(Bucket, Key);
+    }    
+  } 
+  catch (error:any) 
+  {
     result.isSuccessful = false;
     result.error = error;
-    ui.showErrorMessage("api.DeleteObject Error !!!", error);
-    ui.logToOutput("api.DeleteObject Error !!!", error);
+    ui.showErrorMessage('api.DeleteObject Error !!! SourceKey=' + Key, error);
+    ui.logToOutput("api.DeleteObject Error !!! SourceKey=" + Key, error); 
     return result;
   }
 }
@@ -396,7 +398,10 @@ export async function CopyFile(
 
   if (s3_helper.IsFolder(TargetKey)) {
     TargetKey = TargetKey === '/' ? '' : TargetKey;
-    TargetKey = TargetKey + s3_helper.GetFileNameWithExtension(SourceKey);
+    if(s3_helper.IsFile(SourceKey))
+    {
+      TargetKey = TargetKey + s3_helper.GetFileNameWithExtension(SourceKey);
+    }
   }
 
   if (SourceKey === TargetKey) {
@@ -448,6 +453,11 @@ export async function CopyFolder(Bucket:string, SourceKey:string, TargetKey:stri
       result.isSuccessful = false;
       result.error = new Error('Target Is a File, TargetKey=' + SourceKey);
       return result;
+    }
+
+    if(TargetKey === "/")
+    {
+      TargetKey = "";
     }
 
     const s3 = s3Client ? s3Client : await GetS3Client();
@@ -646,7 +656,7 @@ export async function RenameFolder(Bucket:string, SourceKey:string, TargetName:s
     for(var ObjectKey of result_objects.result as string[])
     {
       let TargetKey = ObjectKey.replace(SourceKey, TargetFolderKey);
-      let move_result = await MoveObject(Bucket, ObjectKey, TargetKey);
+      let move_result = await MoveFile(Bucket, ObjectKey, TargetKey);
       if(move_result.isSuccessful)
       {
         result.result.push(TargetKey);

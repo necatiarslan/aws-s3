@@ -115,12 +115,10 @@ https://github.com/necatiarslan/aws-s3/issues/new
 ## Todo
 - AWS S3 Extension News mail ditribution 
 - S3 Select Support
-- Stick to Profile or Workspace
 - Share active profile with other extensions
 - Add "Calculate Folder Size" Button but folder view and show folder size and object count
 - Show warning when item is more then 1000
 - Drag/Drop files and folders to upload
-- Show progressbar when uploading, downloading, deleting etc
 - NoSuchBucket: The specified bucket does not exist handle error and show error message
 - Save IsFav and IsHidden node properties
 ## Nice To Have

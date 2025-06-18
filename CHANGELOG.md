@@ -1,4 +1,8 @@
 # v1.8.3
+    - Show a Progress Bar when needed
+    - Fix Copy, Move, Rename folders
+    - Show File Metadata
+# v1.8.3
     - Fix Download File async to sync
     - Connection pooling
 # v1.8.2

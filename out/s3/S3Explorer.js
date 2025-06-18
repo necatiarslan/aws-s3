@@ -237,12 +237,14 @@ class S3Explorer {
         if (this.S3ExplorerItem.IsFile()) {
             let lastModifiedDate = "";
             let fileSize = "";
+            let fileMetaData;
             let resultObject = await api.GetObjectProperties(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key);
             if (resultObject.isSuccessful && resultObject.result) {
                 if (resultObject.result.LastModified)
                     lastModifiedDate = resultObject.result.LastModified.toLocaleDateString() + "   " + resultObject.result.LastModified.toLocaleTimeString();
                 if (resultObject.result.ContentLength)
                     fileSize = ui.bytesToText(resultObject.result.ContentLength);
+                fileMetaData = resultObject.result.Metadata;
             }
             S3RowHtml = `
             <tr style="height:50px; text-align:center;">
@@ -308,6 +310,17 @@ class S3Explorer {
                 <td colspan="4">${s3_helper.GetURL(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key)}</td>
             </tr>
             `;
+            if (fileMetaData) {
+                for (var key in fileMetaData) {
+                    S3RowHtml += `
+                    <tr>
+                        <td>${key}</td>
+                        <td>:</td>
+                        <td colspan="4">${fileMetaData[key]}</td>
+                    </tr>
+                    `;
+                }
+            }
         }
         let result = /*html*/ `
     <!DOCTYPE html>
@@ -700,7 +713,7 @@ class S3Explorer {
             ui.showInfoMessage("Add / at the end");
             return;
         }
-        if (targetKey.startsWith("/")) {
+        if (targetKey !== "/" && targetKey.startsWith("/")) {
             ui.showInfoMessage("No / at the start");
             return;
         }
@@ -708,6 +721,9 @@ class S3Explorer {
         await ui.withProgress(async (progress) => {
             if (targetKey === undefined) {
                 return;
+            }
+            if (targetKey === "/") {
+                targetKey = "";
             }
             progress.report({ increment: 0 });
             await api.StartConnection();
@@ -740,7 +756,7 @@ class S3Explorer {
             ui.showInfoMessage("Add / at the end");
             return;
         }
-        if (targetKey.startsWith("/")) {
+        if (targetKey !== "/" && targetKey.startsWith("/")) {
             ui.showInfoMessage("No / at the start");
             return;
         }
@@ -748,6 +764,9 @@ class S3Explorer {
         await ui.withProgress(async (progress) => {
             if (targetKey === undefined) {
                 return;
+            }
+            if (targetKey === "/") {
+                targetKey = "";
             }
             progress.report({ increment: 0 });
             await api.StartConnection();
@@ -799,6 +818,7 @@ class S3Explorer {
                 }
             }
             await api.StopConnection();
+            ui.showInfoMessage(deleteCounter.toString() + " File/Folder(s) are deleted");
         });
         //go up if current file/folder is deleted
         if (goto_parent_folder) {
@@ -823,6 +843,9 @@ class S3Explorer {
         }
         let result;
         await ui.withProgress(async (progress) => {
+            if (targetName === undefined) {
+                return;
+            }
             progress.report({ increment: 0 });
             await api.StartConnection();
             result = await api.RenameObject(this.S3ExplorerItem.Bucket, key, targetName);
@@ -909,6 +932,9 @@ class S3Explorer {
             return;
         }
         await ui.withProgress(async (progress) => {
+            if (!selectedFileList || selectedFileList.length == 0) {
+                return;
+            }
             progress.report({ increment: 0 });
             await api.StartConnection();
             for (var file of selectedFileList) {
@@ -924,6 +950,7 @@ class S3Explorer {
             }
             await api.StopConnection();
         });
+        ui.showInfoMessage(selectedFileList.length.toString() + " File(s) are uploaded");
         this.Load();
     }
     async UpdateFile() {
