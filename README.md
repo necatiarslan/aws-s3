@@ -113,7 +113,6 @@ https://github.com/necatiarslan/aws-s3/issues/new
 
 
 ## Todo
-- AWS S3 Extension News mail ditribution 
 - S3 Select Support
 - Share active profile with other extensions
 - Add "Calculate Folder Size" Button but folder view and show folder size and object count
@@ -121,7 +120,10 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Drag/Drop files and folders to upload
 - NoSuchBucket: The specified bucket does not exist handle error and show error message
 - Save IsFav and IsHidden node properties
+- Copy icons in the file view
+- Show Progressbar for each file moved/copied/renamed etc
 ## Nice To Have
+- AWS S3 Extension News mail ditribution 
 - Use vscode icons for files and folders
 - Auto refresh option
 - Paging (now max 1000)
