@@ -135,6 +135,7 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Freeze top bar
 - S3.getBucketAcl to get permissions and enable/disable command buttons
 - Local folder sync
+- Add notes and colors to buckets or keys, notes can popup when you hover on the tree node and in the S3Explorer. Colors could be background color or title forecolor, backcolor etc...
 
 Follow me on linkedin to get latest news \
 https://www.linkedin.com/in/necati-arslan/
