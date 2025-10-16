@@ -404,7 +404,7 @@ export class S3Explorer {
                     <vscode-option>Move</vscode-option>
                 </vscode-single-select >
 
-                <vscode-single-select id="copy_dropdown" style="width: 100px; vertical-align:top" >
+                <vscode-single-select id="copy_dropdown" style="width: 150px; vertical-align:top" >
                     <vscode-option>Copy</vscode-option>
                     <vscode-option>File Name(s) No Ext</vscode-option>
                     <vscode-option>File Name(s) /w Ext</vscode-option>

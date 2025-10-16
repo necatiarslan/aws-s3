@@ -1,3 +1,5 @@
+# v1.8.5
+    - Fix Copy combo width
 # v1.8.4
     - Show a Progress Bar when needed
     - Fix Copy, Move, Rename folders
