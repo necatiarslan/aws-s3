@@ -122,6 +122,7 @@ https://github.com/necatiarslan/aws-s3/issues/new
 - Save IsFav and IsHidden node properties
 - Copy icons in the file view
 - Show Progressbar for each file moved/copied/renamed etc
+- keep search text for a key, when you search on a folder and click a sub folder the search should not be active, but when you turn back to the same folder, the search key should be active. so keep search keys by folder keys in backend
 ## Nice To Have
 - AWS S3 Extension News mail ditribution 
 - Use vscode icons for files and folders
