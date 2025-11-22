@@ -432,7 +432,7 @@ async function MoveObject(Bucket, SourceKey, TargetKey, s3Client) {
     result.result = [];
     try {
         if (SourceKey === TargetKey) {
-            result.isSuccessful == false;
+            result.isSuccessful = false;
             result.error = new Error('api.MoveObject Error !!! SourceKey and TargetKey are the same, SourceKey=' + SourceKey);
             return result;
         }
@@ -643,23 +643,16 @@ async function DownloadFile(Bucket, Key, TargetPath, s3Client) {
         const readStream = data.Body;
         const writeStream = (0, fs_1.createWriteStream)(TargetFilePath);
         readStream.pipe(writeStream);
-        writeStream.on('finish', () => {
-            ui.logToOutput(`Download File=${Key} to ${TargetFilePath}`);
-            result.result = TargetFilePath;
-            result.isSuccessful = true;
-        });
-        // Handle stream error
-        writeStream.on('error', (error) => {
-            result.isSuccessful = false;
-            result.error = error;
-            ui.showErrorMessage('api.DownloadFile Error !!! File=' + Key, error);
-            ui.logToOutput('api.DownloadFile Error !!! File=' + Key, error);
-        });
-        // Wait for writeStream to complete
+        // Wait for writeStream to complete BEFORE setting result
         await new Promise((resolve, reject) => {
             writeStream.on('finish', resolve);
             writeStream.on('error', reject);
+            readStream.on('error', reject);
         });
+        // NOW it's safe to set the result after stream completion
+        ui.logToOutput(`Download File=${Key} to ${TargetFilePath}`);
+        result.result = TargetFilePath;
+        result.isSuccessful = true;
         ui.logToOutput('api.DownloadFile Success File=' + Key);
         return result;
     }

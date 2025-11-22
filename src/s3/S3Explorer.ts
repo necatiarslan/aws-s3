@@ -508,7 +508,7 @@ export class S3Explorer {
     private _setWebviewMessageListener(webview: vscode.Webview) {
         ui.logToOutput('S3Explorer._setWebviewMessageListener Started');
         webview.onDidReceiveMessage(
-            (message: any) => {
+            async (message: any) => {
                 const command = message.command;
                 let id:string;
 
@@ -648,8 +648,9 @@ export class S3Explorer {
                         return;
 
                     case "go_to":
-                        let shortcut:string|undefined  = undefined;
-                        vscode.window.showInputBox({ placeHolder: 'Enter a Folder/File Key' }).then(shortcut);
+                        const shortcut = await vscode.window.showInputBox({ 
+                            placeHolder: 'Enter a Folder/File Key' 
+                        });
 		                if(shortcut===undefined){ return; }
 
                         this.S3ExplorerItem.Key = shortcut;

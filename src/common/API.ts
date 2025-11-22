@@ -505,7 +505,7 @@ export async function MoveObject(Bucket:string, SourceKey:string, TargetKey:stri
   {
     if(SourceKey === TargetKey)
       {
-        result.isSuccessful == false;
+        result.isSuccessful = false;
         result.error = new Error('api.MoveObject Error !!! SourceKey and TargetKey are the same, SourceKey=' + SourceKey);
         return result;
       }
@@ -789,25 +789,17 @@ export async function DownloadFile(
     const writeStream = createWriteStream(TargetFilePath);
     readStream.pipe(writeStream);
 
-    writeStream.on('finish', () => {
-      ui.logToOutput(`Download File=${Key} to ${TargetFilePath}`);
-      result.result = TargetFilePath;
-      result.isSuccessful = true;
-    });
-
-    // Handle stream error
-    writeStream.on('error', (error) => {
-      result.isSuccessful = false;
-      result.error = error;
-      ui.showErrorMessage('api.DownloadFile Error !!! File=' + Key, error);
-      ui.logToOutput('api.DownloadFile Error !!! File=' + Key, error);
-    });
-
-    // Wait for writeStream to complete
-    await new Promise((resolve, reject) => {
+    // Wait for writeStream to complete BEFORE setting result
+    await new Promise<void>((resolve, reject) => {
       writeStream.on('finish', resolve);
       writeStream.on('error', reject);
+      readStream.on('error', reject);
     });
+
+    // NOW it's safe to set the result after stream completion
+    ui.logToOutput(`Download File=${Key} to ${TargetFilePath}`);
+    result.result = TargetFilePath;
+    result.isSuccessful = true;
     ui.logToOutput('api.DownloadFile Success File=' + Key);
     return result;
   } catch (error: any) {

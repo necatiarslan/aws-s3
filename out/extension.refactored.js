@@ -126,4 +126,4 @@ function deactivate() {
     ui.logToOutput('AWS S3 Extension is now deactivated');
 }
 exports.deactivate = deactivate;
-//# sourceMappingURL=extension.js.map
+//# sourceMappingURL=extension.refactored.js.map
