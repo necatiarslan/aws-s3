@@ -15,6 +15,8 @@ class S3Explorer {
         this._disposables = [];
         this.S3ExplorerItem = new S3ExplorerItem_1.S3ExplorerItem("undefined", "");
         this.SearchText = "";
+        this.SortColumn = "Name";
+        this.SortDirection = "asc";
         ui.logToOutput('S3Explorer.constructor Started');
         this.SetS3ExplorerItem(node);
         this.extensionUri = extensionUri;
@@ -102,6 +104,62 @@ class S3Explorer {
         }
         return result;
     }
+    SortList() {
+        if (!this.S3ObjectList) {
+            return;
+        }
+        const direction = this.SortDirection === 'asc' ? 1 : -1;
+        // Sort Folders (CommonPrefixes) - Only by Name as they don't have other properties usually
+        if (this.S3ObjectList.CommonPrefixes) {
+            this.S3ObjectList.CommonPrefixes.sort((a, b) => {
+                const nameA = s3_helper.GetFolderName(a.Prefix || "").toLowerCase();
+                const nameB = s3_helper.GetFolderName(b.Prefix || "").toLowerCase();
+                if (nameA < nameB) {
+                    return -1 * direction;
+                }
+                if (nameA > nameB) {
+                    return 1 * direction;
+                }
+                return 0;
+            });
+        }
+        // Sort Files (Contents)
+        if (this.S3ObjectList.Contents) {
+            this.S3ObjectList.Contents.sort((a, b) => {
+                let valA;
+                let valB;
+                switch (this.SortColumn) {
+                    case 'Name':
+                        valA = s3_helper.GetFileNameWithExtension(a.Key || "").toLowerCase();
+                        valB = s3_helper.GetFileNameWithExtension(b.Key || "").toLowerCase();
+                        break;
+                    case 'Type':
+                        valA = this.GetFileExtension(a.Key || "").toLowerCase();
+                        valB = this.GetFileExtension(b.Key || "").toLowerCase();
+                        break;
+                    case 'Modified':
+                        valA = a.LastModified?.getTime() || 0;
+                        valB = b.LastModified?.getTime() || 0;
+                        break;
+                    case 'Size':
+                        valA = a.Size || 0;
+                        valB = b.Size || 0;
+                        break;
+                    default:
+                        valA = s3_helper.GetFileNameWithExtension(a.Key || "").toLowerCase();
+                        valB = s3_helper.GetFileNameWithExtension(b.Key || "").toLowerCase();
+                        break;
+                }
+                if (valA < valB) {
+                    return -1 * direction;
+                }
+                if (valA > valB) {
+                    return 1 * direction;
+                }
+                return 0;
+            });
+        }
+    }
     async _getWebviewContent(webview, extensionUri) {
         ui.logToOutput('S3Explorer._getWebviewContent Started');
         //file URIs
@@ -124,6 +182,7 @@ class S3Explorer {
         const folderUri = ui.getUri(webview, extensionUri, ["media", "folder.png"]);
         let fileCounter = 0;
         let folderCounter = 0;
+        this.SortList();
         let NavigationRowHtml = "";
         let PathNavigationHtml = "";
         let FolderIsEmpty = true;
@@ -394,10 +453,26 @@ class S3Explorer {
                     <a id="file_copy"><img src="${fileCopyUri}" title="Copy" style="cursor: pointer;"></a>
                     <a id="file_move"><img src="${fileMoveUri}" title="Move" style="cursor: pointer;"></a>
                 </th>
-                <th>Name</th>
-                <th style="width:100px; text-align:center; vertical-align:middle">Type</th>
-                <th style="width:80px; text-align:center; vertical-align:middle">Modified</th>
-                <th style="width:80px; text-align:center; vertical-align:middle">Size</th>
+                <th>
+                    Name 
+                    <a style="cursor:pointer; text-decoration:none;" id="sort_Name_asc">&#9650;</a>
+                    <a style="cursor:pointer; text-decoration:none;" id="sort_Name_desc">&#9660;</a>
+                </th>
+                <th style="width:100px; text-align:center; vertical-align:middle">
+                    Type
+                    <a style="cursor:pointer; text-decoration:none;" id="sort_Type_asc">&#9650;</a>
+                    <a style="cursor:pointer; text-decoration:none;" id="sort_Type_desc">&#9660;</a>
+                </th>
+                <th style="width:100px; text-align:center; vertical-align:middle">
+                    Modified
+                    <a style="cursor:pointer; text-decoration:none;" id="sort_Modified_asc">&#9650;</a>
+                    <a style="cursor:pointer; text-decoration:none;" id="sort_Modified_desc">&#9660;</a>
+                </th>
+                <th style="width:100px; text-align:center; vertical-align:middle">
+                    Size
+                    <a style="cursor:pointer; text-decoration:none;" id="sort_Size_asc">&#9650;</a>
+                    <a style="cursor:pointer; text-decoration:none;" id="sort_Size_desc">&#9660;</a>
+                </th>
             </tr>
             </table>
 
@@ -463,6 +538,15 @@ class S3Explorer {
             const command = message.command;
             let id;
             ui.logToOutput('S3Explorer._setWebviewMessageListener Message Received ' + message.command);
+            if (command.startsWith("sort_")) {
+                const parts = command.split("_");
+                if (parts.length === 3) {
+                    this.SortColumn = parts[1];
+                    this.SortDirection = parts[2];
+                    this.Load();
+                    return;
+                }
+            }
             switch (command) {
                 case "refresh":
                     this.SearchText = message.search_text;

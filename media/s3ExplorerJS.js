@@ -23,8 +23,7 @@ function main() {
   CreateFolderButton.addEventListener("click", CreateFolderButtonClicked);
 
   const CreateFolderInEmptyFolderButton = document.getElementById("create_folder_in_empty_folder");
-  if (CreateFolderInEmptyFolderButton)
-  {
+  if (CreateFolderInEmptyFolderButton) {
     CreateFolderInEmptyFolderButton.addEventListener("click", CreateFolderButtonClicked);
   }
 
@@ -32,8 +31,7 @@ function main() {
   UploadButton.addEventListener("click", UploadButtonClicked);
 
   const UploadEmptyFolderButton = document.getElementById("upload_empty_folder");
-  if(UploadEmptyFolderButton)
-  {
+  if (UploadEmptyFolderButton) {
     UploadEmptyFolderButton.addEventListener("click", UploadEmptyFolderButtonClicked);
   }
 
@@ -42,50 +40,42 @@ function main() {
   DownloadButton.addEventListener("click", DownloadButtonClicked);
 
   const PreviewCurrentFileButton = document.getElementById("preview_current_file");
-  if(PreviewCurrentFileButton)
-  {
+  if (PreviewCurrentFileButton) {
     PreviewCurrentFileButton.addEventListener("click", PreviewCurrentFileButtonClicked);
   }
 
   const DownloadCurrentFileButton = document.getElementById("download_current_file");
-  if(DownloadCurrentFileButton)
-  {
+  if (DownloadCurrentFileButton) {
     DownloadCurrentFileButton.addEventListener("click", DownloadCurrentFileButtonClicked);
   }
 
   const UpdateFileButton = document.getElementById("update_file");
-  if(UpdateFileButton)
-  {
+  if (UpdateFileButton) {
     UpdateFileButton.addEventListener("click", UpdateFileButtonClicked);
   }
 
   const DeleteFileButton = document.getElementById("delete_file");
-  if(DeleteFileButton)
-  {
+  if (DeleteFileButton) {
     DeleteFileButton.addEventListener("click", DeleteFileButtonClicked);
   }
 
   const RenameFileButton = document.getElementById("rename_file");
-  if(RenameFileButton)
-  {
+  if (RenameFileButton) {
     RenameFileButton.addEventListener("click", RenameFileButtonClicked);
   }
 
   const CopyFileButton = document.getElementById("copy_file");
-  if(CopyFileButton)
-  {
+  if (CopyFileButton) {
     CopyFileButton.addEventListener("click", CopyFileButtonClicked);
   }
 
   const MoveFileButton = document.getElementById("move_file");
-  if(MoveFileButton)
-  {
+  if (MoveFileButton) {
     MoveFileButton.addEventListener("click", MoveFileButtonClicked);
   }
 
   const DeleteFolderButton = document.getElementById("delete_folder");
-  if(DeleteFolderButton)
-  {
+  if (DeleteFolderButton) {
     DeleteFolderButton.addEventListener("click", DeleteFolderButtonClicked);
   }
 
@@ -96,56 +86,47 @@ function main() {
   EditDropDown.addEventListener("change", EditDropDownChanged);
 
   const GoUpLink = document.getElementById("go_up");
-  if(GoUpLink)
-  {
+  if (GoUpLink) {
     GoUpLink.addEventListener("click", GoUpLinkClicked);
   }
 
   const FileDownloadLink = document.getElementById("file_download");
-  if(FileDownloadLink)
-  {
+  if (FileDownloadLink) {
     FileDownloadLink.addEventListener("click", FileDownloadLinkClicked);
   }
 
   const FileUploadLink = document.getElementById("file_upload");
-  if(FileUploadLink)
-  {
+  if (FileUploadLink) {
     FileUploadLink.addEventListener("click", FileUploadLinkClicked);
   }
 
   const FolderCreateLink = document.getElementById("folder_create");
-  if(FolderCreateLink)
-  {
+  if (FolderCreateLink) {
     FolderCreateLink.addEventListener("click", FolderCreateLinkClicked);
   }
 
   const FileDeleteLink = document.getElementById("file_delete");
-  if(FileDeleteLink)
-  {
+  if (FileDeleteLink) {
     FileDeleteLink.addEventListener("click", FileDeleteLinkClicked);
   }
 
   const FileRenameLink = document.getElementById("file_rename");
-  if(FileRenameLink)
-  {
+  if (FileRenameLink) {
     FileRenameLink.addEventListener("click", FileRenameLinkClicked);
   }
 
   const FileCopyLink = document.getElementById("file_copy");
-  if(FileCopyLink)
-  {
+  if (FileCopyLink) {
     FileCopyLink.addEventListener("click", FileCopyLinkClicked);
   }
 
   const FileMoveLink = document.getElementById("file_move");
-  if(FileMoveLink)
-  {
+  if (FileMoveLink) {
     FileMoveLink.addEventListener("click", FileMoveLinkClicked);
   }
 
   const GoHomeLink = document.getElementById("go_home");
-  if(GoHomeLink)
-  {
+  if (GoHomeLink) {
     GoHomeLink.addEventListener("click", GoHomeLinkClicked);
   }
 
@@ -163,9 +144,14 @@ function main() {
   for (let i = 0; i < GoKeyLinkList.length; i++) {
     GoKeyLinkList[i].addEventListener("click", GoKeyLinkClicked);
   }
+
+  const SortLinkList = document.querySelectorAll("[id^='sort_']");
+  for (let i = 0; i < SortLinkList.length; i++) {
+    SortLinkList[i].addEventListener("click", SortLinkClicked);
+  }
 }
 
-function SearchTextBoxKeyDown(e){
+function SearchTextBoxKeyDown(e) {
   if (e.key === "Enter") {
     RefreshButtonClicked();
   }
@@ -381,6 +367,12 @@ function GoKeyLinkClicked(e) {
   vscode.postMessage({
     command: "go_key",
     id: e.target.id
+  });
+}
+
+function SortLinkClicked(e) {
+  vscode.postMessage({
+    command: e.target.id
   });
 }
 
