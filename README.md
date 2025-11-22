@@ -1,153 +1,171 @@
 # AWS S3 Extension for Visual Studio Code
 
-![screenshoot](media/psc-main-screen.png)
+![Main Screen](media/psc-main-screen.png)
 
-The **AWS S3** extension for Visual Studio Code empowers users to seamlessly browse and manage their Amazon S3 buckets, files, and folders directly within the VS Code editor.
+The **AWS S3** extension brings the power of Amazon S3 directly into VS Code. Browse, manage, and manipulate buckets, files, and folders without ever leaving your editor.
 
-## Features
+---
 
-With this extension, you can efficiently perform a wide range of tasks, including:
+## 📋 Table of Contents
+- [Features](#features)
+- [Why Use It?](#why-use-it)
+- [Installation](#installation)
+- [Getting Started](#getting-started)
+- [Explorer Overview](#explorer-overview)
+- [Search Functionality](#search-functionality)
+- [Buckets & Shortcuts](#buckets--shortcuts)
+- [File & Folder Views](#file--folder-views)
+- [Edit & Copy Menus](#edit--copy-menus)
+- [Endpoint & Credentials](#endpoint--credentials)
+- [Bug Reporting & Contributions](#bug-reporting--contributions)
+- [Roadmap](#roadmap)
+- [Sponsor & Survey](#sponsor--survey)
+- [Contact](#contact)
 
-- **File Management**:  
-  - Rename, copy, move, delete, upload, and download files.  
+---
 
-- **Folder Management**:  
-  - Create, rename, copy, move, delete, and download folders.  
+## 🚀 Features
+- **File Management** – Rename, copy, move, delete, upload, download.
+- **Folder Management** – Create, rename, copy, move, delete, download.
+- **Copy Options** – File name (with/without extension), key, ARN, URL, S3 URI.
+- **Shortcuts** – Pin frequently used files/folders for instant access.
+- **Advanced Search** – Search across buckets by name, extension, or key (case‑insensitive).
+- **Endpoint & Region Customisation** – Works with custom S3‑compatible endpoints (e.g., LocalStack).
+- **Localstack Support** – Seamlessly test against a local S3 emulator.
 
-- **Enhanced Copying Options**:  
-  - Copy file names (with or without extensions), keys, ARNs, URLs, and S3 URIs.  
+---
 
-- **Shortcuts**:  
-  - Add shortcuts to frequently accessed files and folders for quick access.  
+## 🌟 Why Use It?
+Whether you’re a developer, data scientist, or sysadmin, this extension streamlines your workflow with an intuitive UI that makes S3 resource management faster and more convenient.
 
-- **Advanced Search**:  
-  - Search across all buckets using file names, extensions, folders, or keys.  
+---
 
-- **Endpoint & Region Customization**:  
-  - Configure AWS endpoint URLs for flexibility.
-  - Set Aws Region if you need. Some custom S3 compatible cloud providers may need it.
+## 📦 Installation
+1. Open VS Code.
+2. Go to **Extensions** (`Ctrl+Shift+X`).
+3. Search for **AWS S3** and click **Install**.
+4. Reload VS Code if prompted.
 
-- **Localstack Support**:  
-  - Work with Localstack to emulate S3 for development and testing.
-  - All s3 compatible cloud providers and emulators works with the extension. 
+---
 
-## Why Use It?
+## 🛠️ Getting Started
+1. Open the **AWS S3 Explorer** view from the Activity Bar.
+2. Add a bucket using the `+` button (you can filter by name or list all buckets).
+3. Browse files/folders, use the context menu for actions, or click the **Search** button for advanced queries.
 
-Whether you’re a developer, data scientist, or system administrator, the **AWS S3** extension simplifies your workflow with an intuitive, user-friendly interface designed to make S3 resource management faster and more convenient.
+---
 
-## Sponsor Me
-If you find this extension useful, you can [donate on GitHub](https://github.com/sponsors/necatiarslan).
+## 📂 Explorer Overview
+![Explorer](media/psc-explorer.png)
 
-## Survey
-Please take this survey to help me make the extension better.\
-https://bit.ly/s3-extension-survey
+The Explorer lists all objects in the selected bucket. Use the toolbar to refresh, upload, create folders, or navigate.
 
-## Explorer
-Explorer is the main view of the extension. It lists all the files and folders in the selected bucket.
-![screenshoot](media/psc-explorer.png)
+---
 
-## Search Function
-Search for files and folders by name and extension listed in the explorer. Subfolders are not searched.
-Search is case insensitive.
-![screenshoot](media/psc-search.png)
+## 🔎 Search Functionality
+![Search](media/psc-search.png)
 
-## Buckets & Shortcuts
-To add a bucket click on the `+` button. Then enter part of your bucket name or leave it empty to get all your buckets. Then select buckets to add and click `Add`.
-You can add a shortcut for frequently accessed files or folders. 
-![screenshoot](media/psc-treeview.png)
+Search is case‑insensitive and supports:
+- File name
+- Extension
+- Full key path
 
-## File View
-![screenshoot](media/psc-file.png)
+Results are displayed in the **Search** view; clicking a result opens it in the Explorer.
 
-## Folder View
-![screenshoot](media/psc-empty-folder.png)
+---
 
-## Search View
-You can search for files including subfolders. you can use file/folder name, extension or key to search. By clicking  the item on the results, you can go to the s3 explorer.
-To open search view click on the `Search` button on the explorer or magnify icon on the treeview bucket item.
-You can search for the entire bucket or a specific folder.
-![screenshoot](media/psc-global-search.png)
+## 📁 Buckets & Shortcuts
+![Buckets & Shortcuts](media/psc-treeview.png)
 
-## Edit Menu
-![screenshoot](media/psc-edit-combo.png)
+- Add buckets via the `+` button.
+- Create shortcuts for quick access to frequently used objects.
 
-## Copy Menu
-![screenshoot](media/psc-copy-combo.png)
+---
 
-## Endpoint Url
-You can change your aws endpoint url here. To connect your localstack use the following url: http://localhost:4566
-![screenshoot](media/psc-endpoint.png)
+## 📄 File & Folder Views
+### File View
+![File View](media/psc-file.png)
 
-## Aws Credentials Setup
-To Access Aws, you need to configure aws credentials. 
+### Empty Folder View
+![Empty Folder](media/psc-empty-folder.png)
 
-For more detail on aws credentials \
-https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html \
-https://www.youtube.com/watch?v=SON8sY1iOBU
+---
 
-Extension supports all types of credentials. It searches for aws credentials in the following order:
-- Environment Variables:
-  - AWS_ACCESS_KEY_ID
-  - AWS_SECRET_ACCESS_KEY
-  - AWS_SESSION_TOKEN (optional, for temporary credentials)
+## 🔧 Edit & Copy Menus
+### Edit Menu
+![Edit Menu](media/psc-edit-combo.png)
 
-- Shared Credentials File:
-  - ~/.aws/credentials (default profile or a named profile)
-  - ~/.aws/config (for region settings)
+### Copy Menu
+![Copy Menu](media/psc-copy-combo.png)
 
-- Amazon EC2 Instance Metadata Service (IMDS):
-  - When running on an EC2 instance with an attached IAM role, credentials are retrieved from http://169.254.169.254/latest/meta-data/iam/security-credentials/
+---
 
-- Amazon ECS Container Credentials:
-  - When running in an ECS task, the SDK retrieves credentials from the container metadata URI (provided by ECS agent).
+## 🌐 Endpoint & Credentials
+### Endpoint URL
+You can point the extension at any S3‑compatible service (e.g., LocalStack) by setting the endpoint URL:
+```
+http://localhost:4566
+```
+![Endpoint](media/psc-endpoint.png)
 
-- SSO Credentials:
-  - If you've configured SSO using the AWS CLI, the SDK will attempt to retrieve credentials from your SSO login session.
+### AWS Credentials
+The extension follows the standard AWS SDK credential chain:
+- **Environment variables** (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`)
+- **Shared credentials file** (`~/.aws/credentials` and `~/.aws/config`)
+- **EC2 Instance Metadata Service**
+- **ECS Container Credentials**
+- **AWS SSO**
+- **Web Identity Tokens**
 
-- Web Identity Token (IAM Roles for Service Accounts):
-  - For federated identity access, such as AWS IAM roles for Kubernetes (EKS).
+For more details, see the [AWS CLI credential docs](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html).
 
-## Bug Report
-To report your bugs or request new features, use link below\
-https://github.com/necatiarslan/aws-s3/issues/new
+---
 
+## 🐞 Bug Reporting & Contributions
+- **Report bugs / request features**: <https://github.com/necatiarslan/aws-s3/issues/new>
+- Contributions are welcome! Fork the repo, make your changes, and submit a pull request.
 
-## Todo
-- S3 Select Support
+---
+
+## 🗺️ Roadmap
+### Todo
+- S3 Select support
 - Share active profile with other extensions
-- Add "Calculate Folder Size" Button but folder view and show folder size and object count
-- Show warning when item is more then 1000
-- Drag/Drop files and folders to upload
-- NoSuchBucket: The specified bucket does not exist handle error and show error message
-- Save IsFav and IsHidden node properties
-- Copy icons in the file view
-- Show Progressbar for each file moved/copied/renamed etc
-- keep search text for a key, when you search on a folder and click a sub folder the search should not be active, but when you turn back to the same folder, the search key should be active. so keep search keys by folder keys in backend
-## Nice To Have
-- AWS S3 Extension News mail ditribution 
-- Use vscode icons for files and folders
-- Auto refresh option
-- Paging (now max 1000)
-- Sort By Name / Type
-- Write Selected File and Folder count to the bottom
-- Filter by Date/Size
-- Multiple S3 Explorer
-- Highlight Icons On Hover
+- Calculate folder size & object count
+- Warning for > 1000 items
+- Drag‑and‑drop upload
+- Detailed error handling (e.g., `NoSuchBucket`)
+- Persist favorite/hidden node states
+- Progress bars for move/copy/rename operations
+- Keep search text per folder navigation
+
+### Nice‑to‑Have
+- VS Code icons for files/folders (removed in current version)
+- Auto‑refresh option
+- Paging beyond 1000 items
+- Sort by name/type
+- Display selected file/folder count
+- Filter by date/size
+- Multiple Explorer instances
+- Hover‑highlight icons
 - Freeze top bar
-- S3.getBucketAcl to get permissions and enable/disable command buttons
+- Bucket ACL‑based permission handling
 - Local folder sync
-- Add notes and colors to buckets or keys, notes can popup when you hover on the tree node and in the S3Explorer. Colors could be background color or title forecolor, backcolor etc...
+- Notes & colour tags for buckets/keys
 
-Follow me on linkedin to get latest news \
-https://www.linkedin.com/in/necati-arslan/
+---
 
-Thanks, \
-Necati ARSLAN \
-necatia@gmail.com
+## 🙏 Sponsor & Survey
+If you find this extension useful, consider:
+- **Sponsoring** me on GitHub: <https://github.com/sponsors/necatiarslan>
+- **Taking the survey** to help improve the extension: <https://bit.ly/s3-extension-survey>
 
+---
 
-Other Extensions
-- https://bit.ly/aws-access-vscode-extension
-- https://bit.ly/vscode-aws-s3
-- https://bit.ly/aws-cloudwatch-vscode-extension
-- https://bit.ly/airflow-vscode-extension
+## 📞 Contact
+- **LinkedIn**: <https://www.linkedin.com/in/necati-arslan/>
+- **Email**: necatiarslan@gmail.com
+
+---
+
+*Thanks for using the AWS S3 Extension!*
