@@ -1,6 +1,38 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = exports.getIniProfileData = exports.GetAwsProfileList = exports.TestAwsConnection = exports.TestAwsCredentials = exports.GetBucketList = exports.DownloadFile = exports.DownloadFolder = exports.DownloadObject = exports.RenameObject = exports.RenameFolder = exports.RenameFile = exports.MoveFolder = exports.MoveFile = exports.MoveObject = exports.CopyFolder = exports.CopyFile = exports.CopyObject = exports.UploadFile = exports.UploadFileToFolder = exports.DeleteFolder = exports.DeleteFile = exports.DeleteObject = exports.CreateFolder = exports.SearchObject = exports.GetObjectProperties = exports.GetObjectList = exports.GetFolderList = exports.GetIAMClient = exports.GetS3Client = exports.StopConnection = exports.StartConnection = exports.GetCredentials = void 0;
+exports.getConfigFilepath = exports.getCredentialsFilepath = exports.getHomeDir = exports.ENV_CREDENTIALS_PATH = void 0;
+exports.GetCredentials = GetCredentials;
+exports.StartConnection = StartConnection;
+exports.StopConnection = StopConnection;
+exports.GetS3Client = GetS3Client;
+exports.GetIAMClient = GetIAMClient;
+exports.GetFolderList = GetFolderList;
+exports.GetObjectList = GetObjectList;
+exports.GetObjectProperties = GetObjectProperties;
+exports.SearchObject = SearchObject;
+exports.CreateFolder = CreateFolder;
+exports.DeleteObject = DeleteObject;
+exports.DeleteFile = DeleteFile;
+exports.DeleteFolder = DeleteFolder;
+exports.UploadFileToFolder = UploadFileToFolder;
+exports.UploadFile = UploadFile;
+exports.CopyObject = CopyObject;
+exports.CopyFile = CopyFile;
+exports.CopyFolder = CopyFolder;
+exports.MoveObject = MoveObject;
+exports.MoveFile = MoveFile;
+exports.MoveFolder = MoveFolder;
+exports.RenameFile = RenameFile;
+exports.RenameFolder = RenameFolder;
+exports.RenameObject = RenameObject;
+exports.DownloadObject = DownloadObject;
+exports.DownloadFolder = DownloadFolder;
+exports.DownloadFile = DownloadFile;
+exports.GetBucketList = GetBucketList;
+exports.TestAwsCredentials = TestAwsCredentials;
+exports.TestAwsConnection = TestAwsConnection;
+exports.GetAwsProfileList = GetAwsProfileList;
+exports.getIniProfileData = getIniProfileData;
 /* eslint-disable @typescript-eslint/naming-convention */
 const ui = require("./UI");
 const MethodResult_1 = require("./MethodResult");
@@ -37,7 +69,6 @@ async function GetCredentials() {
         return credentials;
     }
 }
-exports.GetCredentials = GetCredentials;
 const client_s3_1 = require("@aws-sdk/client-s3");
 let CurrentS3Client;
 let CurrentCredentials;
@@ -47,14 +78,12 @@ async function StartConnection() {
     CurrentS3Client = await GetS3Client();
     ui.logToOutput("Connection Started");
 }
-exports.StartConnection = StartConnection;
 async function StopConnection() {
     ui.logToOutput("Stopping Connection");
     CurrentCredentials = undefined;
     CurrentS3Client = undefined;
     ui.logToOutput("Connection Stopped");
 }
-exports.StopConnection = StopConnection;
 async function GetS3Client() {
     let credentials = await GetCredentials();
     if (CurrentS3Client !== undefined) {
@@ -67,13 +96,11 @@ async function GetS3Client() {
         region: S3TreeView.S3TreeView.Current?.AwsRegion,
     });
 }
-exports.GetS3Client = GetS3Client;
 const client_iam_1 = require("@aws-sdk/client-iam");
 async function GetIAMClient() {
     let credentials = await GetCredentials();
     return new client_iam_1.IAMClient({ credentials: credentials });
 }
-exports.GetIAMClient = GetIAMClient;
 const client_s3_2 = require("@aws-sdk/client-s3");
 async function GetFolderList(Bucket, Key) {
     let result = new MethodResult_1.MethodResult();
@@ -98,7 +125,6 @@ async function GetFolderList(Bucket, Key) {
         return result;
     }
 }
-exports.GetFolderList = GetFolderList;
 async function GetObjectList(Bucket, Key) {
     let result = new MethodResult_1.MethodResult();
     let keys = [];
@@ -124,7 +150,6 @@ async function GetObjectList(Bucket, Key) {
         return result;
     }
 }
-exports.GetObjectList = GetObjectList;
 const client_s3_3 = require("@aws-sdk/client-s3");
 async function GetObjectProperties(Bucket, Key) {
     let result = new MethodResult_1.MethodResult();
@@ -144,7 +169,6 @@ async function GetObjectProperties(Bucket, Key) {
         return result;
     }
 }
-exports.GetObjectProperties = GetObjectProperties;
 async function SearchObject(Bucket, PrefixKey, FileName, FileExtension, FolderName, MaxResultCount = 100) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
@@ -193,7 +217,6 @@ async function SearchObject(Bucket, PrefixKey, FileName, FileExtension, FolderNa
         return result;
     }
 }
-exports.SearchObject = SearchObject;
 const client_s3_4 = require("@aws-sdk/client-s3");
 async function CreateFolder(Bucket, Key, FolderName) {
     let result = new MethodResult_1.MethodResult();
@@ -216,7 +239,6 @@ async function CreateFolder(Bucket, Key, FolderName) {
         return result;
     }
 }
-exports.CreateFolder = CreateFolder;
 const client_s3_5 = require("@aws-sdk/client-s3");
 async function DeleteObject(Bucket, Key) {
     let result = new MethodResult_1.MethodResult();
@@ -237,7 +259,6 @@ async function DeleteObject(Bucket, Key) {
         return result;
     }
 }
-exports.DeleteObject = DeleteObject;
 async function DeleteFile(Bucket, Key) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
@@ -258,7 +279,6 @@ async function DeleteFile(Bucket, Key) {
         return result;
     }
 }
-exports.DeleteFile = DeleteFile;
 async function DeleteFolder(Bucket, Key) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
@@ -291,13 +311,11 @@ async function DeleteFolder(Bucket, Key) {
         return result;
     }
 }
-exports.DeleteFolder = DeleteFolder;
 async function UploadFileToFolder(Bucket, FolderKey, SourcePath) {
     let result = new MethodResult_1.MethodResult();
     let TargetKey = `${FolderKey}${s3_helper.GetFileNameWithExtension(SourcePath)}`;
     return UploadFile(Bucket, TargetKey, SourcePath);
 }
-exports.UploadFileToFolder = UploadFileToFolder;
 async function UploadFile(Bucket, TargetKey, SourcePath) {
     let result = new MethodResult_1.MethodResult();
     try {
@@ -323,7 +341,6 @@ async function UploadFile(Bucket, TargetKey, SourcePath) {
         return result;
     }
 }
-exports.UploadFile = UploadFile;
 async function CopyObject(Bucket, SourceKey, TargetKey, s3Client) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
@@ -343,7 +360,6 @@ async function CopyObject(Bucket, SourceKey, TargetKey, s3Client) {
         return result;
     }
 }
-exports.CopyObject = CopyObject;
 const client_s3_6 = require("@aws-sdk/client-s3");
 async function CopyFile(Bucket, SourceKey, TargetKey, s3Client) {
     let result = new MethodResult_1.MethodResult();
@@ -381,7 +397,6 @@ async function CopyFile(Bucket, SourceKey, TargetKey, s3Client) {
         return result;
     }
 }
-exports.CopyFile = CopyFile;
 async function CopyFolder(Bucket, SourceKey, TargetKey, s3Client) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
@@ -426,7 +441,6 @@ async function CopyFolder(Bucket, SourceKey, TargetKey, s3Client) {
         return result;
     }
 }
-exports.CopyFolder = CopyFolder;
 async function MoveObject(Bucket, SourceKey, TargetKey, s3Client) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
@@ -451,7 +465,6 @@ async function MoveObject(Bucket, SourceKey, TargetKey, s3Client) {
         return result;
     }
 }
-exports.MoveObject = MoveObject;
 async function MoveFile(Bucket, SourceKey, TargetKey, s3Client) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
@@ -478,7 +491,6 @@ async function MoveFile(Bucket, SourceKey, TargetKey, s3Client) {
     ui.logToOutput("api.MoveFile Success SourceKey=" + SourceKey + " TargetKey=" + TargetKey);
     return result;
 }
-exports.MoveFile = MoveFile;
 async function MoveFolder(Bucket, SourceKey, TargetKey, s3Client) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
@@ -515,7 +527,6 @@ async function MoveFolder(Bucket, SourceKey, TargetKey, s3Client) {
     ui.logToOutput("api.MoveFolder Success SourceKey=" + SourceKey + " TargetKey=" + TargetKey);
     return result;
 }
-exports.MoveFolder = MoveFolder;
 async function RenameFile(Bucket, SourceKey, TargetName) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
@@ -532,7 +543,6 @@ async function RenameFile(Bucket, SourceKey, TargetName) {
     ui.logToOutput("api.RenameFile Success SourceKey=" + SourceKey + " TargetKey=" + TargetKey);
     return result;
 }
-exports.RenameFile = RenameFile;
 async function RenameFolder(Bucket, SourceKey, TargetName) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
@@ -566,7 +576,6 @@ async function RenameFolder(Bucket, SourceKey, TargetName) {
     ui.logToOutput("api.RenameFolder Success SourceKey=" + SourceKey + " TargetKey=" + TargetFolderKey);
     return result;
 }
-exports.RenameFolder = RenameFolder;
 async function RenameObject(Bucket, SourceKey, TargetName) {
     let result = new MethodResult_1.MethodResult();
     result.result = [];
@@ -586,7 +595,6 @@ async function RenameObject(Bucket, SourceKey, TargetName) {
         return result;
     }
 }
-exports.RenameObject = RenameObject;
 async function DownloadObject(Bucket, Key, TargetPath, s3Client) {
     if (s3_helper.IsFolder(Key)) {
         return await DownloadFolder(Bucket, Key, TargetPath, s3Client);
@@ -595,7 +603,6 @@ async function DownloadObject(Bucket, Key, TargetPath, s3Client) {
         return await DownloadFile(Bucket, Key, TargetPath, s3Client);
     }
 }
-exports.DownloadObject = DownloadObject;
 async function DownloadFolder(Bucket, Key, TargetPath, s3Client) {
     let result = new MethodResult_1.MethodResult();
     try {
@@ -623,7 +630,6 @@ async function DownloadFolder(Bucket, Key, TargetPath, s3Client) {
         return result;
     }
 }
-exports.DownloadFolder = DownloadFolder;
 const client_s3_7 = require("@aws-sdk/client-s3");
 const fs_1 = require("fs");
 async function DownloadFile(Bucket, Key, TargetPath, s3Client) {
@@ -664,7 +670,6 @@ async function DownloadFile(Bucket, Key, TargetPath, s3Client) {
         return result;
     }
 }
-exports.DownloadFile = DownloadFile;
 const client_s3_8 = require("@aws-sdk/client-s3");
 async function GetBucketList(BucketName) {
     let result = new MethodResult_1.MethodResult();
@@ -704,7 +709,6 @@ async function GetBucketList(BucketName) {
         return result;
     }
 }
-exports.GetBucketList = GetBucketList;
 const client_sts_1 = require("@aws-sdk/client-sts");
 async function GetSTSClient(region) {
     const credentials = await GetCredentials();
@@ -729,7 +733,6 @@ async function TestAwsCredentials() {
         return result;
     }
 }
-exports.TestAwsCredentials = TestAwsCredentials;
 async function TestAwsConnection(Region = "us-east-1") {
     let result = new MethodResult_1.MethodResult();
     try {
@@ -746,7 +749,6 @@ async function TestAwsConnection(Region = "us-east-1") {
         return result;
     }
 }
-exports.TestAwsConnection = TestAwsConnection;
 async function GetAwsProfileList() {
     ui.logToOutput("api.GetAwsProfileList Started");
     let result = new MethodResult_1.MethodResult();
@@ -764,12 +766,10 @@ async function GetAwsProfileList() {
         return result;
     }
 }
-exports.GetAwsProfileList = GetAwsProfileList;
 async function getIniProfileData(init = {}) {
     const profiles = await (0, parseKnownFiles_1.parseKnownFiles)(init);
     return profiles;
 }
-exports.getIniProfileData = getIniProfileData;
 exports.ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
 const getHomeDir = () => {
     const { HOME, USERPROFILE, HOMEPATH, HOMEDRIVE = `C:${path_1.sep}` } = process.env;

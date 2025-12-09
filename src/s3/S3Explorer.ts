@@ -545,14 +545,15 @@ export class S3Explorer {
             </tr>
 
         </table>
+        <br>
         <table border="0">
             <tr>
                 <td style="width:20px">
                     <vscode-checkbox id="auto_refresh_checkbox"></vscode-checkbox>
                 </td>
                 <td style="text-align:left;">
-                    <span id="auto_refresh_icon" style="display: none; margin-left: 15px;" class="spinner">⟳</span>
                     <span style="margin-left: 15px; vertical-align: middle;">Auto Refresh (every 15 sec)</span>
+                    <span id="auto_refresh_icon" style="display: none; margin-left: 15px;" class="spinner">⌛</span>
                 </td>
             </tr>
         </table>

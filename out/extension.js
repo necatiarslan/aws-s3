@@ -7,7 +7,8 @@
  * @module extension
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deactivate = exports.activate = void 0;
+exports.activate = activate;
+exports.deactivate = deactivate;
 const vscode = require("vscode");
 const ui = require("./common/UI");
 const S3TreeView_1 = require("./s3/S3TreeView");
@@ -32,7 +33,6 @@ function activate(context) {
         ui.showErrorMessage('Failed to activate AWS S3 Extension', error);
     }
 }
-exports.activate = activate;
 /**
  * Register all extension commands
  *
@@ -125,5 +125,4 @@ function registerCommands(context, treeView) {
 function deactivate() {
     ui.logToOutput('AWS S3 Extension is now deactivated');
 }
-exports.deactivate = deactivate;
 //# sourceMappingURL=extension.js.map
