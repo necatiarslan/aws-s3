@@ -22,3 +22,30 @@ table {
     color: var(--vscode-panelSectionHeader-background);
   }
   */
+
+  /* Icon hover effects */
+  img[style*="cursor: pointer"] {
+    transition: all 0.2s ease-in-out;
+    opacity: 0.8;
+  }
+
+  img[style*="cursor: pointer"]:hover {
+    opacity: 1;
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
+    transform: scale(1.1);
+  }
+
+  /* Spinning icon animation */
+  .spinner {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }

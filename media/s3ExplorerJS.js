@@ -149,6 +149,11 @@ function main() {
   for (let i = 0; i < SortLinkList.length; i++) {
     SortLinkList[i].addEventListener("click", SortLinkClicked);
   }
+
+  const AutoRefreshCheckbox = document.getElementById("auto_refresh_checkbox");
+  if (AutoRefreshCheckbox) {
+    AutoRefreshCheckbox.addEventListener("change", AutoRefreshCheckboxChanged);
+  }
 }
 
 function SearchTextBoxKeyDown(e) {
@@ -373,6 +378,22 @@ function GoKeyLinkClicked(e) {
 function SortLinkClicked(e) {
   vscode.postMessage({
     command: e.target.id
+  });
+}
+
+function AutoRefreshCheckboxChanged(e) {
+  const enabled = e.target.checked;
+  const icon = document.getElementById("auto_refresh_icon");
+  
+  if (enabled) {
+    icon.style.display = "inline-block";
+  } else {
+    icon.style.display = "none";
+  }
+  
+  vscode.postMessage({
+    command: "auto_refresh_toggle",
+    enabled: enabled
   });
 }
 

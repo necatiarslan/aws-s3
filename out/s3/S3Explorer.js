@@ -13,6 +13,7 @@ const S3Search_1 = require("./S3Search");
 class S3Explorer {
     constructor(panel, extensionUri, node) {
         this._disposables = [];
+        this._isAutoRefreshEnabled = false;
         this.S3ExplorerItem = new S3ExplorerItem_1.S3ExplorerItem("undefined", "");
         this.SearchText = "";
         this.SortColumn = "Name";
@@ -499,7 +500,17 @@ class S3Explorer {
             </tr>
 
         </table>
-        
+        <table border="0">
+            <tr>
+                <td style="width:20px">
+                    <vscode-checkbox id="auto_refresh_checkbox"></vscode-checkbox>
+                </td>
+                <td style="text-align:left;">
+                    <span id="auto_refresh_icon" style="display: none; margin-left: 15px;" class="spinner">⟳</span>
+                    <span style="margin-left: 15px; vertical-align: middle;">Auto Refresh (every 15 sec)</span>
+                </td>
+            </tr>
+        </table>
         <br>        
         <br>
         <br>
@@ -676,6 +687,10 @@ class S3Explorer {
                     id = id.replace("go_key_", "");
                     this.S3ExplorerItem.Key = id;
                     this.Load();
+                    return;
+                case "auto_refresh_toggle":
+                    this._isAutoRefreshEnabled = message.enabled;
+                    this.SetAutoRefresh(this._isAutoRefreshEnabled);
                     return;
             }
         }, undefined, this._disposables);
@@ -1074,8 +1089,32 @@ class S3Explorer {
             this.Load();
         }
     }
+    SetAutoRefresh(enabled) {
+        if (enabled) {
+            // Clear any existing interval
+            if (this._autoRefreshInterval) {
+                clearInterval(this._autoRefreshInterval);
+            }
+            // Start auto-refresh every 15 seconds
+            this._autoRefreshInterval = setInterval(() => {
+                this.Load();
+            }, 15000);
+        }
+        else {
+            // Stop auto-refresh
+            if (this._autoRefreshInterval) {
+                clearInterval(this._autoRefreshInterval);
+                this._autoRefreshInterval = undefined;
+            }
+        }
+    }
     dispose() {
         ui.logToOutput('S3Explorer.dispose Started');
+        // Clear auto-refresh interval if active
+        if (this._autoRefreshInterval) {
+            clearInterval(this._autoRefreshInterval);
+            this._autoRefreshInterval = undefined;
+        }
         S3Explorer.Current = undefined;
         if (this._panel)
             this._panel.dispose();

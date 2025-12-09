@@ -129,6 +129,7 @@ For more details, see the [AWS CLI credential docs](https://docs.aws.amazon.com/
 
 ## 🗺️ Roadmap
 ### Todo
+- A Separate list of s3 buckets to search for buckets and add
 - S3 Select support
 - Share active profile with other extensions
 - Calculate folder size & object count
@@ -141,13 +142,10 @@ For more details, see the [AWS CLI credential docs](https://docs.aws.amazon.com/
 
 ### Nice‑to‑Have
 - VS Code icons for files/folders (removed in current version)
-- Auto‑refresh option
 - Paging beyond 1000 items
-- Sort by name/type
 - Display selected file/folder count
 - Filter by date/size
 - Multiple Explorer instances
-- Hover‑highlight icons
 - Freeze top bar
 - Bucket ACL‑based permission handling
 - Local folder sync
