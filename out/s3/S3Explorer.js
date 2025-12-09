@@ -434,9 +434,11 @@ class S3Explorer {
                 </td>
             </tr>
             </table>
+            
+            <br>
 
             <table>
-            <tr>
+            <tr style="height:25px; border-bottom: 1px solid var(--vscode-editorWidget-border);">
                 <th style="width:20px; text-align:center; vertical-align:middle">
                     <a id="go_home"><img src="${goHomeUri}" title="Go Home" style="cursor: pointer;"></a>
                 </th>
@@ -498,8 +500,7 @@ class S3Explorer {
                     ${fileCounter} File(s), ${folderCounter} Folder(s)
                 </th>
             </tr>
-
-        </table>
+            </table>
         <br>
         <table border="0">
             <tr>

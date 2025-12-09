@@ -10,7 +10,7 @@
   },
   "icon": "media/aws-s3-logo-extension.png",
   "engines": {
-    "vscode": "^1.75.0"
+    "vscode": "^1.104.0"
   },
   "categories": [
     "Other"
@@ -273,7 +273,7 @@
     "@types/glob": "^9.0.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^24.10.2",
-    "@types/vscode": "^1.106.1",
+    "@types/vscode": "^1.104.0",
     "@vscode-elements/elements": "^2.3.1",
     "@vscode/codicons": "^0.0.43",
     "@vscode/test-electron": "^2.5.2",
