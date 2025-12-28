@@ -312,7 +312,7 @@ class S3Search {
                     S3Explorer_1.S3Explorer.Render(this.extensionUri, node);
                     return;
                 case "copy":
-                    if (message.keys.length == 0) {
+                    if (!message.keys || message.keys.length == 0) {
                         return;
                     }
                     switch (message.action) {
@@ -351,7 +351,7 @@ class S3Search {
     }
     CopyS3URI(keys) {
         Telemetry_1.Telemetry.Current?.send("S3Search.CopyS3URI");
-        if (keys.length === 0 || !keys.includes("|")) {
+        if (!keys || keys.length === 0 || !keys.includes("|")) {
             return;
         }
         var keyList = keys.split("|");
@@ -368,7 +368,7 @@ class S3Search {
     }
     CopyURLs(keys) {
         Telemetry_1.Telemetry.Current?.send("S3Search.CopyURLs");
-        if (keys.length === 0 || !keys.includes("|")) {
+        if (!keys || keys.length === 0 || !keys.includes("|")) {
             return;
         }
         var keyList = keys.split("|");
@@ -385,7 +385,7 @@ class S3Search {
     }
     CopyFileNameWithExtension(keys) {
         Telemetry_1.Telemetry.Current?.send("S3Search.CopyFileNameWithExtension");
-        if (keys.length === 0 || !keys.includes("|")) {
+        if (!keys || keys.length === 0 || !keys.includes("|")) {
             return;
         }
         var keyList = keys.split("|");
@@ -402,7 +402,7 @@ class S3Search {
     }
     CopyFileNameWithoutExtension(keys) {
         Telemetry_1.Telemetry.Current?.send("S3Search.CopyFileNameWithoutExtension");
-        if (keys.length === 0 || !keys.includes("|")) {
+        if (!keys || keys.length === 0 || !keys.includes("|")) {
             return;
         }
         var keyList = keys.split("|");
@@ -419,7 +419,7 @@ class S3Search {
     }
     CopyKeys(keys) {
         Telemetry_1.Telemetry.Current?.send("S3Search.CopyKeys");
-        if (keys.length === 0 || !keys.includes("|")) {
+        if (!keys || keys.length === 0 || !keys.includes("|")) {
             return;
         }
         var keyList = keys.split("|");
@@ -430,7 +430,7 @@ class S3Search {
     }
     CopyFileARNs(keys) {
         Telemetry_1.Telemetry.Current?.send("S3Search.CopyFileARNs");
-        if (keys.length === 0 || !keys.includes("|")) {
+        if (!keys || keys.length === 0 || !keys.includes("|")) {
             return;
         }
         var keyList = keys.split("|");

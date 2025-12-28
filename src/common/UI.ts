@@ -38,7 +38,7 @@ export function showOutputMessage(message: any, popupMessage: string = "Results 
   }
   outputChannel.show();
 
-  if(popupMessage.length > 0)
+  if(popupMessage && popupMessage.length > 0)
   {
     showInfoMessage(popupMessage);
   }

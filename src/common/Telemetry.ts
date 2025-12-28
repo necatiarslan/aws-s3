@@ -32,7 +32,8 @@ export class Telemetry {
                 stack: errorOrProps.stack ?? ''
             }, measurements);
         } else {
-            this.reporter.sendTelemetryErrorEvent(eventName, errorOrProps, measurements);
+            const props = errorOrProps || {};
+            this.reporter.sendTelemetryErrorEvent(eventName, props, measurements);
         }
     }
 

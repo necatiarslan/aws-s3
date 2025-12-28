@@ -124,6 +124,7 @@ For more details, see the [AWS CLI credential docs](https://docs.aws.amazon.com/
 ## 🐞 Bug Reporting & Contributions
 - **Report bugs / request features**: <https://github.com/necatiarslan/aws-s3/issues/new>
 - Contributions are welcome! Fork the repo, make your changes, and submit a pull request.
+- This extension collects anonymous usage telemetry to help improve reliability and features.
 
 ---
 

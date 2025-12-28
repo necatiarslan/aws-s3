@@ -692,7 +692,7 @@ export class S3Explorer {
                         return;
 
                     case "edit":
-                        if(message.keys.length == 0) { return; }
+                        if(!message.keys || message.keys.length == 0) { return; }
                         switch(message.action)
                         {
                             case "Delete":
@@ -711,7 +711,7 @@ export class S3Explorer {
                         return;
 
                     case "copy":
-                        if(message.keys.length == 0) { return; }
+                        if(!message.keys || message.keys.length == 0) { return; }
                         switch(message.action)
                         {
                             case "File Name(s) No Ext":
@@ -847,7 +847,7 @@ export class S3Explorer {
     
     GetSelectedKeys(keys: string) 
     {
-        if(keys.length === 0) { return []; }
+        if(!keys || keys.length === 0) { return []; }
         if(!keys.includes("|")) { return [keys]; }
 
         var keyList = keys.split("|");
@@ -1110,7 +1110,7 @@ export class S3Explorer {
     
     async PreviewFile(key: string) {
         Telemetry.Current?.send("S3Explorer.PreviewFile");
-        if(key.length === 0) { return; }
+        if(!key || key.length === 0) { return; }
 
         if(key && s3_helper.IsFile(key))
         {
@@ -1131,7 +1131,7 @@ export class S3Explorer {
     
     async UploadFile() {
         Telemetry.Current?.send("S3Explorer.UploadFile");
-        if(!this.S3ExplorerItem.IsFolder) { return; }
+        if(!this.S3ExplorerItem.IsFolder()) { return; }
 
         let param = {
             canSelectFolders:false,
@@ -1195,7 +1195,7 @@ export class S3Explorer {
     async CreateFolder() 
     {
         Telemetry.Current?.send("S3Explorer.CreateFolder");
-        if(!this.S3ExplorerItem.IsFolder) { return; }
+        if(!this.S3ExplorerItem.IsFolder()) { return; }
 
         let folderName = await vscode.window.showInputBox({ placeHolder: 'Folder Name' });
 		if(folderName===undefined){ return; }

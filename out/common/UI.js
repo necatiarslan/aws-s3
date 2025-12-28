@@ -50,7 +50,7 @@ function showOutputMessage(message, popupMessage = "Results are printed to OUTPU
         outputChannel.appendLine(message);
     }
     outputChannel.show();
-    if (popupMessage.length > 0) {
+    if (popupMessage && popupMessage.length > 0) {
         showInfoMessage(popupMessage);
     }
 }

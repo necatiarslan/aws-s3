@@ -1,26 +1,37 @@
+# v1.8.6
+    - Telemetry integration
+
 # v1.8.5
     - Fix Copy combo width
+
 # v1.8.4
     - Show a Progress Bar when needed
     - Fix Copy, Move, Rename folders
     - Show File Metadata
+
 # v1.8.3
     - Fix Download File async to sync
     - Connection pooling
+
 # v1.8.2
     - Fix Preview File
+
 # v1.8.1
     - Aws JS SDK v3 Migration
     - Vscode-elements Migration
     - TestAwsCredentials button
     - ShowOnlyInThisProfile
     - Dynamic Context Menu
+
 # v1.7.3
     - Fix Aws Profile change button
+
 # v1.7.2
     - Set Aws Region
+
 # v1.7.1
     - Extended Aws Credentials support
+
 # v1.7.0
     - Delete Folder with files
     - Rename, Copy, Move a Folder

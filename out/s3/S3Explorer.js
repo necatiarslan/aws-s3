@@ -624,7 +624,7 @@ class S3Explorer {
                     this.DownloadFile(this.S3ExplorerItem.Key);
                     return;
                 case "edit":
-                    if (message.keys.length == 0) {
+                    if (!message.keys || message.keys.length == 0) {
                         return;
                     }
                     switch (message.action) {
@@ -643,7 +643,7 @@ class S3Explorer {
                     }
                     return;
                 case "copy":
-                    if (message.keys.length == 0) {
+                    if (!message.keys || message.keys.length == 0) {
                         return;
                     }
                     switch (message.action) {
@@ -760,7 +760,7 @@ class S3Explorer {
         }
     }
     GetSelectedKeys(keys) {
-        if (keys.length === 0) {
+        if (!keys || keys.length === 0) {
             return [];
         }
         if (!keys.includes("|")) {
@@ -1021,7 +1021,7 @@ class S3Explorer {
     }
     async PreviewFile(key) {
         Telemetry_1.Telemetry.Current?.send("S3Explorer.PreviewFile");
-        if (key.length === 0) {
+        if (!key || key.length === 0) {
             return;
         }
         if (key && s3_helper.IsFile(key)) {
@@ -1038,7 +1038,7 @@ class S3Explorer {
     }
     async UploadFile() {
         Telemetry_1.Telemetry.Current?.send("S3Explorer.UploadFile");
-        if (!this.S3ExplorerItem.IsFolder) {
+        if (!this.S3ExplorerItem.IsFolder()) {
             return;
         }
         let param = {
@@ -1099,7 +1099,7 @@ class S3Explorer {
     }
     async CreateFolder() {
         Telemetry_1.Telemetry.Current?.send("S3Explorer.CreateFolder");
-        if (!this.S3ExplorerItem.IsFolder) {
+        if (!this.S3ExplorerItem.IsFolder()) {
             return;
         }
         let folderName = await vscode.window.showInputBox({ placeHolder: 'Folder Name' });
