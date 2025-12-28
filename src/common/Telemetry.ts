@@ -17,13 +17,16 @@ export class Telemetry {
     }
 
     public send(eventName: string, properties?: { [key: string]: string }, measurements?: { [key: string]: number }) {
-        if (this.reporter) {
-            this.reporter.sendTelemetryEvent(eventName, properties, measurements);
-        }
+        if (!vscode.env.isTelemetryEnabled) return;
+        if (!this.reporter) return;
+
+        this.reporter.sendTelemetryEvent(eventName, properties, measurements);
     }
 
     public sendError(eventName: string, errorOrProps?: Error | { [key: string]: string }, measurements?: { [key: string]: number }) {
+        if (!vscode.env.isTelemetryEnabled) return;
         if (!this.reporter) return;
+
 
         if (errorOrProps instanceof Error) {
             this.reporter.sendTelemetryErrorEvent(eventName, {

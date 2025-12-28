@@ -9,6 +9,8 @@
     "url": "https://github.com/necatiarslan/aws-s3"
   },
   "icon": "media/aws-s3-logo-extension.png",
+  "privacy": "https://github.com/necatiarslan/aws-s3#telemetry--privacy",
+  "license": "Apache-2.0",
   "engines": {
     "vscode": "^1.104.0"
   },

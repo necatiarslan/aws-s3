@@ -14,11 +14,15 @@ class Telemetry {
         }
     }
     send(eventName, properties, measurements) {
-        if (this.reporter) {
-            this.reporter.sendTelemetryEvent(eventName, properties, measurements);
-        }
+        if (!vscode.env.isTelemetryEnabled)
+            return;
+        if (!this.reporter)
+            return;
+        this.reporter.sendTelemetryEvent(eventName, properties, measurements);
     }
     sendError(eventName, errorOrProps, measurements) {
+        if (!vscode.env.isTelemetryEnabled)
+            return;
         if (!this.reporter)
             return;
         if (errorOrProps instanceof Error) {
