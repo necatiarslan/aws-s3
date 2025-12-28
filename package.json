@@ -290,6 +290,7 @@
     "@aws-sdk/credential-providers": "^3.947.0",
     "@vscode-elements/elements": "^1.13.1",
     "@vscode/codicons": "^0.0.36",
+    "@vscode/extension-telemetry": "^1.2.0",
     "tmp": "^0.2.3"
   }
 }

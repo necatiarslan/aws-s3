@@ -12,6 +12,7 @@ exports.deactivate = deactivate;
 const vscode = require("vscode");
 const ui = require("./common/UI");
 const S3TreeView_1 = require("./s3/S3TreeView");
+const Telemetry_1 = require("./common/Telemetry");
 /**
  * Extension activation function
  * Called when the extension is activated
@@ -20,7 +21,10 @@ const S3TreeView_1 = require("./s3/S3TreeView");
  */
 function activate(context) {
     ui.logToOutput('AWS S3 Extension activation started');
+    // Initialize telemetry
+    new Telemetry_1.Telemetry(context);
     try {
+        Telemetry_1.Telemetry.Current?.sendTelemetryEvent('extension.activated');
         // Initialize the tree view
         const treeView = new S3TreeView_1.S3TreeView(context);
         // Register all commands and add them to subscriptions for proper disposal

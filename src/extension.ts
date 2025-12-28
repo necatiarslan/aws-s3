@@ -10,6 +10,7 @@ import * as vscode from 'vscode';
 import * as ui from './common/UI';
 import {S3TreeView} from './s3/S3TreeView';
 import {S3TreeItem} from './s3/S3TreeItem';
+import { Telemetry } from './common/Telemetry';
 
 /**
  * Extension activation function
@@ -19,8 +20,12 @@ import {S3TreeItem} from './s3/S3TreeItem';
  */
 export function activate(context: vscode.ExtensionContext): void {
 	ui.logToOutput('AWS S3 Extension activation started');
+	
+	// Initialize telemetry
+	new Telemetry(context);
 
 	try {
+		Telemetry.Current?.sendTelemetryEvent('extension.activated');
 		// Initialize the tree view
 		const treeView = new S3TreeView(context);
 
