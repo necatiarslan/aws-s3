@@ -16,15 +16,23 @@ export class Telemetry {
         }
     }
 
-    public sendTelemetryEvent(eventName: string, properties?: { [key: string]: string }, measurements?: { [key: string]: number }) {
+    public send(eventName: string, properties?: { [key: string]: string }, measurements?: { [key: string]: number }) {
         if (this.reporter) {
             this.reporter.sendTelemetryEvent(eventName, properties, measurements);
         }
     }
 
-    public sendTelemetryErrorEvent(eventName: string, properties?: { [key: string]: string }, measurements?: { [key: string]: number }) {
-        if (this.reporter) {
-            this.reporter.sendTelemetryErrorEvent(eventName, properties, measurements);
+    public sendError(eventName: string, errorOrProps?: Error | { [key: string]: string }, measurements?: { [key: string]: number }) {
+        if (!this.reporter) return;
+
+        if (errorOrProps instanceof Error) {
+            this.reporter.sendTelemetryErrorEvent(eventName, {
+                message: errorOrProps.message,
+                name: errorOrProps.name,
+                stack: errorOrProps.stack ?? ''
+            }, measurements);
+        } else {
+            this.reporter.sendTelemetryErrorEvent(eventName, errorOrProps, measurements);
         }
     }
 

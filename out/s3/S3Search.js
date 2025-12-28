@@ -10,6 +10,7 @@ const S3TreeItem_1 = require("./S3TreeItem");
 const S3ExplorerItem_1 = require("./S3ExplorerItem");
 const s3_helper = require("./S3Helper");
 const S3Explorer_1 = require("./S3Explorer");
+const Telemetry_1 = require("../common/Telemetry");
 class S3Search {
     constructor(panel, extensionUri, node) {
         this._disposables = [];
@@ -43,6 +44,7 @@ class S3Search {
         ui.logToOutput('S3Search.RenderHmtl Completed');
     }
     async Load() {
+        Telemetry_1.Telemetry.Current?.send("S3Search.Load");
         ui.logToOutput('S3Search.LoadLogs Started');
         if (!S3TreeView_1.S3TreeView.Current) {
             return;
@@ -57,6 +59,7 @@ class S3Search {
     }
     static Render(extensionUri, node) {
         ui.logToOutput('S3Search.Render Started');
+        Telemetry_1.Telemetry.Current?.send("S3Search.Render");
         if (S3Search.Current) {
             S3Search.Current.ResetCurrentState();
             S3Search.Current.SetS3ExplorerItem(node);
@@ -342,10 +345,12 @@ class S3Search {
         }, undefined, this._disposables);
     }
     AddShortcut(key) {
+        Telemetry_1.Telemetry.Current?.send("S3Search.AddShortcut");
         S3TreeView_1.S3TreeView.Current?.AddOrRemoveShortcut(this.S3ExplorerItem.Bucket, key);
         this.RenderHtml();
     }
     CopyS3URI(keys) {
+        Telemetry_1.Telemetry.Current?.send("S3Search.CopyS3URI");
         if (keys.length === 0 || !keys.includes("|")) {
             return;
         }
@@ -362,6 +367,7 @@ class S3Search {
         }
     }
     CopyURLs(keys) {
+        Telemetry_1.Telemetry.Current?.send("S3Search.CopyURLs");
         if (keys.length === 0 || !keys.includes("|")) {
             return;
         }
@@ -378,6 +384,7 @@ class S3Search {
         }
     }
     CopyFileNameWithExtension(keys) {
+        Telemetry_1.Telemetry.Current?.send("S3Search.CopyFileNameWithExtension");
         if (keys.length === 0 || !keys.includes("|")) {
             return;
         }
@@ -394,6 +401,7 @@ class S3Search {
         }
     }
     CopyFileNameWithoutExtension(keys) {
+        Telemetry_1.Telemetry.Current?.send("S3Search.CopyFileNameWithoutExtension");
         if (keys.length === 0 || !keys.includes("|")) {
             return;
         }
@@ -410,6 +418,7 @@ class S3Search {
         }
     }
     CopyKeys(keys) {
+        Telemetry_1.Telemetry.Current?.send("S3Search.CopyKeys");
         if (keys.length === 0 || !keys.includes("|")) {
             return;
         }
@@ -420,6 +429,7 @@ class S3Search {
         }
     }
     CopyFileARNs(keys) {
+        Telemetry_1.Telemetry.Current?.send("S3Search.CopyFileARNs");
         if (keys.length === 0 || !keys.includes("|")) {
             return;
         }

@@ -25,7 +25,7 @@ export function activate(context: vscode.ExtensionContext): void {
 	new Telemetry(context);
 
 	try {
-		Telemetry.Current?.sendTelemetryEvent('extension.activated');
+		Telemetry.Current?.send('extension.activated');
 		// Initialize the tree view
 		const treeView = new S3TreeView(context);
 
@@ -34,6 +34,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 		ui.logToOutput('AWS S3 Extension activation completed successfully');
 	} catch (error) {
+		Telemetry.Current?.sendError('extension.activationFailed', error as Error);
 		const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 		ui.logToOutput(`AWS S3 Extension activation failed: ${errorMessage}`, error as Error);
 		ui.showErrorMessage('Failed to activate AWS S3 Extension', error as Error);

@@ -13,14 +13,23 @@ class Telemetry {
             context.subscriptions.push(this.reporter);
         }
     }
-    sendTelemetryEvent(eventName, properties, measurements) {
+    send(eventName, properties, measurements) {
         if (this.reporter) {
             this.reporter.sendTelemetryEvent(eventName, properties, measurements);
         }
     }
-    sendTelemetryErrorEvent(eventName, properties, measurements) {
-        if (this.reporter) {
-            this.reporter.sendTelemetryErrorEvent(eventName, properties, measurements);
+    sendError(eventName, errorOrProps, measurements) {
+        if (!this.reporter)
+            return;
+        if (errorOrProps instanceof Error) {
+            this.reporter.sendTelemetryErrorEvent(eventName, {
+                message: errorOrProps.message,
+                name: errorOrProps.name,
+                stack: errorOrProps.stack ?? ''
+            }, measurements);
+        }
+        else {
+            this.reporter.sendTelemetryErrorEvent(eventName, errorOrProps, measurements);
         }
     }
     dispose() {

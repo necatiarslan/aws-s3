@@ -24,7 +24,7 @@ function activate(context) {
     // Initialize telemetry
     new Telemetry_1.Telemetry(context);
     try {
-        Telemetry_1.Telemetry.Current?.sendTelemetryEvent('extension.activated');
+        Telemetry_1.Telemetry.Current?.send('extension.activated');
         // Initialize the tree view
         const treeView = new S3TreeView_1.S3TreeView(context);
         // Register all commands and add them to subscriptions for proper disposal
@@ -32,6 +32,7 @@ function activate(context) {
         ui.logToOutput('AWS S3 Extension activation completed successfully');
     }
     catch (error) {
+        Telemetry_1.Telemetry.Current?.sendError('extension.activationFailed', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         ui.logToOutput(`AWS S3 Extension activation failed: ${errorMessage}`, error);
         ui.showErrorMessage('Failed to activate AWS S3 Extension', error);

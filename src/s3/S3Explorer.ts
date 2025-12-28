@@ -9,6 +9,7 @@ import * as s3_helper from "./S3Helper";
 import { S3Search } from "./S3Search";
 import { ListObjectsV2CommandOutput } from "@aws-sdk/client-s3";
 import { MethodResult } from '../common/MethodResult';
+import { Telemetry } from "../common/Telemetry";
 
 export class S3Explorer {
     public static Current: S3Explorer | undefined;
@@ -61,6 +62,7 @@ export class S3Explorer {
 
     public async Load(){
         ui.logToOutput('S3Explorer.LoadLogs Started');
+        Telemetry.Current?.send("S3Explorer.Load");
         if(!S3TreeView.Current){return;}
 
         var result = await api.GetFolderList(this.S3ExplorerItem.Bucket, this.S3ExplorerItem.Key);
@@ -78,6 +80,8 @@ export class S3Explorer {
 
     public static Render(extensionUri: vscode.Uri, node:S3TreeItem, changeKey:string|undefined=undefined) {
         ui.logToOutput('S3Explorer.Render Started');
+        Telemetry.Current?.send("S3Explorer.Render");
+
         if (S3Explorer.Current) {
             S3Explorer.Current.ResetCurrentState();
             S3Explorer.Current.SetS3ExplorerItem(node);
@@ -776,12 +780,14 @@ export class S3Explorer {
     }
   
     AddShortcut(key: string) {
+        Telemetry.Current?.send("S3Explorer.AddShortcut");
         S3TreeView.Current?.AddOrRemoveShortcut(this.S3ExplorerItem.Bucket, key);
         this.RenderHtml();
     }
     
     CopyS3URI(keys: string) 
     {
+        Telemetry.Current?.send("S3Explorer.CopyS3URI");
         var keyList = this.GetSelectedKeys(keys);
         if(keyList.length === 0) { ui.showInfoMessage("Select File/Folder"); return; }
 
@@ -800,6 +806,7 @@ export class S3Explorer {
     
     CopyURLs(keys: string) 
     {
+        Telemetry.Current?.send("S3Explorer.CopyURLs");
         var keyList = this.GetSelectedKeys(keys);
         if(keyList.length === 0) { ui.showInfoMessage("Select File/Folder"); return; }
 
@@ -818,6 +825,7 @@ export class S3Explorer {
     
     CopyFileNameWithExtension(keys: string) 
     {
+        Telemetry.Current?.send("S3Explorer.CopyFileNameWithExtension");
         var keyList = this.GetSelectedKeys(keys);
         if(keyList.length === 0) { ui.showInfoMessage("Select File/Folder"); return; }
         var listToCopy:string[] = [];
@@ -847,6 +855,7 @@ export class S3Explorer {
 
     CopyFileNameWithoutExtension(keys: string) 
     {
+        Telemetry.Current?.send("S3Explorer.CopyFileNameWithoutExtension");
         var keyList = this.GetSelectedKeys(keys);
         if(keyList.length === 0) { ui.showInfoMessage("Select File/Folder"); return; }
 
@@ -865,6 +874,7 @@ export class S3Explorer {
     
     CopyKeys(keys: string) 
     {
+        Telemetry.Current?.send("S3Explorer.CopyKeys");
         var keyList = this.GetSelectedKeys(keys);
         if(keyList.length === 0) { ui.showInfoMessage("Select File/Folder"); return; }
 
@@ -877,6 +887,7 @@ export class S3Explorer {
     
     CopyFileARNs(keys: string) 
     {
+        Telemetry.Current?.send("S3Explorer.CopyFileARNs");
         var keyList = this.GetSelectedKeys(keys);
         if(keyList.length === 0) { ui.showInfoMessage("Select File/Folder"); return; }
 
@@ -894,6 +905,7 @@ export class S3Explorer {
     }
     
     async MoveObject(keys: string) {
+        Telemetry.Current?.send("S3Explorer.MoveObject");
         var keyList = this.GetSelectedKeys(keys);
         if(keyList.length === 0) { ui.showInfoMessage("Select File/Folder"); return; }
 
@@ -932,6 +944,7 @@ export class S3Explorer {
     }
     
     async CopyObject(keys: string) {
+        Telemetry.Current?.send("S3Explorer.CopyObject");
         var keyList = this.GetSelectedKeys(keys);
         if(keyList.length === 0) { ui.showInfoMessage("Select File/Folder"); return; }
 
@@ -969,6 +982,7 @@ export class S3Explorer {
     }
     
     async DeleteObject(keys: string) {
+        Telemetry.Current?.send("S3Explorer.DeleteObject");
         var keyList = this.GetSelectedKeys(keys);
         if(keyList.length === 0) { ui.showInfoMessage("Select File/Folder"); return; }
 
@@ -1018,6 +1032,7 @@ export class S3Explorer {
     }
     
     async RenameObject(keys: string) {
+        Telemetry.Current?.send("S3Explorer.RenameObject");
         var keyList = this.GetSelectedKeys(keys);
         if(keyList.length === 0) { ui.showInfoMessage("Select File/Folder"); return; }
         if(keyList.length !== 1) { ui.showInfoMessage("Select 1 File/Folder"); return; }
@@ -1059,6 +1074,7 @@ export class S3Explorer {
     }
     
     async DownloadFile(keys: string) {
+        Telemetry.Current?.send("S3Explorer.DownloadFile");
         var keyList = this.GetSelectedKeys(keys);
         if(keyList.length === 0) { ui.showInfoMessage("Select File/Folder"); return; }
 
@@ -1090,6 +1106,7 @@ export class S3Explorer {
     }
     
     async PreviewFile(key: string) {
+        Telemetry.Current?.send("S3Explorer.PreviewFile");
         if(key.length === 0) { return; }
 
         if(key && s3_helper.IsFile(key))
@@ -1111,6 +1128,7 @@ export class S3Explorer {
     }
     
     async UploadFile() {
+        Telemetry.Current?.send("S3Explorer.UploadFile");
         if(!this.S3ExplorerItem.IsFolder) { return; }
 
         let param = {
@@ -1149,6 +1167,7 @@ export class S3Explorer {
     }
     
     async UpdateFile() {
+        Telemetry.Current?.send("S3Explorer.UpdateFile");
         if(!this.S3ExplorerItem.IsFile()) { return; }
 
         let param = {
@@ -1173,6 +1192,7 @@ export class S3Explorer {
     
     async CreateFolder() 
     {
+        Telemetry.Current?.send("S3Explorer.CreateFolder");
         if(!this.S3ExplorerItem.IsFolder) { return; }
 
         let folderName = await vscode.window.showInputBox({ placeHolder: 'Folder Name' });
