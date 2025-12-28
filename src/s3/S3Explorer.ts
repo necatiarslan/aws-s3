@@ -10,6 +10,9 @@ import { S3Search } from "./S3Search";
 import { ListObjectsV2CommandOutput } from "@aws-sdk/client-s3";
 import { MethodResult } from '../common/MethodResult';
 import { Telemetry } from "../common/Telemetry";
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 
 export class S3Explorer {
     public static Current: S3Explorer | undefined;
@@ -1111,8 +1114,7 @@ export class S3Explorer {
 
         if(key && s3_helper.IsFile(key))
         {
-            const tmp = require('tmp');
-			const tempFolderPath = tmp.dirSync().name;
+            const tempFolderPath = fs.mkdtempSync(path.join(os.tmpdir(), 'aws-s3-'));
 
             let result = await api.DownloadFile(this.S3ExplorerItem.Bucket, key, tempFolderPath);
             if(result.isSuccessful)

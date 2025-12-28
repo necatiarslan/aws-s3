@@ -11,6 +11,9 @@ const S3ExplorerItem_1 = require("./S3ExplorerItem");
 const s3_helper = require("./S3Helper");
 const S3Search_1 = require("./S3Search");
 const Telemetry_1 = require("../common/Telemetry");
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
 class S3Explorer {
     constructor(panel, extensionUri, node) {
         this._disposables = [];
@@ -1022,8 +1025,7 @@ class S3Explorer {
             return;
         }
         if (key && s3_helper.IsFile(key)) {
-            const tmp = require('tmp');
-            const tempFolderPath = tmp.dirSync().name;
+            const tempFolderPath = fs.mkdtempSync(path.join(os.tmpdir(), 'aws-s3-'));
             let result = await api.DownloadFile(this.S3ExplorerItem.Bucket, key, tempFolderPath);
             if (result.isSuccessful) {
                 ui.openFile(result.result);
