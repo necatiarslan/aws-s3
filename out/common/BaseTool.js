@@ -17,6 +17,16 @@ class BaseTool {
     }
     async invoke(options, token) {
         const { command, params } = options.input;
+        if (Session_1.Session.Current?.IsProVersion === false) {
+            const proOnlyResponse = {
+                success: false,
+                command,
+                message: `Command '${command}' requires Pro version. Please upgrade to access this feature.`
+            };
+            return new vscode.LanguageModelToolResult([
+                new vscode.LanguageModelTextPart(JSON.stringify(proOnlyResponse, null, 2))
+            ]);
+        }
         const startTime = Date.now();
         let success = false;
         let responseData = null;

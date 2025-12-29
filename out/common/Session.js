@@ -12,6 +12,7 @@ class Session {
         this.DisabledTools = new Set();
         this.DisabledCommands = new Map();
         this.HostAppName = '';
+        this.IsProVersion = false;
         this._onDidChangeSession = new vscode.EventEmitter();
         this.onDidChangeSession = this._onDidChangeSession.event;
         Session.Current = this;

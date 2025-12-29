@@ -36,6 +36,16 @@ export abstract class BaseTool<TInput extends BaseToolInput> implements vscode.L
     ): Promise<vscode.LanguageModelToolResult> {
         const { command, params } = options.input;
 
+            if (Session.Current?.IsProVersion === false) {
+                const proOnlyResponse = {
+                        success: false,
+                        command,
+                        message: `Command '${command}' requires Pro version. Please upgrade to access this feature.`
+                    };
+                    return new vscode.LanguageModelToolResult([
+                        new vscode.LanguageModelTextPart(JSON.stringify(proOnlyResponse, null, 2))
+                    ]);
+            }
             
             const startTime = Date.now();
             let success = false;

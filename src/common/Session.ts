@@ -16,6 +16,7 @@ export class Session implements vscode.Disposable {
     public DisabledTools: Set<string> = new Set<string>();
     public DisabledCommands: Map<string, Set<string>> = new Map<string, Set<string>>();
     public HostAppName: string = '';
+    public IsProVersion: boolean = false;
 
     private _onDidChangeSession = new vscode.EventEmitter<void>();
     public readonly onDidChangeSession = this._onDidChangeSession.event;
