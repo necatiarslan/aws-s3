@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://github.com/necatiarslan/aws-s3"
   },
-  "icon": "media/aws-s3-logo-extension.png",
+  "icon": "media/extension/aws-s3-logo-extension.png",
   "privacy": "https://github.com/necatiarslan/aws-s3#-telemetry--privacy",
   "license": "Apache-2.0",
   "engines": {
@@ -824,7 +824,7 @@
         {
           "id": "aws-s3-vscode-extension",
           "title": "Aws S3",
-          "icon": "media/aws-s3-logo-activitybar.png"
+          "icon": "media/extension/aws-s3-logo-activitybar.png"
         }
       ]
     },
@@ -833,7 +833,7 @@
         {
           "id": "S3TreeView",
           "name": "Aws S3",
-          "icon": "media/aws-s3-logo-activitybar.png"
+          "icon": "media/extension/aws-s3-logo-activitybar.png"
         }
       ]
     },
