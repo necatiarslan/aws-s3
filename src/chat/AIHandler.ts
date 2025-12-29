@@ -6,8 +6,8 @@ import * as path from "path";
 import * as MessageHub from "../common/MessageHub";
 import { encodingForModel } from "js-tiktoken";
 
-const PARTICIPANT_ID = "awsflow.chat";
-const DEFAULT_PROMPT = "What can you do to help me with AWS tasks?";
+const PARTICIPANT_ID = "s3.chat";
+const DEFAULT_PROMPT = "What can you do to help me with AWS S3 tasks?";
 
 export class AIHandler {
   public static Current: AIHandler;

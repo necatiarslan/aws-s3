@@ -7,8 +7,8 @@ const Session_1 = require("../common/Session");
 const fs = require("fs");
 const path = require("path");
 const MessageHub = require("../common/MessageHub");
-const PARTICIPANT_ID = "awsflow.chat";
-const DEFAULT_PROMPT = "What can you do to help me with AWS tasks?";
+const PARTICIPANT_ID = "s3.chat";
+const DEFAULT_PROMPT = "What can you do to help me with AWS S3 tasks?";
 class AIHandler {
     constructor() {
         this.latestResources = {};

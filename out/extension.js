@@ -13,6 +13,18 @@ const vscode = require("vscode");
 const ui = require("./common/UI");
 const S3TreeView_1 = require("./s3/S3TreeView");
 const Telemetry_1 = require("./common/Telemetry");
+const ClientManager_1 = require("./common/ClientManager");
+const AIHandler_1 = require("./chat/AIHandler");
+const Session_1 = require("./common/Session");
+const TestAwsConnectionTool_1 = require("./sts/TestAwsConnectionTool");
+const STSTool_1 = require("./sts/STSTool");
+const S3Tool_1 = require("./s3/S3Tool");
+const S3FileOperationsTool_1 = require("./s3/S3FileOperationsTool");
+const FileOperationsTool_1 = require("./common/FileOperationsTool");
+const SessionTool_1 = require("./common/SessionTool");
+const CloudWatchLogTool_1 = require("./cloudwatch/CloudWatchLogTool");
+const ServiceAccessView_1 = require("./common/ServiceAccessView");
+const CommandHistoryView_1 = require("./common/CommandHistoryView");
 /**
  * Extension activation function
  * Called when the extension is activated
@@ -23,10 +35,28 @@ function activate(context) {
     ui.logToOutput('AWS S3 Extension activation started');
     // Initialize telemetry
     new Telemetry_1.Telemetry(context);
+    const session = new Session_1.Session(context);
+    new AIHandler_1.AIHandler();
+    const clientManager = ClientManager_1.ClientManager.Instance;
+    // Register disposables
+    // TODO: Uncomment when Session, ClientManager, and UI have proper dispose methods
+    // context.subscriptions.push(
+    // 	session,
+    // 	clientManager,
+    // 	{ dispose: () => ui.dispose() }
+    // );
     try {
         Telemetry_1.Telemetry.Current?.send('extension.activated');
         // Initialize the tree view
         const treeView = new S3TreeView_1.S3TreeView(context);
+        if (Session_1.Session.Current?.IsHostSupportLanguageTools()) {
+            // Register language model tools
+            context.subscriptions.push(vscode.lm.registerTool('TestAwsConnectionTool', new TestAwsConnectionTool_1.TestAwsConnectionTool()), vscode.lm.registerTool('STSTool', new STSTool_1.STSTool()), vscode.lm.registerTool('S3Tool', new S3Tool_1.S3Tool()), vscode.lm.registerTool('S3FileOperationsTool', new S3FileOperationsTool_1.S3FileOperationsTool()), vscode.lm.registerTool('FileOperationsTool', new FileOperationsTool_1.FileOperationsTool()), vscode.lm.registerTool('SessionTool', new SessionTool_1.SessionTool()), vscode.lm.registerTool('CloudWatchLogTool', new CloudWatchLogTool_1.CloudWatchLogTool()));
+        }
+        else {
+            ui.logToOutput(`Language model tools registration skipped for ${Session_1.Session.Current?.HostAppName}`);
+        }
+        ui.logToOutput('Language model tools registered');
         // Register all commands and add them to subscriptions for proper disposal
         registerCommands(context, treeView);
         ui.logToOutput('AWS S3 Extension activation completed successfully');
@@ -118,6 +148,20 @@ function registerCommands(context, treeView) {
     }));
     context.subscriptions.push(vscode.commands.registerCommand('S3TreeView.TestAwsConnection', () => {
         treeView.TestAwsConnection();
+    }));
+    context.subscriptions.push(vscode.commands.registerCommand('S3TreeView.ShowCommandHistory', () => {
+        if (!Session_1.Session.Current) {
+            ui.showErrorMessage('Session not initialized', new Error('No session'));
+            return;
+        }
+        CommandHistoryView_1.CommandHistoryView.Render(Session_1.Session.Current.ExtensionUri);
+    }));
+    context.subscriptions.push(vscode.commands.registerCommand('S3TreeView.OpenServiceAccessView', () => {
+        if (!Session_1.Session.Current) {
+            ui.showErrorMessage('Session not initialized', new Error('No session'));
+            return;
+        }
+        ServiceAccessView_1.ServiceAccessView.Render(Session_1.Session.Current.ExtensionUri);
     }));
     ui.logToOutput('All commands registered successfully');
 }

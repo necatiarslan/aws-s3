@@ -24,6 +24,569 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
+    "chatParticipants": [
+      {
+        "id": "s3.chat",
+        "name": "aws-s3",
+        "fullName": "AWS S3",
+        "description": "Access AWS S3 through chat",
+        "isSticky": true
+      }
+    ],
+    "languageModelTools": [
+      {
+        "name": "TestAwsConnectionTool",
+        "toolReferenceName": "TestAwsConnectionTool",
+        "displayName": "Test AWS Connection",
+        "modelDescription": "Tests AWS connectivity using STS GetCallerIdentity. Returns true if the connection is successful.",
+        "userDescription": "Test your AWS connectivity with current session credentials",
+        "tags": [
+          "aws",
+          "connectivity",
+          "test"
+        ],
+        "canBeReferencedInPrompt": true,
+        "icon": "$(cloud)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "region": {
+              "type": "string",
+              "description": "The AWS region to test. If not specified, uses the current session region.",
+              "default": "us-east-1"
+            }
+          }
+        }
+      },
+      {
+        "name": "SessionTool",
+        "toolReferenceName": "SessionTool",
+        "displayName": "Session Tool",
+        "modelDescription": "Get or set AWS session values (AwsProfile, AwsEndPoint, AwsRegion), list available profiles, or refresh cached credentials. Use GetSession to read current values. Use SetSession with params to update any of AwsProfile, AwsEndPoint, AwsRegion. Use ListProfiles to return profile names detected from AWS config/credentials files. Use RefreshCredentials to clear and reload cached credentials.",
+        "userDescription": "Manage session (profile/region/endpoint), list profiles, refresh credentials",
+        "tags": [
+          "aws",
+          "session",
+          "profile",
+          "region",
+          "endpoint"
+        ],
+        "canBeReferencedInPrompt": true,
+        "icon": "$(gear)",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "command"
+          ],
+          "properties": {
+            "command": {
+              "type": "string",
+              "enum": [
+                "GetSession",
+                "SetSession",
+                "ListProfiles",
+                "RefreshCredentials"
+              ],
+              "description": "Use GetSession to read current values. Use SetSession to update session values. Use ListProfiles to retrieve available profile names. Use RefreshCredentials to clear and reload cached credentials."
+            },
+            "params": {
+              "type": "object",
+              "description": "Parameters for SetSession. Omit to leave unchanged.",
+              "properties": {
+                "AwsProfile": {
+                  "type": "string",
+                  "description": "AWS profile name to set (Used by: SetSession)"
+                },
+                "AwsEndPoint": {
+                  "type": "string",
+                  "description": "Custom AWS/S3-compatible endpoint to set (Used by: SetSession)"
+                },
+                "AwsRegion": {
+                  "type": "string",
+                  "description": "AWS region to set (Used by: SetSession)"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "STSTool",
+        "toolReferenceName": "STSTool",
+        "displayName": "STS Tool",
+        "modelDescription": "Execute AWS STS (Security Token Service) commands. ALWAYS provide params object. Examples: GetCallerIdentity {command:'GetCallerIdentity', params:{}}. GetAccessKeyInfo {command:'GetAccessKeyInfo', params:{AccessKeyId:'AKIA...'}}. GetSessionToken {command:'GetSessionToken', params:{DurationSeconds:3600}}. GetFederationToken {command:'GetFederationToken', params:{Name:'session-name'}}. GetWebIdentityToken {command:'GetWebIdentityToken', params:{RoleArn:'arn:aws:iam::...', RoleSessionName:'session', WebIdentityToken:'token'}}.",
+        "userDescription": "Get temporary security credentials and caller identity information from AWS STS",
+        "tags": [
+          "aws",
+          "sts",
+          "credentials",
+          "security",
+          "tokens",
+          "identity"
+        ],
+        "canBeReferencedInPrompt": true,
+        "icon": "$(key)",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "command",
+            "params"
+          ],
+          "properties": {
+            "command": {
+              "type": "string",
+              "enum": [
+                "GetCallerIdentity",
+                "GetAccessKeyInfo",
+                "GetDelegatedAccessToken",
+                "GetFederationToken",
+                "GetSessionToken",
+                "GetWebIdentityToken"
+              ],
+              "description": "The STS command to execute"
+            },
+            "params": {
+              "type": "object",
+              "description": "REQUIRED parameters object. Always include this even if empty.",
+              "properties": {
+                "AccessKeyId": {
+                  "type": "string",
+                  "description": "AWS access key ID (Used by: GetAccessKeyInfo (Required))"
+                },
+                "RoleArn": {
+                  "type": "string",
+                  "description": "IAM role ARN (Used by: GetDelegatedAccessToken (Required), GetWebIdentityToken (Required))"
+                },
+                "DurationSeconds": {
+                  "type": "number",
+                  "description": "Token lifetime in seconds (Used by: GetDelegatedAccessToken, GetFederationToken, GetSessionToken, GetWebIdentityToken)"
+                },
+                "DelegationTokenLifetimeSeconds": {
+                  "type": "number",
+                  "description": "Delegated token lifetime in seconds (Used by: GetDelegatedAccessToken)"
+                },
+                "Name": {
+                  "type": "string",
+                  "description": "Session or federation token name (Used by: GetFederationToken (Required))"
+                },
+                "Policy": {
+                  "type": "string",
+                  "description": "IAM policy JSON string for the temporary credentials (Used by: GetFederationToken)"
+                },
+                "Tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "Key": {
+                        "type": "string"
+                      },
+                      "Value": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "description": "Session tags (Used by: GetFederationToken)"
+                },
+                "SerialNumber": {
+                  "type": "string",
+                  "description": "MFA device serial number (Used by: GetSessionToken)"
+                },
+                "TokenCode": {
+                  "type": "string",
+                  "description": "MFA token code (Used by: GetSessionToken)"
+                },
+                "RoleSessionName": {
+                  "type": "string",
+                  "description": "Role session name (Used by: GetWebIdentityToken (Required))"
+                },
+                "WebIdentityToken": {
+                  "type": "string",
+                  "description": "Web identity token (Used by: GetWebIdentityToken (Required))"
+                },
+                "ProviderId": {
+                  "type": "string",
+                  "description": "Identity provider ID (Used by: GetWebIdentityToken)"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "S3FileOperationsTool",
+        "toolReferenceName": "S3FileOperationsTool",
+        "displayName": "S3 File Operations Tool",
+        "modelDescription": "Execute S3 file operations: UploadFile to upload one or multiple files, DownloadFile to download one or multiple files, UploadFolder to upload folders with preserved structure, DownloadFolder to download folders with preserved structure. ALWAYS provide params object.",
+        "userDescription": "Upload and download files and folders to/from S3 with folder structure preservation",
+        "tags": [
+          "aws",
+          "s3",
+          "upload",
+          "download",
+          "file",
+          "folder"
+        ],
+        "canBeReferencedInPrompt": true,
+        "icon": "$(cloud-upload)",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "command",
+            "params"
+          ],
+          "properties": {
+            "command": {
+              "type": "string",
+              "enum": [
+                "UploadFile",
+                "DownloadFile",
+                "UploadFolder",
+                "DownloadFolder"
+              ],
+              "description": "The S3 file operation command to execute"
+            },
+            "params": {
+              "type": "object",
+              "description": "REQUIRED parameters object. Always include this even if empty.",
+              "properties": {
+                "Bucket": {
+                  "type": "string",
+                  "description": "S3 bucket name (Used by: UploadFile (Required), DownloadFile (Required), UploadFolder (Required), DownloadFolder (Required))"
+                },
+                "LocalPaths": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Array of local file or folder paths (Used by: UploadFile (Required), UploadFolder (Required))"
+                },
+                "S3Keys": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Array of S3 object keys (Used by: DownloadFile (Required))"
+                },
+                "S3KeyPrefixes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Array of S3 key prefixes/folders (Used by: DownloadFolder (Required))"
+                },
+                "LocalDirectory": {
+                  "type": "string",
+                  "description": "Local directory path to download to (Used by: DownloadFile (Required), DownloadFolder (Required))"
+                },
+                "S3KeyPrefix": {
+                  "type": "string",
+                  "description": "S3 key prefix/folder to upload to (Used by: UploadFile, UploadFolder)"
+                },
+                "ContentType": {
+                  "type": "string",
+                  "description": "MIME type for uploaded files (Used by: UploadFile)"
+                },
+                "PreserveStructure": {
+                  "type": "boolean",
+                  "description": "Whether to preserve folder structure (Used by: DownloadFile, DownloadFolder, UploadFolder)"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "S3Tool",
+        "toolReferenceName": "S3Tool",
+        "displayName": "S3 Tool",
+        "modelDescription": "Execute S3 commands. ALWAYS provide params object. Examples: ListObjectsV2 {command:'ListObjectsV2', params:{Bucket:'bucket-name'}}. PutObject {command:'PutObject', params:{Bucket:'name', Key:'path', Body:'content'}}. DeleteObject {command:'DeleteObject', params:{Bucket:'name', Key:'path'}}. CopyObject {command:'CopyObject', params:{Bucket:'name', CopySource:'/bucket/key', Key:'new-path'}}. OpenS3Explorer {command:'OpenS3Explorer', params:{Bucket:'bucket-name', Key:'optional/path/'}}.",
+        "userDescription": "Execute S3 commands including read, write, delete operations, and open S3 Explorer view",
+        "tags": [
+          "aws",
+          "s3",
+          "bucket",
+          "object",
+          "generic",
+          "upload",
+          "download",
+          "delete",
+          "copy"
+        ],
+        "canBeReferencedInPrompt": true,
+        "icon": "$(database)",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "command",
+            "params"
+          ],
+          "properties": {
+            "command": {
+              "type": "string",
+              "enum": [
+                "HeadBucket",
+                "HeadObject",
+                "ListBuckets",
+                "ListObjectsV2",
+                "ListObjectVersions",
+                "GetBucketPolicy",
+                "GetBucketNotificationConfiguration",
+                "GetObject",
+                "PutObject",
+                "DeleteObject",
+                "CopyObject",
+                "SelectObjectContent",
+                "OpenS3Explorer"
+              ],
+              "description": "The S3 command to execute"
+            },
+            "params": {
+              "type": "object",
+              "description": "REQUIRED parameters object. Always include this even if empty. For write operations ensure Bucket and Key are provided.",
+              "properties": {
+                "Bucket": {
+                  "type": "string",
+                  "description": "Bucket name (Used by: HeadBucket (Required), HeadObject (Required), ListObjectsV2 (Required), ListObjectVersions (Required), GetBucketPolicy (Required), GetBucketNotificationConfiguration (Required), GetObject (Required), PutObject (Required), DeleteObject (Required), CopyObject (Required), SelectObjectContent (Required), OpenS3Explorer (Required))"
+                },
+                "Key": {
+                  "type": "string",
+                  "description": "Object key path (Used by: HeadObject (Required), GetObject (Required), PutObject (Required), DeleteObject (Required), CopyObject (Required), SelectObjectContent (Required), OpenS3Explorer (Required))"
+                },
+                "CopySource": {
+                  "type": "string",
+                  "description": "Source object path for copy command (Used by: CopyObject (Required))"
+                },
+                "Body": {
+                  "type": "string",
+                  "description": "Object content as string or base64 (Used by: PutObject)"
+                },
+                "ContentType": {
+                  "type": "string",
+                  "description": "MIME type for the object (Used by: PutObject)"
+                },
+                "Prefix": {
+                  "type": "string",
+                  "description": "Filter objects by prefix path (Used by: ListObjectsV2, ListObjectVersions, OpenS3Explorer)"
+                },
+                "Delimiter": {
+                  "type": "string",
+                  "description": "Delimiter character for grouping keys, typically / (Used by: ListObjectsV2, ListObjectVersions)"
+                },
+                "MaxKeys": {
+                  "type": "number",
+                  "description": "Maximum number of keys to return (Used by: ListObjectsV2, ListObjectVersions)"
+                },
+                "ContinuationToken": {
+                  "type": "string",
+                  "description": "Token for pagination from previous response (Used by: ListObjectsV2)"
+                },
+                "StartAfter": {
+                  "type": "string",
+                  "description": "Start listing after this key name (Used by: ListObjectsV2)"
+                },
+                "VersionId": {
+                  "type": "string",
+                  "description": "Specific version ID of object (Used by: HeadObject, GetObject, DeleteObject)"
+                },
+                "KeyMarker": {
+                  "type": "string",
+                  "description": "Key marker for version pagination (Used by: ListObjectVersions)"
+                },
+                "VersionIdMarker": {
+                  "type": "string",
+                  "description": "Version ID marker for pagination (Used by: ListObjectVersions)"
+                },
+                "Metadata": {
+                  "type": "object",
+                  "description": "Custom metadata key-value pairs (Used by: PutObject, CopyObject)"
+                },
+                "MetadataDirective": {
+                  "type": "string",
+                  "description": "How to handle metadata in CopyObject: COPY or REPLACE (Used by: CopyObject)"
+                },
+                "DownloadToTemp": {
+                  "type": "boolean",
+                  "description": "Download file to temp folder and return local path (Used by: GetObject)"
+                },
+                "AsText": {
+                  "type": "boolean",
+                  "description": "Return file content as text for analysis (Used by: GetObject)"
+                },
+                "Expression": {
+                  "type": "string",
+                  "description": "SQL expression for querying object content (Used by: SelectObjectContent (Required))"
+                },
+                "ExpressionType": {
+                  "type": "string",
+                  "description": "Type of expression (Used by: SelectObjectContent (Required))"
+                },
+                "InputSerialization": {
+                  "type": "object",
+                  "description": "Format of the input data (Used by: SelectObjectContent (Required))"
+                },
+                "OutputSerialization": {
+                  "type": "object",
+                  "description": "Format for output data (Used by: SelectObjectContent (Required))"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "FileOperationsTool",
+        "toolReferenceName": "FileOperationsTool",
+        "displayName": "File Operations Tool",
+        "modelDescription": "Perform file operations: ReadFile to read file content, ReadFileStream to get file metadata, ReadFileAsBase64 to read as Base64, GetFileInfo to get file statistics, ListFiles to list directory contents, ZipTextFile to create a zip archive of a file or directory.",
+        "userDescription": "Read and manage files with various encoding and format options",
+        "tags": [
+          "file",
+          "read",
+          "write",
+          "operations",
+          "filesystem",
+          "base64"
+        ],
+        "canBeReferencedInPrompt": true,
+        "icon": "$(file)",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "command",
+            "params"
+          ],
+          "properties": {
+            "command": {
+              "type": "string",
+              "enum": [
+                "ReadFile",
+                "ReadFileStream",
+                "ReadFileAsBase64",
+                "GetFileInfo",
+                "ListFiles",
+                "ZipTextFile"
+              ],
+              "description": "The file operation command to execute"
+            },
+            "params": {
+              "type": "object",
+              "description": "Command parameters. ReadFile: {filePath, encoding?}. ReadFileStream: {filePath}. ReadFileAsBase64: {filePath}. GetFileInfo: {filePath}. ListFiles: {dirPath, recursive?}. ZipTextFile: {filePath, outputPath?}",
+              "properties": {
+                "filePath": {
+                  "type": "string",
+                  "description": "File path (Used by: ReadFile (Required), ReadFileStream (Required), ReadFileAsBase64 (Required), GetFileInfo (Required), ZipTextFile (Required))"
+                },
+                "dirPath": {
+                  "type": "string",
+                  "description": "Directory path (Used by: ListFiles (Required))"
+                },
+                "encoding": {
+                  "type": "string",
+                  "description": "File encoding for ReadFile (Used by: ReadFile)"
+                },
+                "recursive": {
+                  "type": "boolean",
+                  "description": "Recursively list files in subdirectories (Used by: ListFiles)"
+                },
+                "outputPath": {
+                  "type": "string",
+                  "description": "Custom output path for zip file (Used by: ZipTextFile)"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "CloudWatchLogTool",
+        "toolReferenceName": "CloudWatchLogTool",
+        "displayName": "CloudWatch Logs Tool",
+        "modelDescription": "Execute CloudWatch Logs commands. ALWAYS provide params object. Examples: DescribeLogGroups {command:'DescribeLogGroups', params:{logGroupNamePrefix:'app'}}. DescribeLogStreams {command:'DescribeLogStreams', params:{logGroupName:'my-group'}}. GetLogEvents {command:'GetLogEvents', params:{logGroupName:'my-group', logStreamName:'stream', limit:50}}. OpenCloudWatchLogView {command:'OpenCloudWatchLogView', params:{logGroupName:'my-group', logStreamName:'optional-stream'}}.",
+        "userDescription": "Query CloudWatch log groups, streams, events, and open log viewer",
+        "tags": [
+          "aws",
+          "cloudwatch",
+          "logs",
+          "monitoring"
+        ],
+        "canBeReferencedInPrompt": true,
+        "icon": "$(list-selection)",
+        "inputSchema": {
+          "type": "object",
+          "required": [
+            "command",
+            "params"
+          ],
+          "properties": {
+            "command": {
+              "type": "string",
+              "enum": [
+                "DescribeLogGroups",
+                "DescribeLogStreams",
+                "GetLogEvents",
+                "OpenCloudWatchLogView"
+              ],
+              "description": "The CloudWatch Logs command to execute"
+            },
+            "params": {
+              "type": "object",
+              "description": "REQUIRED parameters object. Always include this even if empty. Provide logGroupName/logStreamName where needed.",
+              "properties": {
+                "logGroupNamePrefix": {
+                  "type": "string",
+                  "description": "Prefix filter for log group names (Used by: DescribeLogGroups)"
+                },
+                "logGroupName": {
+                  "type": "string",
+                  "description": "Target log group name (Used by: DescribeLogStreams (Required), GetLogEvents (Required), OpenCloudWatchLogView (Required))"
+                },
+                "logStreamNamePrefix": {
+                  "type": "string",
+                  "description": "Prefix filter for log stream names (Used by: DescribeLogStreams)"
+                },
+                "orderBy": {
+                  "type": "string",
+                  "enum": [
+                    "LogStreamName",
+                    "LastEventTime"
+                  ],
+                  "description": "Ordering for DescribeLogStreams (Used by: DescribeLogStreams)"
+                },
+                "descending": {
+                  "type": "boolean",
+                  "description": "Whether to sort descending for DescribeLogStreams (Used by: DescribeLogStreams)"
+                },
+                "limit": {
+                  "type": "number",
+                  "description": "Maximum items to return where supported (Used by: DescribeLogGroups, DescribeLogStreams, GetLogEvents)"
+                },
+                "nextToken": {
+                  "type": "string",
+                  "description": "Pagination token (Used by: DescribeLogGroups, DescribeLogStreams, GetLogEvents)"
+                },
+                "logStreamName": {
+                  "type": "string",
+                  "description": "Target log stream name (Used by: GetLogEvents (Required), OpenCloudWatchLogView)"
+                },
+                "startTime": {
+                  "type": "number",
+                  "description": "Start time in epoch milliseconds (Used by: GetLogEvents)"
+                },
+                "endTime": {
+                  "type": "number",
+                  "description": "End time in epoch milliseconds (Used by: GetLogEvents)"
+                },
+                "startFromHead": {
+                  "type": "boolean",
+                  "description": "Return events starting from the beginning of the stream (Used by: GetLogEvents)"
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
     "commands": [
       {
         "command": "S3TreeView.Refresh",
@@ -120,6 +683,14 @@
       {
         "command": "S3TreeView.TestAwsConnection",
         "title": "Test Aws Connection"
+      },
+            {
+        "command": "S3TreeView.ShowCommandHistory",
+        "title": "Show Command History"
+      },
+      {
+        "command": "S3TreeView.OpenServiceAccessView",
+        "title": "Service Access Settings"
       }
     ],
     "menus": {
@@ -166,6 +737,16 @@
         },
         {
           "command": "S3TreeView.TestAwsConnection",
+          "when": "view == S3TreeView",
+          "group": "other"
+        },
+        {
+          "command": "S3TreeView.ShowCommandHistory",
+          "when": "view == S3TreeView",
+          "group": "other"
+        },
+        {
+          "command": "S3TreeView.OpenServiceAccessView",
           "when": "view == S3TreeView",
           "group": "other"
         }
@@ -276,6 +857,7 @@
     "@types/glob": "^9.0.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^24.10.2",
+    "@types/tmp": "^0.2.6",
     "@types/vscode": "^1.104.0",
     "@vscode/test-electron": "^2.5.2",
     "eslint": "^9.39.1",
@@ -284,6 +866,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@aws-sdk/client-cloudwatch-logs": "^3.958.0",
     "@aws-sdk/client-iam": "^3.947.0",
     "@aws-sdk/client-s3": "^3.947.0",
     "@aws-sdk/client-sts": "^3.947.0",
@@ -292,6 +875,7 @@
     "@vscode/codicons": "^0.0.36",
     "@vscode/extension-telemetry": "^1.2.0",
     "archiver": "^7.0.1",
-    "js-tiktoken": "^1.0.21"
+    "js-tiktoken": "^1.0.21",
+    "tmp": "^0.2.5"
   }
 }

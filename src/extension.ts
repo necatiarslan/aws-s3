@@ -11,6 +11,18 @@ import * as ui from './common/UI';
 import {S3TreeView} from './s3/S3TreeView';
 import {S3TreeItem} from './s3/S3TreeItem';
 import { Telemetry } from './common/Telemetry';
+import { ClientManager } from './common/ClientManager';
+import { AIHandler } from './chat/AIHandler';
+import { Session } from './common/Session';
+import { TestAwsConnectionTool } from './sts/TestAwsConnectionTool';
+import { STSTool } from './sts/STSTool';
+import { S3Tool } from './s3/S3Tool';
+import { S3FileOperationsTool } from './s3/S3FileOperationsTool';
+import { FileOperationsTool } from './common/FileOperationsTool';
+import { SessionTool } from './common/SessionTool';
+import { CloudWatchLogTool } from './cloudwatch/CloudWatchLogTool';
+import { ServiceAccessView } from './common/ServiceAccessView';
+import { CommandHistoryView } from './common/CommandHistoryView';
 
 /**
  * Extension activation function
@@ -24,10 +36,41 @@ export function activate(context: vscode.ExtensionContext): void {
 	// Initialize telemetry
 	new Telemetry(context);
 
+	const session = new Session(context);
+	new AIHandler();
+	const clientManager = ClientManager.Instance;
+
+	// Register disposables
+	// TODO: Uncomment when Session, ClientManager, and UI have proper dispose methods
+	// context.subscriptions.push(
+	// 	session,
+	// 	clientManager,
+	// 	{ dispose: () => ui.dispose() }
+	// );
+
 	try {
 		Telemetry.Current?.send('extension.activated');
 		// Initialize the tree view
 		const treeView = new S3TreeView(context);
+
+
+		if (Session.Current?.IsHostSupportLanguageTools()) {
+			// Register language model tools
+			context.subscriptions.push(
+				vscode.lm.registerTool('TestAwsConnectionTool', new TestAwsConnectionTool()),
+				vscode.lm.registerTool('STSTool', new STSTool()),
+				vscode.lm.registerTool('S3Tool', new S3Tool()),
+				vscode.lm.registerTool('S3FileOperationsTool', new S3FileOperationsTool()),
+				vscode.lm.registerTool('FileOperationsTool', new FileOperationsTool()),
+				vscode.lm.registerTool('SessionTool', new SessionTool()),
+				vscode.lm.registerTool('CloudWatchLogTool', new CloudWatchLogTool()),
+			);
+		}
+		else {
+			ui.logToOutput(`Language model tools registration skipped for ${Session.Current?.HostAppName}`);
+		}
+
+		ui.logToOutput('Language model tools registered');
 
 		// Register all commands and add them to subscriptions for proper disposal
 		registerCommands(context, treeView);
@@ -187,6 +230,24 @@ function registerCommands(context: vscode.ExtensionContext, treeView: S3TreeView
 			treeView.TestAwsConnection();
 		})
 	);
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand('S3TreeView.ShowCommandHistory', () => {
+		if (!Session.Current) {
+			ui.showErrorMessage('Session not initialized', new Error('No session'));
+			return;
+		}
+		CommandHistoryView.Render(Session.Current.ExtensionUri);
+	}));
+
+	context.subscriptions.push(	
+	vscode.commands.registerCommand('S3TreeView.OpenServiceAccessView', () => {
+		if (!Session.Current) {
+			ui.showErrorMessage('Session not initialized', new Error('No session'));
+			return;
+		}
+		ServiceAccessView.Render(Session.Current.ExtensionUri);
+	}));
 
 	ui.logToOutput('All commands registered successfully');
 }

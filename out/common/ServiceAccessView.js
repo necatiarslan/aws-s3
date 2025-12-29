@@ -34,100 +34,11 @@ const TOOL_REGISTRY = [
         commands: ["UploadFile", "DownloadFile", "UploadFolder", "DownloadFolder"]
     },
     {
-        name: "SNSTool",
-        displayName: "SNS (Simple Notification Service)",
-        commands: ["CheckIfPhoneNumberIsOptedOut", "GetEndpointAttributes", "GetPlatformApplicationAttributes",
-            "GetSMSAttributes", "GetSubscriptionAttributes", "GetTopicAttributes",
-            "ListPhoneNumbersOptedOut", "ListSubscriptionsByTopic", "ListSubscriptions",
-            "ListTagsForResource", "ListTopics", "Publish"]
-    },
-    {
-        name: "SQSTool",
-        displayName: "SQS (Simple Queue Service)",
-        commands: ["ListQueues", "GetQueueAttributes", "GetQueueUrl", "SendMessage",
-            "ReceiveMessage", "DeleteMessage", "PurgeQueue", "ListQueueTags"]
-    },
-    {
-        name: "EC2Tool",
-        displayName: "EC2 (Elastic Compute Cloud)",
-        commands: ["DescribeInstances", "DescribeImages", "DescribeVolumes", "DescribeSnapshots",
-            "DescribeSecurityGroups", "DescribeKeyPairs", "DescribeVpcs", "DescribeSubnets",
-            "DescribeRouteTables", "DescribeInternetGateways", "DescribeNatGateways"]
-    },
-    {
-        name: "EMRTool",
-        displayName: "EMR (Elastic MapReduce)",
-        commands: ["DescribeCluster", "DescribeJobFlows", "DescribeNotebookExecution", "DescribePersistentAppUI",
-            "DescribeReleaseLabel", "DescribeSecurityConfiguration", "DescribeStep", "DescribeStudio",
-            "GetAutoTerminationPolicy", "GetBlockPublicAccessConfiguration", "GetClusterSessionCredentials",
-            "GetManagedScalingPolicy", "GetOnClusterAppUIPresignedURL", "GetPersistentAppUIPresignedURL",
-            "GetStudioSessionMapping", "ListBootstrapActions", "ListClusters", "ListInstanceFleets",
-            "ListInstanceGroups", "ListInstances", "ListNotebookExecutions", "ListReleaseLabels",
-            "ListSecurityConfigurations", "ListSteps", "ListStudios", "ListStudioSessionMappings",
-            "ListSupportedInstanceTypes"]
-    },
-    {
-        name: "LambdaTool",
-        displayName: "Lambda",
-        commands: ["ListFunctions", "GetFunction", "GetFunctionConfiguration", "Invoke",
-            "ListVersionsByFunction", "ListAliases", "GetPolicy", "ListEventSourceMappings"]
-    },
-    {
-        name: "DynamoDBTool",
-        displayName: "DynamoDB",
-        commands: ["ListTables", "DescribeTable", "CreateTable", "DeleteTable", "Query",
-            "Scan", "PutItem", "UpdateItem", "DeleteItem", "GetItem", "UpdateTable",
-            "UpdateTimeToLive", "ListTagsOfResource"]
-    },
-    {
-        name: "RDSTool",
-        displayName: "RDS (Relational Database Service)",
-        commands: ["DescribeDBInstances", "DescribeDBClusters", "DescribeDBSnapshots",
-            "DescribeDBClusterSnapshots", "DescribeDBEngineVersions", "DescribeDBParameterGroups"]
-    },
-    {
-        name: "RDSDataTool",
-        displayName: "RDS Data API",
-        commands: ["ExecuteStatement", "BatchExecuteStatement", "BeginTransaction",
-            "CommitTransaction", "RollbackTransaction"]
-    },
-    {
-        name: "CloudFormationTool",
-        displayName: "CloudFormation",
-        commands: ["ListStacks", "DescribeStacks", "DescribeStackResources", "DescribeStackEvents",
-            "GetTemplate", "ValidateTemplate", "ListStackResources"]
-    },
-    {
         name: "CloudWatchLogTool",
         displayName: "CloudWatch Logs",
         commands: ["DescribeLogGroups", "DescribeLogStreams", "GetLogEvents", "FilterLogEvents",
             "PutLogEvents", "CreateLogGroup", "CreateLogStream", "DeleteLogGroup",
             "DeleteLogStream", "OpenCloudWatchView"]
-    },
-    {
-        name: "StepFuncTool",
-        displayName: "Step Functions",
-        commands: ["ListStateMachines", "DescribeStateMachine", "DescribeExecution",
-            "ListExecutions", "StartExecution", "StopExecution", "GetExecutionHistory"]
-    },
-    {
-        name: "GlueTool",
-        displayName: "Glue",
-        commands: ["GetDatabases", "GetTables", "GetTable", "GetDatabase", "GetJobs",
-            "GetJob", "GetCrawlers", "GetCrawler", "GetPartitions"]
-    },
-    {
-        name: "IAMTool",
-        displayName: "IAM (Identity & Access Management)",
-        commands: ["ListUsers", "ListGroups", "ListRoles", "ListPolicies", "GetUser",
-            "GetGroup", "GetRole", "GetPolicy", "ListAttachedUserPolicies",
-            "ListAttachedGroupPolicies", "ListAttachedRolePolicies"]
-    },
-    {
-        name: "APIGatewayTool",
-        displayName: "API Gateway",
-        commands: ["GetRestApis", "GetResources", "GetStages", "GetDeployments",
-            "GetIntegration", "GetMethod", "GetApiKeys", "GetUsagePlans"]
     },
     {
         name: "FileOperationsTool",
