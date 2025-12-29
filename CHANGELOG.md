@@ -1,3 +1,6 @@
+# v1.8.10
+    - Shrink vsix size
+
 # 1.8.9
     - Fix Edit and Copy Combos
 
