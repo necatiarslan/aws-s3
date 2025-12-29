@@ -175,7 +175,7 @@ You can disable telemetry via: Settings → Telemetry → Telemetry Level
 ## 🙏 Sponsor & Survey
 If you find this extension useful, consider:
 - **Sponsoring** me on GitHub: <https://github.com/sponsors/necatiarslan>
-- **Taking the survey** to help improve the extension: <https://bit.ly/s3-extension-survey>
+- **Taking the survey** to help improve the extension: <https://docs.google.com/forms/d/e/1FAIpQLSdAbmozmNCK-o0Y2wD2mL1HjYSlR1ZKdchR6HXYxBx44AfcLw/viewform?usp=share_link>
 
 ---
 

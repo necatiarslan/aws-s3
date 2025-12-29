@@ -2,14 +2,14 @@
   "name": "aws-s3-vscode-extension",
   "displayName": "Aws S3",
   "description": "Browse Your AWS S3 Buckets, Upload, Download, Delete Files",
-  "version": "1.8.6",
+  "version": "1.8.8",
   "publisher": "NecatiARSLAN",
   "repository": {
     "type": "git",
     "url": "https://github.com/necatiarslan/aws-s3"
   },
   "icon": "media/aws-s3-logo-extension.png",
-  "privacy": "https://github.com/necatiarslan/aws-s3#telemetry--privacy",
+  "privacy": "https://github.com/necatiarslan/aws-s3#-telemetry--privacy",
   "license": "Apache-2.0",
   "engines": {
     "vscode": "^1.104.0"
@@ -259,7 +259,7 @@
     "viewsWelcome": [
       {
         "view": "S3TreeView",
-        "contents": "Please click [+] to add your buckets. \n [Add Bucket](command:S3TreeView.AddBucket) \n Leave bucket name empty to get all your buckets. You can enter bucket name partially. \n If you can not connect after a while check your Aws Credentials, Network and Proxy settings. \n\n\n\n To Access Aws, you need to configure aws credentials. \n For more detail on Aws Credentials [Click Here](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) \n For a Youtube Tutorial [Click Here](https://www.youtube.com/watch?v=SON8sY1iOBU) \n [Test Aws Connection](command:S3TreeView.TestAwsConnection) \n [Update Aws EndPoint](command:S3TreeView.UpdateAwsEndPoint)"
+        "contents": "Please click [+] to add your buckets. \n [Add Bucket](command:S3TreeView.AddBucket) \n Leave bucket name empty to get all your buckets. You can enter bucket name partially. \n If you can not connect after a while check your Aws Credentials, Network and Proxy settings. \n\n\n\n To Access Aws, you need to configure aws credentials. \n For more detail on Aws Credentials, see the [AWS CLI Credentials Documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html). \n For a video guide, see this [YouTube Tutorial on AWS Credentials](https://www.youtube.com/watch?v=SON8sY1iOBU). \n [Test Aws Connection](command:S3TreeView.TestAwsConnection) \n [Update Aws EndPoint](command:S3TreeView.UpdateAwsEndPoint)"
       }
     ]
   },

@@ -1,0 +1,53 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/vscode-extension-telemetry/main/schema/telemetry.schema.json",
+    "events": {
+        "extension.activated": {
+            "description": "Sent when the extension is successfully activated."
+        },
+        "extension.activationFailed": {
+            "description": "Sent when the extension fails to activate."
+        },
+        "S3Search.Load": {
+            "description": "Sent when the S3 Search view is loaded."
+        },
+        "S3Search.Render": {
+            "description": "Sent when the S3 Search view is rendered."
+        },
+        "S3Search.AddShortcut": {
+            "description": "Sent when a shortcut is added from the search view."
+        },
+        "S3Explorer.Load": {
+            "description": "Sent when the S3 Explorer view is loaded."
+        },
+        "S3Explorer.Render": {
+            "description": "Sent when the S3 Explorer view is rendered."
+        },
+        "S3Explorer.AddShortcut": {
+            "description": "Sent when a shortcut is added from the explorer view."
+        },
+        "S3Explorer.UploadFile": {
+            "description": "Sent when a file is uploaded via the explorer."
+        },
+        "S3Explorer.DownloadFile": {
+            "description": "Sent when a file is downloaded via the explorer."
+        },
+        "S3Explorer.DeleteObject": {
+            "description": "Sent when an object is deleted."
+        },
+        "S3Explorer.MoveObject": {
+            "description": "Sent when an object is moved."
+        },
+        "S3Explorer.CopyObject": {
+            "description": "Sent when an object is copied."
+        },
+        "S3Explorer.RenameObject": {
+            "description": "Sent when an object is renamed."
+        },
+        "S3TreeView.AddBucket": {
+            "description": "Sent when a bucket is added to the sidebar."
+        },
+        "S3TreeView.RemoveBucket": {
+            "description": "Sent when a bucket is removed from the sidebar."
+        }
+    }
+}

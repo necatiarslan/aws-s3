@@ -580,7 +580,7 @@ export class S3Explorer {
         <table>
             <tr>
                 <td>
-                    <a href="https://bit.ly/s3-extension-survey" style="cursor: pointer; text-decoration: none;">New Feature Survey</a>
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdAbmozmNCK-o0Y2wD2mL1HjYSlR1ZKdchR6HXYxBx44AfcLw/viewform?usp=share_link" style="cursor: pointer; text-decoration: none;">New Feature Survey</a>
                 </td>
             </tr>
         </table>
