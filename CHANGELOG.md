@@ -1,4 +1,7 @@
-# v1.8.6
+# 1.8.9
+    - Fix Edit and Copy Combos
+
+# v1.8.8
     - Telemetry integration
 
 # v1.8.5
