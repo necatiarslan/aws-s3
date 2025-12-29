@@ -81,7 +81,12 @@ class AIHandler {
             }
             ui.logToOutput(`AIHandler: Using model ${model.family} (${model.name})`);
             //ui.logToOutput(`AIHandler: Initial messages: ${JSON.stringify(messages)}`);
-            await this.runToolCallingLoop(model, messages, tools, wrappedStream, token);
+            if (Session_1.Session.Current?.IsProVersion) {
+                await this.runToolCallingLoop(model, messages, tools, wrappedStream, token);
+            }
+            else {
+                this.renderProVersionMessage(wrappedStream);
+            }
             this.renderResponseButtons(wrappedStream);
             if (usedAppreciated || defaultPromptUsed) {
                 this.renderAppreciationMessage(wrappedStream);
@@ -340,6 +345,10 @@ class AIHandler {
         stream.markdown("\n\n\n");
         stream.markdown("\n🙏 [Donate](https://github.com/sponsors/necatiarslan) if you found me useful!");
         stream.markdown("\n🤔 [New Feature](https://github.com/necatiarslan/awsflow/issues/new) Request");
+    }
+    renderProVersionMessage(stream) {
+        stream.markdown("\n");
+        stream.markdown("🚀 Upgrade to Pro version for advanced AI features!");
     }
     handleError(err, stream) {
         if (err instanceof Error) {

@@ -134,13 +134,17 @@ export class AIHandler {
       ui.logToOutput(`AIHandler: Using model ${model.family} (${model.name})`);
       //ui.logToOutput(`AIHandler: Initial messages: ${JSON.stringify(messages)}`);
 
-      await this.runToolCallingLoop(
-        model,
-        messages,
-        tools,
-        wrappedStream,
-        token
-      );
+      if (Session.Current?.IsProVersion) {
+        await this.runToolCallingLoop(
+          model,
+          messages,
+          tools,
+          wrappedStream,
+          token
+        );
+      } else {
+        this.renderProVersionMessage(wrappedStream);
+      }
       
       this.renderResponseButtons(wrappedStream);
 
@@ -483,6 +487,13 @@ export class AIHandler {
     );
     stream.markdown(
       "\n🤔 [New Feature](https://github.com/necatiarslan/awsflow/issues/new) Request"
+    );
+  }
+
+  private renderProVersionMessage(stream: vscode.ChatResponseStream): void {
+    stream.markdown("\n");
+    stream.markdown(
+      "🚀 Upgrade to Pro version for advanced AI features!"
     );
   }
 

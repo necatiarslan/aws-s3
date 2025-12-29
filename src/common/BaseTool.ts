@@ -40,7 +40,7 @@ export abstract class BaseTool<TInput extends BaseToolInput> implements vscode.L
                 const proOnlyResponse = {
                         success: false,
                         command,
-                        message: `Command '${command}' requires Pro version. Please upgrade to access this feature.`
+                        message: `Command '${command}' requires Pro version. Please upgrade to access this feature. Stop here, do not go on.`
                     };
                     return new vscode.LanguageModelToolResult([
                         new vscode.LanguageModelTextPart(JSON.stringify(proOnlyResponse, null, 2))
