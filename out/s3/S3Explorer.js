@@ -222,7 +222,7 @@ class S3Explorer {
                     } //do not list object itself
                     FolderIsEmpty = false;
                     let folderName = s3_helper.GetFolderName(folder.Prefix);
-                    if (this.SearchText.length > 0 && !folderName.toLowerCase().includes(this.SearchText.toLowerCase())) {
+                    if (this.SearchText && this.SearchText.length > 0 && !folderName.toLowerCase().includes(this.SearchText.toLowerCase())) {
                         continue;
                     }
                     folderCounter++;
@@ -256,7 +256,7 @@ class S3Explorer {
                     } //do not list object itself
                     FolderIsEmpty = false;
                     let fileName = s3_helper.GetFileNameWithExtension(file.Key);
-                    if (this.SearchText.length > 0 && !fileName.toLowerCase().includes(this.SearchText.toLowerCase())) {
+                    if (this.SearchText && this.SearchText.length > 0 && !fileName.toLowerCase().includes(this.SearchText.toLowerCase())) {
                         continue;
                     }
                     fileCounter++;
@@ -1141,10 +1141,12 @@ class S3Explorer {
         S3Explorer.Current = undefined;
         if (this._panel)
             this._panel.dispose();
-        while (this._disposables.length) {
-            const disposable = this._disposables.pop();
-            if (disposable) {
-                disposable.dispose();
+        if (this._disposables) {
+            while (this._disposables.length) {
+                const disposable = this._disposables.pop();
+                if (disposable) {
+                    disposable.dispose();
+                }
             }
         }
     }

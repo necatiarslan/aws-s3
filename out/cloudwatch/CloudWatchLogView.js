@@ -456,10 +456,12 @@ class CloudWatchLogView {
         this.StopTimer(); // Ensure timer is cleaned up to prevent memory leak
         CloudWatchLogView.Current = undefined;
         this._panel.dispose();
-        while (this._disposables.length) {
-            const disposable = this._disposables.pop();
-            if (disposable) {
-                disposable.dispose();
+        if (this._disposables) {
+            while (this._disposables.length) {
+                const disposable = this._disposables.pop();
+                if (disposable) {
+                    disposable.dispose();
+                }
             }
         }
     }
