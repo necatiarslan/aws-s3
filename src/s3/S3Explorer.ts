@@ -263,7 +263,7 @@ export class S3Explorer {
                     if(folder.Prefix === this.S3ExplorerItem.Key){ continue; }//do not list object itself
                     FolderIsEmpty = false;
                     let folderName = s3_helper.GetFolderName(folder.Prefix);
-                    if(this.SearchText.length > 0 && !folderName.toLowerCase().includes(this.SearchText.toLowerCase())){ continue; }
+                    if(this.SearchText && this.SearchText.length > 0 && !folderName.toLowerCase().includes(this.SearchText.toLowerCase())){ continue; }
 
                     folderCounter++;
                     S3RowHtml += `
@@ -297,7 +297,7 @@ export class S3Explorer {
                     if(file.Key === this.S3ExplorerItem.Key){ continue; } //do not list object itself
                     FolderIsEmpty = false;
                     let fileName = s3_helper.GetFileNameWithExtension(file.Key)
-                    if(this.SearchText.length > 0 && !fileName.toLowerCase().includes(this.SearchText.toLowerCase())){ continue; }
+                    if( this.SearchText && this.SearchText.length > 0 && !fileName.toLowerCase().includes(this.SearchText.toLowerCase())){ continue; }
 
                     fileCounter++;
                     S3RowHtml += `
@@ -1242,10 +1242,12 @@ export class S3Explorer {
         if(this._panel)
             this._panel.dispose();
 
-        while (this._disposables.length) {
-            const disposable = this._disposables.pop();
-            if (disposable) {
-                disposable.dispose();
+        if (this._disposables) {
+            while (this._disposables.length) {
+                const disposable = this._disposables.pop();
+                if (disposable) {
+                    disposable.dispose();
+                }
             }
         }
     }
