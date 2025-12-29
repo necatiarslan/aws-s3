@@ -1,0 +1,1 @@
+{"version":3,"file":"MessageHub.js","sourceRoot":"","sources":["../../src/common/MessageHub.ts"],"names":[],"mappings":";;AACA,oCAEC;AAED,gCAEC;AAED,gDAEC;AAED,0CAEC;AAED,sCAEC;AAlBD,SAAgB,YAAY;IACxB,yCAAyC;AAC7C,CAAC;AAED,SAAgB,UAAU;IACtB,uCAAuC;AAC3C,CAAC;AAED,SAAgB,kBAAkB;IAC9B,wCAAwC;AAC5C,CAAC;AAED,SAAgB,eAAe;IAC3B,4CAA4C;AAChD,CAAC;AAED,SAAgB,aAAa;IACzB,0CAA0C;AAC9C,CAAC"}

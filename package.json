@@ -272,6 +272,7 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
+    "@types/archiver": "^7.0.0",
     "@types/glob": "^9.0.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^24.10.2",
@@ -289,6 +290,8 @@
     "@aws-sdk/credential-providers": "^3.947.0",
     "@vscode-elements/elements": "^1.13.1",
     "@vscode/codicons": "^0.0.36",
-    "@vscode/extension-telemetry": "^1.2.0"
+    "@vscode/extension-telemetry": "^1.2.0",
+    "archiver": "^7.0.1",
+    "js-tiktoken": "^1.0.21"
   }
 }
