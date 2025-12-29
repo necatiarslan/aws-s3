@@ -77,7 +77,7 @@ function CopyDropDownChanged(e) {
 
   vscode.postMessage({
     command: "copy",
-    action: e.target._value,
+    action: e.target.value,
     keys: CheckedKeys
   });
 
