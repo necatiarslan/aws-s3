@@ -270,7 +270,7 @@ function CopyDropDownChanged(e) {
 
   vscode.postMessage({
     command: "copy",
-    action: e.target._value,
+    action: e.target.value,
     keys: CheckedKeys
   });
 
@@ -279,7 +279,7 @@ function CopyDropDownChanged(e) {
 
 function EditDropDownChanged(e) {
 
-  EditSelectedFiles(e.target._value);
+  EditSelectedFiles(e.target.value);
 
   e.target._selectedIndex = 0;
 }
