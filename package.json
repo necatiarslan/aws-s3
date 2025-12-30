@@ -691,6 +691,14 @@
       {
         "command": "S3TreeView.OpenServiceAccessView",
         "title": "Service Access Settings"
+      },
+      {
+        "command": "S3TreeView.ActivatePro",
+        "title": "Activate Pro"
+      },
+      {
+        "command": "S3TreeView.EnterLicenseKey",
+        "title": "Enter License Key"
       }
     ],
     "menus": {
@@ -747,6 +755,16 @@
         },
         {
           "command": "S3TreeView.OpenServiceAccessView",
+          "when": "view == S3TreeView",
+          "group": "other"
+        },
+        {
+          "command": "S3TreeView.ActivatePro",
+          "when": "view == S3TreeView",
+          "group": "other"
+        },
+        {
+          "command": "S3TreeView.EnterLicenseKey",
           "when": "view == S3TreeView",
           "group": "other"
         }

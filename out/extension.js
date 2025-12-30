@@ -166,6 +166,24 @@ function registerCommands(context, treeView) {
         }
         ServiceAccessView_1.ServiceAccessView.Render(Session_1.Session.Current.ExtensionUri);
     }));
+    context.subscriptions.push(vscode.commands.registerCommand('S3TreeView.ActivatePro', () => {
+        if (Session_1.Session.Current?.IsProVersion) {
+            ui.showInfoMessage('You already have an active Pro license!');
+            return;
+        }
+        vscode.env.openExternal(vscode.Uri.parse('https://necatiarslan.lemonsqueezy.com/checkout/buy/dcdda46a-2137-44cc-a9d9-30dfc75070cf'));
+    }));
+    context.subscriptions.push(vscode.commands.registerCommand('S3TreeView.EnterLicenseKey', async () => {
+        if (Session_1.Session.Current?.IsProVersion) {
+            ui.showInfoMessage('You already have an active Pro license!');
+            return;
+        }
+        await (0, License_1.promptForLicense)(context);
+        // Update session with new license status
+        if (Session_1.Session.Current) {
+            Session_1.Session.Current.IsProVersion = (0, License_1.isLicenseValid)();
+        }
+    }));
     ui.logToOutput('All commands registered successfully');
 }
 /**

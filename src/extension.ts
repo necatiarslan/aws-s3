@@ -23,7 +23,7 @@ import { SessionTool } from './common/SessionTool';
 import { CloudWatchLogTool } from './cloudwatch/CloudWatchLogTool';
 import { ServiceAccessView } from './common/ServiceAccessView';
 import { CommandHistoryView } from './common/CommandHistoryView';
-import { initializeLicense, isLicenseValid } from "./common/License";
+import { initializeLicense, isLicenseValid, promptForLicense } from "./common/License";
 
 /**
  * Extension activation function
@@ -251,6 +251,31 @@ function registerCommands(context: vscode.ExtensionContext, treeView: S3TreeView
 		}
 		ServiceAccessView.Render(Session.Current.ExtensionUri);
 	}));
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand('S3TreeView.ActivatePro', () => {
+			if (Session.Current?.IsProVersion) {
+				ui.showInfoMessage('You already have an active Pro license!');
+				return;
+			}
+			vscode.env.openExternal(vscode.Uri.parse('https://necatiarslan.lemonsqueezy.com/checkout/buy/dcdda46a-2137-44cc-a9d9-30dfc75070cf'));
+		})
+	);
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand('S3TreeView.EnterLicenseKey', async () => {
+			if (Session.Current?.IsProVersion) {
+				ui.showInfoMessage('You already have an active Pro license!');
+				return;
+			}
+
+			await promptForLicense(context);
+			// Update session with new license status
+			if (Session.Current) {
+				Session.Current.IsProVersion = isLicenseValid();
+			}
+		})
+	);
 
 	ui.logToOutput('All commands registered successfully');
 }
