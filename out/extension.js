@@ -25,6 +25,7 @@ const SessionTool_1 = require("./common/SessionTool");
 const CloudWatchLogTool_1 = require("./cloudwatch/CloudWatchLogTool");
 const ServiceAccessView_1 = require("./common/ServiceAccessView");
 const CommandHistoryView_1 = require("./common/CommandHistoryView");
+const License_1 = require("./common/License");
 /**
  * Extension activation function
  * Called when the extension is activated
@@ -35,7 +36,9 @@ function activate(context) {
     ui.logToOutput('AWS S3 Extension activation started');
     // Initialize telemetry
     new Telemetry_1.Telemetry(context);
+    (0, License_1.initializeLicense)(context);
     const session = new Session_1.Session(context);
+    session.IsProVersion = (0, License_1.isLicenseValid)();
     new AIHandler_1.AIHandler();
     const clientManager = ClientManager_1.ClientManager.Instance;
     // Register disposables

@@ -23,6 +23,7 @@ import { SessionTool } from './common/SessionTool';
 import { CloudWatchLogTool } from './cloudwatch/CloudWatchLogTool';
 import { ServiceAccessView } from './common/ServiceAccessView';
 import { CommandHistoryView } from './common/CommandHistoryView';
+import { initializeLicense, isLicenseValid } from "./common/License";
 
 /**
  * Extension activation function
@@ -35,8 +36,10 @@ export function activate(context: vscode.ExtensionContext): void {
 	
 	// Initialize telemetry
 	new Telemetry(context);
+	initializeLicense(context);
 
 	const session = new Session(context);
+	session.IsProVersion = isLicenseValid();
 	new AIHandler();
 	const clientManager = ClientManager.Instance;
 
