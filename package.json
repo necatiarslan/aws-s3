@@ -668,6 +668,10 @@
         "icon": "$(search)"
       },
       {
+        "command": "aws-s3.OpenS3ExplorerView",
+        "title": "Open S3 Explorer View"
+      },
+      {
         "command": "S3TreeView.SelectAwsProfile",
         "title": "Select Aws Profile",
         "icon": "$(account)"

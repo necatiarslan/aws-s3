@@ -12,6 +12,8 @@ exports.deactivate = deactivate;
 const vscode = require("vscode");
 const ui = require("./common/UI");
 const S3TreeView_1 = require("./s3/S3TreeView");
+const S3TreeItem_1 = require("./s3/S3TreeItem");
+const S3Explorer_1 = require("./s3/S3Explorer");
 const Telemetry_1 = require("./common/Telemetry");
 const ClientManager_1 = require("./common/ClientManager");
 const AIHandler_1 = require("./chat/AIHandler");
@@ -135,6 +137,26 @@ function registerCommands(context, treeView) {
     // Explorer and search commands
     context.subscriptions.push(vscode.commands.registerCommand('S3TreeView.ShowS3Explorer', (node) => {
         treeView.ShowS3Explorer(node);
+    }));
+    // Open S3 Explorer view from external commands (e.g., chat buttons)
+    context.subscriptions.push(vscode.commands.registerCommand('aws-s3.OpenS3ExplorerView', (bucket, key) => {
+        if (!Session_1.Session.Current) {
+            ui.showErrorMessage('Session not initialized', new Error('No session'));
+            return;
+        }
+        if (!bucket) {
+            ui.showErrorMessage('Bucket not specified', new Error('No bucket specified'));
+            return;
+        }
+        try {
+            const node = new S3TreeItem_1.S3TreeItem(bucket, S3TreeItem_1.TreeItemType.Bucket);
+            node.Bucket = bucket;
+            S3Explorer_1.S3Explorer.Render(Session_1.Session.Current.ExtensionUri, node, key);
+        }
+        catch (err) {
+            ui.showErrorMessage('OpenS3ExplorerView Error', err);
+            ui.logToOutput('OpenS3ExplorerView Error', err);
+        }
     }));
     context.subscriptions.push(vscode.commands.registerCommand('S3TreeView.ShowS3Search', (node) => {
         treeView.ShowS3Search(node);
