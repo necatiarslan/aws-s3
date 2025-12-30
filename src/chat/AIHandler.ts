@@ -89,6 +89,9 @@ export class AIHandler {
   ): Promise<void> {
     MessageHub.StartWorking();
 
+    // Detect S3 bucket mention in the incoming prompt and record it as a recent resource
+    this.detectResourcesInPrompt(request);
+
     let workingEnded = false;
     const endWorkingOnce = () => {
       if (workingEnded) {
@@ -161,6 +164,30 @@ export class AIHandler {
     }
   }
 
+  private detectResourcesInPrompt(request: vscode.ChatRequest) {
+    try {
+      const bucketMatch = request?.prompt?.match(/Bucket:\s*([^?\s]+)/i);
+      if (bucketMatch && bucketMatch[1]) {
+        const bucketName = bucketMatch[1].replace(/^\"|\'|\"$/g, "");
+        this.updateLatestResource({ type: "S3 Bucket", name: bucketName });
+        ui.logToOutput(`AIHandler: Detected bucket in prompt - ${bucketName}`);
+      }
+    } catch (err) {
+      // Non-fatal - continue without blocking AI handling
+    }
+
+    try {
+      const keyMatch = request?.prompt?.match(/Key:\s*([^?\s]+)/i);
+      if (keyMatch && keyMatch[1]) {
+        const keyName = keyMatch[1].replace(/^\"|\'|\"$/g, "");
+        this.updateLatestResource({ type: "S3 Key", name: keyName });
+        ui.logToOutput(`AIHandler: Detected key in prompt - ${keyName}`);
+      }
+    } catch (err) {
+      // Non-fatal - continue without blocking AI handling
+    }
+  }
+
   private buildInitialMessages(
     request: vscode.ChatRequest,
     chatContext: vscode.ChatContext
@@ -170,6 +197,7 @@ export class AIHandler {
     messages.push(vscode.LanguageModelChatMessage.User(`AWS Expert: Use tools for tasks. Respond in Markdown; no JSON unless requested.`));
 
     // Add summarized resources
+
     messages.push(...this.getLatestResources());
 
     messages.push(vscode.LanguageModelChatMessage.User(request.prompt));
@@ -447,7 +475,7 @@ export class AIHandler {
 
     stream.markdown("\n\n");
     stream.button({
-      command: "awsflow.OpenCloudWatchView",
+      command: "aws-s3.OpenCloudWatchView",
       title: "Open Log View",
       arguments: logStream ? [logGroup, logStream] : [logGroup],
     });
@@ -459,11 +487,12 @@ export class AIHandler {
     }
 
     const bucket = this.latestResources["S3 Bucket"].name;
+    const key = this.latestResources["S3 Key"]?.name;
     stream.markdown("\n\n");
     stream.button({
-      command: "awsflow.OpenS3ExplorerView",
+      command: "aws-s3.OpenS3ExplorerView",
       title: "Open S3 View",
-      arguments: [bucket],
+      arguments: [bucket, key],
     });
   }
 
@@ -474,7 +503,7 @@ export class AIHandler {
 
     stream.markdown("\n\n");
     stream.button({
-      command: "awsflow.LoadMoreResults",
+      command: "aws-s3.LoadMoreResults",
       title: "Load More",
       arguments: [this.paginationContext],
     });
@@ -486,7 +515,7 @@ export class AIHandler {
       "\n🙏 [Donate](https://github.com/sponsors/necatiarslan) if you found me useful!"
     );
     stream.markdown(
-      "\n🤔 [New Feature](https://github.com/necatiarslan/awsflow/issues/new) Request"
+      "\n🤔 [New Feature](https://github.com/necatiarslan/aws-s3/issues/new) Request"
     );
   }
 
@@ -506,7 +535,7 @@ export class AIHandler {
       stream.markdown("I'm sorry, I couldn't connect to the AI model.");
     }
     stream.markdown(
-      "\n🪲 Please [Report an Issue](https://github.com/necatiarslan/awsflow/issues/new)"
+      "\n🪲 Please [Report an Issue](https://github.com/necatiarslan/aws-s3/issues/new)"
     );
   }
 

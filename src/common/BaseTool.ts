@@ -59,7 +59,7 @@ export abstract class BaseTool<TInput extends BaseToolInput> implements vscode.L
                     const disabledResponse = { 
                         success: false, 
                         command, 
-                        message: `Tool '${this.toolName}' is disabled. Enable it in Service Access Settings (Command Palette: Awsflow: Service Access Settings)` 
+                        message: `Tool '${this.toolName}' is disabled. Enable it in Service Access Settings (Command Palette: Aws-S3: Service Access Settings)` 
                     };
                     responseData = disabledResponse;
                     ui.logToOutput(`${this.toolName}: Tool is disabled`);
@@ -73,7 +73,7 @@ export abstract class BaseTool<TInput extends BaseToolInput> implements vscode.L
                     const disabledResponse = { 
                         success: false, 
                         command, 
-                        message: `Command '${command}' in tool '${this.toolName}' is disabled. Enable it in Service Access Settings (Command Palette: Awsflow: Service Access Settings)` 
+                        message: `Command '${command}' in tool '${this.toolName}' is disabled. Enable it in Service Access Settings (Command Palette: Aws-S3: Service Access Settings)` 
                     };
                     responseData = disabledResponse;
                     ui.logToOutput(`${this.toolName}: Command ${command} is disabled`);

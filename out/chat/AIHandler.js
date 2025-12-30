@@ -45,6 +45,8 @@ class AIHandler {
     }
     async aIHandler(request, context, stream, token) {
         MessageHub.StartWorking();
+        // Detect S3 bucket mention in the incoming prompt and record it as a recent resource
+        this.detectResourcesInPrompt(request);
         let workingEnded = false;
         const endWorkingOnce = () => {
             if (workingEnded) {
@@ -99,6 +101,30 @@ class AIHandler {
         }
         finally {
             cancelListener.dispose();
+        }
+    }
+    detectResourcesInPrompt(request) {
+        try {
+            const bucketMatch = request?.prompt?.match(/Bucket:\s*([^?\s]+)/i);
+            if (bucketMatch && bucketMatch[1]) {
+                const bucketName = bucketMatch[1].replace(/^\"|\'|\"$/g, "");
+                this.updateLatestResource({ type: "S3 Bucket", name: bucketName });
+                ui.logToOutput(`AIHandler: Detected bucket in prompt - ${bucketName}`);
+            }
+        }
+        catch (err) {
+            // Non-fatal - continue without blocking AI handling
+        }
+        try {
+            const keyMatch = request?.prompt?.match(/Key:\s*([^?\s]+)/i);
+            if (keyMatch && keyMatch[1]) {
+                const keyName = keyMatch[1].replace(/^\"|\'|\"$/g, "");
+                this.updateLatestResource({ type: "S3 Key", name: keyName });
+                ui.logToOutput(`AIHandler: Detected key in prompt - ${keyName}`);
+            }
+        }
+        catch (err) {
+            // Non-fatal - continue without blocking AI handling
         }
     }
     buildInitialMessages(request, chatContext) {
@@ -313,7 +339,7 @@ class AIHandler {
         const logStream = this.latestResources["CloudWatch Log Stream"]?.name;
         stream.markdown("\n\n");
         stream.button({
-            command: "awsflow.OpenCloudWatchView",
+            command: "aws-s3.OpenCloudWatchView",
             title: "Open Log View",
             arguments: logStream ? [logGroup, logStream] : [logGroup],
         });
@@ -323,11 +349,12 @@ class AIHandler {
             return;
         }
         const bucket = this.latestResources["S3 Bucket"].name;
+        const key = this.latestResources["S3 Key"]?.name;
         stream.markdown("\n\n");
         stream.button({
-            command: "awsflow.OpenS3ExplorerView",
+            command: "aws-s3.OpenS3ExplorerView",
             title: "Open S3 View",
-            arguments: [bucket],
+            arguments: [bucket, key],
         });
     }
     renderPaginationButton(stream) {
@@ -336,7 +363,7 @@ class AIHandler {
         }
         stream.markdown("\n\n");
         stream.button({
-            command: "awsflow.LoadMoreResults",
+            command: "aws-s3.LoadMoreResults",
             title: "Load More",
             arguments: [this.paginationContext],
         });
@@ -344,7 +371,7 @@ class AIHandler {
     renderAppreciationMessage(stream) {
         stream.markdown("\n\n\n");
         stream.markdown("\n🙏 [Donate](https://github.com/sponsors/necatiarslan) if you found me useful!");
-        stream.markdown("\n🤔 [New Feature](https://github.com/necatiarslan/awsflow/issues/new) Request");
+        stream.markdown("\n🤔 [New Feature](https://github.com/necatiarslan/aws-s3/issues/new) Request");
     }
     renderProVersionMessage(stream) {
         stream.markdown("\n");
@@ -357,7 +384,7 @@ class AIHandler {
         else {
             stream.markdown("I'm sorry, I couldn't connect to the AI model.");
         }
-        stream.markdown("\n🪲 Please [Report an Issue](https://github.com/necatiarslan/awsflow/issues/new)");
+        stream.markdown("\n🪲 Please [Report an Issue](https://github.com/necatiarslan/aws-s3/issues/new)");
     }
     async isChatCommandAvailable() {
         const commands = await vscode.commands.getCommands(true); // 'true' includes internal commands
