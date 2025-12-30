@@ -327,6 +327,7 @@ class AIHandler {
         }
     }
     renderResponseButtons(stream) {
+        this.renderActivateProButton(stream);
         this.renderCloudWatchButton(stream);
         this.renderS3Button(stream);
         this.renderPaginationButton(stream);
@@ -355,6 +356,16 @@ class AIHandler {
             command: "aws-s3.OpenS3ExplorerView",
             title: "Open S3 View",
             arguments: [bucket, key],
+        });
+    }
+    renderActivateProButton(stream) {
+        if (Session_1.Session.Current?.IsProVersion) {
+            return;
+        }
+        stream.markdown("\n\n");
+        stream.button({
+            command: "S3TreeView.ActivatePro",
+            title: "Activate Pro Version",
         });
     }
     renderPaginationButton(stream) {

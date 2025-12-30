@@ -460,6 +460,7 @@ export class AIHandler {
   }
 
   private renderResponseButtons(stream: vscode.ChatResponseStream): void {
+    this.renderActivateProButton(stream);
     this.renderCloudWatchButton(stream);
     this.renderS3Button(stream);
     this.renderPaginationButton(stream);
@@ -493,6 +494,17 @@ export class AIHandler {
       command: "aws-s3.OpenS3ExplorerView",
       title: "Open S3 View",
       arguments: [bucket, key],
+    });
+  }
+
+  private renderActivateProButton(stream: vscode.ChatResponseStream): void {
+    if (Session.Current?.IsProVersion) {
+      return;
+    }
+    stream.markdown("\n\n");
+    stream.button({
+      command: "S3TreeView.ActivatePro",
+      title: "Activate Pro Version",
     });
   }
 
