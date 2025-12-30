@@ -699,6 +699,11 @@
       {
         "command": "S3TreeView.EnterLicenseKey",
         "title": "Enter License Key"
+      },
+      {
+        "command": "S3TreeView.AskAI",
+        "title": "Ask AI",
+        "icon": "$(comment-discussion)"
       }
     ],
     "menus": {
@@ -832,6 +837,11 @@
         },
         {
           "command": "S3TreeView.ShowS3Search",
+          "when": "view == S3TreeView",
+          "group": "inline"
+        },
+        {
+          "command": "S3TreeView.AskAI",
           "when": "view == S3TreeView",
           "group": "inline"
         }

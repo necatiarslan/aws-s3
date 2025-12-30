@@ -371,7 +371,7 @@ class AIHandler {
         }
         const commandId = this.getCommandIdForEnvironment();
         await vscode.commands.executeCommand(commandId, {
-            query: "@aws " + (prompt || DEFAULT_PROMPT),
+            query: "@aws-s3 " + (prompt || DEFAULT_PROMPT),
         });
     }
     getCommandIdForEnvironment() {

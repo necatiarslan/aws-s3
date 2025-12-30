@@ -209,6 +209,24 @@ function registerCommands(context: vscode.ExtensionContext, treeView: S3TreeView
 		})
 	);
 
+	context.subscriptions.push(
+		vscode.commands.registerCommand('S3TreeView.AskAI', async (node: S3TreeItem) => {
+			ui.logToOutput('S3TreeView.AskAI Started');
+			try {
+				const bucket = node?.Bucket ?? '';
+				const key = node?.Shortcut ?? '';
+				if (!AIHandler.Current) {
+					ui.showErrorMessage('AIHandler not initialized', new Error('AI handler is not available'));
+					return;
+				}
+				await AIHandler.Current.askAI(`How can you help with Bucket:${bucket} Key:${key} ?`);
+			} catch (error: unknown) {
+				ui.showErrorMessage('AskAI Error !!!', error as Error);
+				ui.logToOutput('AskAI Error !!!', error as Error);
+			}
+		})
+	);
+
 	// AWS configuration commands
 	context.subscriptions.push(
 		vscode.commands.registerCommand('S3TreeView.SelectAwsProfile', (node: S3TreeItem) => {
