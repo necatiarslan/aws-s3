@@ -120,9 +120,9 @@ async function validateLicenseOnline(context) {
  * Does NOT make network calls
  */
 function isLicenseValid() {
-    if (process.env.VSCODE_DEBUG_MODE === 'true') {
-        return true;
-    }
+    // if (process.env.VSCODE_DEBUG_MODE === 'true') {
+    //     return true;
+    // }
     if (!cachedStatus) {
         return false;
     }

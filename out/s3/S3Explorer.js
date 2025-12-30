@@ -410,12 +410,12 @@ class S3Explorer {
             <tr>
                 <td colspan="4" style="text-align:left">
                 <vscode-button secondary id="ask_ai" title="Ask AI">💬</vscode-button>
-                <vscode-button secondary id="refresh">Refresh</vscode-button>
-                <vscode-button secondary id="search" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Search</vscode-button>
-                <vscode-button secondary id="download" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Download</vscode-button>
-                <vscode-button secondary id="upload" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Upload</vscode-button>
-                <vscode-button secondary id="create_folder" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""}>Create Folder</vscode-button>
-
+                <vscode-button secondary id="refresh" title="Refresh">🔄</vscode-button>
+                <vscode-button secondary id="search" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""} title="Advanced Search">🔍</vscode-button>
+                <vscode-button secondary id="download" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""} title="Download">Download</vscode-button>
+                <vscode-button secondary id="upload" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""} title="Upload">Upload</vscode-button>
+                <vscode-button secondary id="create_folder" ${this.S3ExplorerItem.IsFile() ? "disabled" : ""} title="New Folder">New Folder</vscode-button>
+                
                 <vscode-single-select id="edit_dropdown" style="width: 100px; vertical-align:top" >
                     <vscode-option>Edit</vscode-option>
                     <vscode-option>Delete</vscode-option>
