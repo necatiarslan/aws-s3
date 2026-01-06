@@ -5,7 +5,7 @@ export interface LicenseStatus {
     valid: boolean;
     plan: string | null;
     expires_at: string | null; // ISO date string or null for lifetime
-    checked_at: number; // Unix timestamp of last validation
+    checked_at: number; // Unix timestamp of last validation in seconds
     grace_days: number; // Number of grace days allowed
 }
 
@@ -164,8 +164,8 @@ export function isLicenseValid(): boolean {
     
     // Check grace period for offline usage
     // If last check was more than grace_days ago, consider invalid
-    const now = Date.now();
-    const daysSinceCheck = (now - cachedStatus.checked_at) / (1000 * 60 * 60 * 24);
+    const now = Date.now() / 1000; // in seconds
+    const daysSinceCheck = (now - cachedStatus.checked_at) / (60 * 60 * 24);
     
     if (daysSinceCheck > cachedStatus.grace_days) {
         // Grace period expired

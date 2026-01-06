@@ -141,8 +141,8 @@ function isLicenseValid() {
     }
     // Check grace period for offline usage
     // If last check was more than grace_days ago, consider invalid
-    const now = Date.now();
-    const daysSinceCheck = (now - cachedStatus.checked_at) / (1000 * 60 * 60 * 24);
+    const now = Date.now() / 1000; // in seconds
+    const daysSinceCheck = (now - cachedStatus.checked_at) / (60 * 60 * 24);
     if (daysSinceCheck > cachedStatus.grace_days) {
         // Grace period expired
         return false;
