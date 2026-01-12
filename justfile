@@ -66,14 +66,14 @@ localstack_help:
 localstack_update:
     localstack update
 
-create_bucket:
+create:
     aws --endpoint-url=http://localhost:4566 s3 mb s3://my-bucket
 
-list_buckets:
+lists:
     aws --endpoint-url=http://localhost:4566 s3 ls
 
-list_bucket_content:
+list_files:
     aws --endpoint-url=http://localhost:4566 s3 ls s3://my-bucket
 
-upload_file:
+upload:
     aws --endpoint-url=http://localhost:4566 s3 cp README.md s3://my-bucket
