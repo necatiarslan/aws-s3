@@ -128,7 +128,21 @@ export class AIHandler {
       const usedAppreciated = request.prompt.toLowerCase().includes("thank");
       const defaultPromptUsed = request.prompt === DEFAULT_PROMPT;
 
-      const [model] = await vscode.lm.selectChatModels();
+      let model:vscode.LanguageModelChat | undefined = request.model;
+      if (request.model.id.includes('auto')) {
+          const models = await vscode.lm.selectChatModels({ vendor: model.vendor, family: model.family });
+          if (models.length > 0)
+          {
+              model = models[0];
+              ui.logToOutput(`Auto-selected model: ${model.name} (${model.id})`);
+          }
+          else
+          {
+              ui.logToOutput(`No models found for vendor: ${model.vendor}, family: ${model.family}`);
+              model = undefined;
+          }
+      }
+
       if (!model) {
         wrappedStream.markdown("No suitable AI model found.");
         endWorkingOnce();
