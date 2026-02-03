@@ -221,6 +221,8 @@ export class S3Explorer {
         const fileUri = ui.getUri(webview, extensionUri, ["media", "file.png"]);
         const folderUri = ui.getUri(webview, extensionUri, ["media", "folder.png"]);
 
+        const copilotUri = ui.getUri(webview, extensionUri, ["media", "copilot.png"]);
+
         let fileCounter = 0;
         let folderCounter = 0;
 
@@ -455,9 +457,8 @@ export class S3Explorer {
         <table>
             <tr>
                 <td colspan="4" style="text-align:left">
-                <vscode-button secondary id="ask_ai" title="Ask AI">💬</vscode-button>
-                <vscode-button secondary id="refresh" title="Refresh">🔄</vscode-button>
-                <vscode-button secondary id="search" ${this.S3ExplorerItem.IsFile() ? "disabled":""} title="Advanced Search">🔍</vscode-button>
+                <vscode-button secondary id="refresh" title="Refresh">Refresh</vscode-button>
+                <vscode-button secondary id="search" ${this.S3ExplorerItem.IsFile() ? "disabled":""} title="Advanced Search">Search</vscode-button>
                 <vscode-button secondary id="download" ${this.S3ExplorerItem.IsFile() ? "disabled":""} title="Download">Download</vscode-button>
                 <vscode-button secondary id="upload" ${this.S3ExplorerItem.IsFile() ? "disabled":""} title="Upload">Upload</vscode-button>
                 <vscode-button secondary id="create_folder" ${this.S3ExplorerItem.IsFile() ? "disabled":""} title="New Folder">New Folder</vscode-button>
@@ -498,7 +499,7 @@ export class S3Explorer {
                 <th style="width:20px; text-align:center; vertical-align:middle">
                     <a id="go_up"><img src="${goUpUri}" title="Go Back" style="cursor: pointer;"></a>
                 </th>
-                <th style="width:160px; text-align:center; vertical-align:middle">
+                <th style="width:180px; text-align:center; vertical-align:middle">
                     
                     <a id="file_download"><img src="${fileDownloadUri}" title="Download" style="cursor: pointer;"></a>
                     <a id="file_upload"><img src="${fileUploadUri}" title="Upload" style="cursor: pointer;"></a>
@@ -508,6 +509,8 @@ export class S3Explorer {
                     <a id="file_rename"><img src="${fileRenameUri}" title="Rename" style="cursor: pointer;"></a>
                     <a id="file_copy"><img src="${fileCopyUri}" title="Copy" style="cursor: pointer;"></a>
                     <a id="file_move"><img src="${fileMoveUri}" title="Move" style="cursor: pointer;"></a>
+                    <a id="ask_ai"><img src="${copilotUri}" title="Copilot" style="cursor: pointer; width: 20px; height: 20px;"></a>
+                
                 </th>
                 <th>
                     Name 
