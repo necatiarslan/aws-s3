@@ -148,6 +148,7 @@ You can disable telemetry via: Settings → Telemetry → Telemetry Level
 
 ## 🗺️ Roadmap
 ### Todo
+- MCP support
 - A Separate list of s3 buckets to search for buckets and add
 - S3 Select support
 - Share active profile with other extensions

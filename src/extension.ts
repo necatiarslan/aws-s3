@@ -299,7 +299,14 @@ function registerCommands(context: vscode.ExtensionContext, treeView: S3TreeView
 				ui.showInfoMessage('You already have an active Pro license!');
 				return;
 			}
+
+			if(!Session.Current?.IsHostSupportLanguageTools){
+				ui.showWarningMessage('Pro version is only available when using VSCode. Antigravity, Windsurf, and other hosts are not supported.');
+				return;
+			}
+
 			vscode.env.openExternal(vscode.Uri.parse('https://necatiarslan.lemonsqueezy.com/checkout/buy/dcdda46a-2137-44cc-a9d9-30dfc75070cf'));
+
 		})
 	);
 
@@ -307,6 +314,11 @@ function registerCommands(context: vscode.ExtensionContext, treeView: S3TreeView
 		vscode.commands.registerCommand('S3TreeView.EnterLicenseKey', async () => {
 			if (Session.Current?.IsProVersion) {
 				ui.showInfoMessage('You already have an active Pro license!');
+				return;
+			}
+
+			if(!Session.Current?.IsHostSupportLanguageTools){
+				ui.showWarningMessage('Pro version is only available when using VSCode. Antigravity, Windsurf, and other hosts are not supported.');
 				return;
 			}
 
