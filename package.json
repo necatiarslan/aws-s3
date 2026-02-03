@@ -699,11 +699,11 @@
       },
             {
         "command": "S3TreeView.ShowCommandHistory",
-        "title": "Show Command History"
+        "title": "AI Aws Command History"
       },
       {
         "command": "S3TreeView.OpenServiceAccessView",
-        "title": "Service Access Settings"
+        "title": "AI Aws Access Settings"
       },
       {
         "command": "S3TreeView.ActivatePro",
@@ -714,9 +714,23 @@
         "title": "Enter License Key"
       },
       {
+        "command": "S3TreeView.ResetLicenseKey",
+        "title": "Reset License Key"
+      },
+      {
         "command": "S3TreeView.AskAI",
         "title": "Ask AI",
         "icon": "$(comment-discussion)"
+      }
+    ],
+    "submenus": [
+      {
+        "id": "aws-s3.ConnectionMenu",
+        "label": "Connection"
+      },
+      {
+        "id": "aws-s3.ActivateProMenu",
+        "label": "Activate Pro"
       }
     ],
     "menus": {
@@ -752,17 +766,7 @@
           "group": "navigation@7"
         },
         {
-          "command": "S3TreeView.UpdateAwsEndPoint",
-          "when": "view == S3TreeView",
-          "group": "other"
-        },
-        {
-          "command": "S3TreeView.SetAwsRegion",
-          "when": "view == S3TreeView",
-          "group": "other"
-        },
-        {
-          "command": "S3TreeView.TestAwsConnection",
+          "submenu": "aws-s3.ConnectionMenu",
           "when": "view == S3TreeView",
           "group": "other"
         },
@@ -777,14 +781,38 @@
           "group": "other"
         },
         {
-          "command": "S3TreeView.ActivatePro",
+          "submenu": "aws-s3.ActivateProMenu",
           "when": "view == S3TreeView",
           "group": "other"
+        }
+        
+      ],
+      "aws-s3.ConnectionMenu": [
+        {
+          "command": "S3TreeView.TestAwsConnection",
+          "group": "other@1"
+        },
+        {
+          "command": "S3TreeView.UpdateAwsEndPoint",
+          "group": "other@2"
+        },
+        {
+          "command": "S3TreeView.SetAwsRegion",
+          "group": "other@3"
+        }
+      ],
+      "aws-s3.ActivateProMenu": [
+        {
+          "command": "S3TreeView.ActivatePro",
+          "group": "other@1"
         },
         {
           "command": "S3TreeView.EnterLicenseKey",
-          "when": "view == S3TreeView",
-          "group": "other"
+          "group": "other@2"
+        },
+        {
+          "command": "S3TreeView.ResetLicenseKey",
+          "group": "other@3"
         }
       ],
       "view/item/context": [

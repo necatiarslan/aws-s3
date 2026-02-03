@@ -24,7 +24,7 @@ import { SessionTool } from './common/SessionTool';
 import { CloudWatchLogTool } from './cloudwatch/CloudWatchLogTool';
 import { ServiceAccessView } from './common/ServiceAccessView';
 import { CommandHistoryView } from './common/CommandHistoryView';
-import { initializeLicense, isLicenseValid, promptForLicense } from "./common/License";
+import { initializeLicense, isLicenseValid, promptForLicense, clearLicense } from "./common/License";
 
 /**
  * Extension activation function
@@ -314,6 +314,16 @@ function registerCommands(context: vscode.ExtensionContext, treeView: S3TreeView
 			// Update session with new license status
 			if (Session.Current) {
 				Session.Current.IsProVersion = isLicenseValid();
+			}
+		})
+	);
+	context.subscriptions.push(
+		vscode.commands.registerCommand('S3TreeView.ResetLicenseKey', async () => {
+			await clearLicense();
+			ui.showInfoMessage('License key has been reset. Please enter a new license key to activate Pro features.');
+			// Update session to reflect non-Pro status
+			if (Session.Current) {
+				Session.Current.IsProVersion = false;
 			}
 		})
 	);

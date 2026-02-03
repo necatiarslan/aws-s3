@@ -222,6 +222,14 @@ function registerCommands(context, treeView) {
             Session_1.Session.Current.IsProVersion = (0, License_1.isLicenseValid)();
         }
     }));
+    context.subscriptions.push(vscode.commands.registerCommand('S3TreeView.ResetLicenseKey', async () => {
+        await (0, License_1.clearLicense)();
+        ui.showInfoMessage('License key has been reset. Please enter a new license key to activate Pro features.');
+        // Update session to reflect non-Pro status
+        if (Session_1.Session.Current) {
+            Session_1.Session.Current.IsProVersion = false;
+        }
+    }));
     ui.logToOutput('All commands registered successfully');
 }
 /**

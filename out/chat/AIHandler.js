@@ -378,6 +378,10 @@ class AIHandler {
             command: "S3TreeView.ActivatePro",
             title: "Activate Pro Version",
         });
+        stream.button({
+            command: "S3TreeView.EnterLicenseKey",
+            title: "Enter License Key",
+        });
     }
     renderPaginationButton(stream) {
         if (!this.paginationContext) {
