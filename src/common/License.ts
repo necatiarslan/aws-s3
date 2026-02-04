@@ -23,8 +23,8 @@ const LICENSE_STATUS_KEY = 'aws-s3.licenseStatus';
 // API endpoint
 const LICENSE_API_URL = 'https://www.sairefe.com/wp-json/vscode/v1/license/validate';
 
-// Validation frequency (3 Days)
-const VALIDATION_INTERVAL_MS = 3 * 24 * 60 * 60 * 1000;
+// Validation frequency (7 Days)
+const VALIDATION_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000;
 const GRACE_PERIOD_DAYS = 7;
 
 const PRODUCT_NAME = 'Aws S3 Vscode Extension Pro';
@@ -100,7 +100,7 @@ export async function validateLicenseOnline(context: vscode.ExtensionContext): P
         await context.globalState.update(LICENSE_STATUS_KEY, cachedStatus);
         return false;
     }
-    
+    const env = process.env.VSCODE_DEBUG_MODE === 'true' ? 'QA' : 'PROD';
     try {
         // Call the WordPress REST API
         const response = await fetch(LICENSE_API_URL, {
@@ -110,7 +110,8 @@ export async function validateLicenseOnline(context: vscode.ExtensionContext): P
             },
             body: JSON.stringify({
                 licenseKey: licenseKey,
-                machineId: vscode.env.machineId
+                machineId: vscode.env.machineId,
+                env: env
             })
         });
         
@@ -328,6 +329,7 @@ export async function promptForLicense(context: vscode.ExtensionContext): Promis
             vscode.window.showInformationMessage(`License activated successfully! Product: ${cachedStatus?.product_name || 'Unknown'}`);
             Telemetry.Current?.send('License.licenseActivated');
         } else {
+            ui.logToOutput('License validation failed:', new Error(cachedStatus?.error || 'Unknown error'));
             vscode.window.showErrorMessage('License validation failed. Please check your license key.');
             // Clear the invalid license
             await clearLicense();
