@@ -7,21 +7,21 @@ The **AWS S3** extension brings the power of Amazon S3 directly into VS Code. 
 ---
 
 ## 📋 Table of Contents
-- [Features](#features)
-- [Why Use It?](#why-use-it)
-- [Installation](#installation)
-- [Getting Started](#getting-started)
-- [Explorer Overview](#explorer-overview)
-- [Search Functionality](#search-functionality)
-- [AI Features](#ai-features)
-- [Buckets & Shortcuts](#buckets--shortcuts)
-- [File & Folder Views](#file--folder-views)
-- [Edit & Copy Menus](#edit--copy-menus)
-- [Endpoint & Credentials](#endpoint--credentials)
-- [Bug Reporting & Contributions](#bug-reporting--contributions)
-- [Roadmap](#roadmap)
-- [Sponsor & Survey](#sponsor--survey)
-- [Contact](#contact)
+- [Features](#-features)
+- [Why Use It?](#-why-use-it)
+- [Installation](#-installation)
+- [Getting Started](#️-getting-started)
+- [Explorer Overview](#-explorer-overview)
+- [Search Functionality](#-search-functionality)
+- [AI Features](#-ai-features)
+- [Buckets & Shortcuts](#-buckets--shortcuts)
+- [File & Folder Views](#-file--folder-views)
+- [Edit & Copy Menus](#-edit--copy-menus)
+- [Endpoint & Credentials](#-endpoint--credentials)
+- [Bug Reporting & Contributions](#-bug-reporting--contributions)
+- [Roadmap](#️-roadmap)
+- [Sponsor & Survey](#-sponsor--survey)
+- [Contact](#-contact)
 
 ---
 
