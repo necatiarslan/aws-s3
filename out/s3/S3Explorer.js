@@ -14,6 +14,7 @@ const Telemetry_1 = require("../common/Telemetry");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
+const Session_1 = require("../common/Session");
 class S3Explorer {
     constructor(panel, extensionUri, node) {
         this._disposables = [];
@@ -402,10 +403,17 @@ class S3Explorer {
         <title></title>
       </head>
       <body>  
-        
-        <div style="display: flex; align-items: center;">
-            <h2>${this.S3ExplorerItem.GetFullPath()}</h2>
-        </div>
+
+        <table>
+            <tr>
+                <td style="font-size:12px; color:var(--vscode-foreground);">
+                    <h2>${this.S3ExplorerItem.GetFullPath()}</h2>
+                </td>
+                <td style="text-align:right; font-size:14px; color:var(--vscode-foreground);">
+                    ${Session_1.Session.Current?.IsProVersion ? "🚀 Pro" : ""}
+                </td>
+                </tr>
+        </table>
 
         <table>
             <tr>

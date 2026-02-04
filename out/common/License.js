@@ -18,7 +18,8 @@ const LICENSE_API_URL = 'https://www.sairefe.com/wp-json/vscode/v1/license/valid
 const VALIDATION_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000;
 const GRACE_PERIOD_DAYS = 7;
 const PRODUCT_NAME = 'Aws S3 Vscode Extension Pro';
-const PRODUCT_ID = 748567; //807043;
+const PRODUCT_ID = 807043;
+const PRODUCT_ID_QA = 748567;
 // In-memory cache of the current license status
 let cachedStatus = null;
 let extensionContext = null;
@@ -116,7 +117,7 @@ async function validateLicenseOnline(context) {
             expires_at: data.expires_at || null,
             checked_at: data.checked_at || Date.now(),
         };
-        if (cachedStatus.product_id !== PRODUCT_ID) {
+        if (cachedStatus.product_id !== PRODUCT_ID && cachedStatus.product_id !== PRODUCT_ID_QA) {
             ui.logToOutput('License product ID does not match this product.');
             cachedStatus.valid = false;
             cachedStatus.error = 'License is not valid for this product.';

@@ -209,18 +209,24 @@ function registerCommands(context, treeView) {
             ui.showInfoMessage('You already have an active Pro license!');
             return;
         }
-        if (!Session_1.Session.Current?.IsHostSupportLanguageTools) {
+        if (!Session_1.Session.Current?.IsHostSupportLanguageTools()) {
             ui.showWarningMessage('Pro version is only available when using VSCode. Antigravity, Windsurf, and other hosts are not supported.');
             return;
         }
-        vscode.env.openExternal(vscode.Uri.parse('https://necatiarslan.lemonsqueezy.com/checkout/buy/dcdda46a-2137-44cc-a9d9-30dfc75070cf'));
+        let buyUrl = 'https://necatiarslan.lemonsqueezy.com/checkout/buy/07854d0c-be55-4204-b0ac-8f53ac5d76d7';
+        if (Session_1.Session.Current?.IsDebugMode()) {
+            buyUrl = 'https://necatiarslan.lemonsqueezy.com/checkout/buy/dcdda46a-2137-44cc-a9d9-30dfc75070cf';
+        }
+        vscode.env.openExternal(vscode.Uri.parse(buyUrl));
+        // call S3TreeView.EnterLicenseKey command after opening the URL
+        vscode.commands.executeCommand('S3TreeView.EnterLicenseKey');
     }));
     context.subscriptions.push(vscode.commands.registerCommand('S3TreeView.EnterLicenseKey', async () => {
         if (Session_1.Session.Current?.IsProVersion) {
             ui.showInfoMessage('You already have an active Pro license!');
             return;
         }
-        if (!Session_1.Session.Current?.IsHostSupportLanguageTools) {
+        if (!Session_1.Session.Current?.IsHostSupportLanguageTools()) {
             ui.showWarningMessage('Pro version is only available when using VSCode. Antigravity, Windsurf, and other hosts are not supported.');
             return;
         }

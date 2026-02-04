@@ -28,7 +28,8 @@ const VALIDATION_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000;
 const GRACE_PERIOD_DAYS = 7;
 
 const PRODUCT_NAME = 'Aws S3 Vscode Extension Pro';
-const PRODUCT_ID = 748567 //807043;
+const PRODUCT_ID = 807043;
+const PRODUCT_ID_QA = 748567;
 
 // In-memory cache of the current license status
 let cachedStatus: LicenseStatus | null = null;
@@ -146,7 +147,7 @@ export async function validateLicenseOnline(context: vscode.ExtensionContext): P
             checked_at: data.checked_at || Date.now(),
         };
         
-        if(cachedStatus.product_id !== PRODUCT_ID) {
+        if(cachedStatus.product_id !== PRODUCT_ID && cachedStatus.product_id !== PRODUCT_ID_QA) {
             ui.logToOutput('License product ID does not match this product.');
             cachedStatus.valid = false;
             cachedStatus.error = 'License is not valid for this product.';
