@@ -1,6 +1,6 @@
 # AWS S3 Extension for Visual Studio Code
 
-![Main Screen](doc/readme/psc-main-screen.png)
+![Main Screen](docs/readme/psc-main-screen.png)
 
 The **AWS S3** extension brings the power of Amazon S3 directly into VS Code. Browse, manage, and manipulate buckets, files, and folders without ever leaving your editor.
 
@@ -56,14 +56,14 @@ Whether you’re a developer, data scientist, or sysadmin, this extension stream
 ---
 
 ## 📂 Explorer Overview
-![Explorer](doc/readme/psc-explorer.png)
+![Explorer](docs/readme/psc-explorer.png)
 
 The Explorer lists all objects in the selected bucket. Use the toolbar to refresh, upload, create folders, or navigate.
 
 ---
 
 ## 🔎 Search Functionality
-![Search](doc/readme/psc-search.png)
+![Search](docs/readme/psc-search.png)
 
 Search is case‑insensitive and supports:
 - File name
@@ -75,7 +75,7 @@ Results are displayed in the **Search** view; clicking a result opens it in the 
 ---
 
 ## 📁 Buckets & Shortcuts
-![Buckets & Shortcuts](doc/readme/psc-treeview.png)
+![Buckets & Shortcuts](docs/readme/psc-treeview.png)
 
 - Add buckets via the `+` button.
 - Create shortcuts for quick access to frequently used objects.
@@ -84,19 +84,19 @@ Results are displayed in the **Search** view; clicking a result opens it in the 
 
 ## 📄 File & Folder Views
 ### File View
-![File View](doc/readme/psc-file.png)
+![File View](docs/readme/psc-file.png)
 
 ### Empty Folder View
-![Empty Folder](doc/readme/psc-empty-folder.png)
+![Empty Folder](docs/readme/psc-empty-folder.png)
 
 ---
 
 ## 🔧 Edit & Copy Menus
 ### Edit Menu
-![Edit Menu](doc/readme/psc-edit-combo.png)
+![Edit Menu](docs/readme/psc-edit-combo.png)
 
 ### Copy Menu
-![Copy Menu](doc/readme/psc-copy-combo.png)
+![Copy Menu](docs/readme/psc-copy-combo.png)
 
 ---
 
@@ -106,7 +106,7 @@ You can point the extension at any S3‑compatible service (e.g., LocalStack) by
 ```
 http://localhost:4566
 ```
-![Endpoint](doc/readme/psc-endpoint.png)
+![Endpoint](docs/readme/psc-endpoint.png)
 
 ### AWS Credentials
 The extension follows the standard AWS SDK credential chain:
