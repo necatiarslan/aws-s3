@@ -584,6 +584,10 @@ class S3Explorer {
                     return;
                 case "ask_ai":
                     ui.logToOutput('S3Explorer.AskAI Started');
+                    if (!Session_1.Session.Current?.IsHostSupportLanguageTools()) {
+                        ui.showWarningMessage('AI features are only available when using VSCode. Antigravity, Windsurf, and other hosts are not supported.');
+                        return;
+                    }
                     try {
                         const { AIHandler } = await Promise.resolve().then(() => require('../chat/AIHandler'));
                         if (!AIHandler.Current) {

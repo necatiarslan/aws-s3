@@ -1,6 +1,6 @@
 # AWS S3 Extension for Visual Studio Code
 
-![Main Screen](docs/readme/psc-main-screen.png)
+![Main Screen](docs/readme/video1.gif)
 
 The **AWS S3** extension brings the power of Amazon S3 directly into VS Code. Browse, manage, and manipulate buckets, files, and folders without ever leaving your editor.
 
@@ -13,6 +13,7 @@ The **AWS S3** extension brings the power of Amazon S3 directly into VS Code. 
 - [Getting Started](#getting-started)
 - [Explorer Overview](#explorer-overview)
 - [Search Functionality](#search-functionality)
+- [AI Features](#ai-features)
 - [Buckets & Shortcuts](#buckets--shortcuts)
 - [File & Folder Views](#file--folder-views)
 - [Edit & Copy Menus](#edit--copy-menus)
@@ -71,6 +72,55 @@ Search is case‑insensitive and supports:
 - Full key path
 
 Results are displayed in the **Search** view; clicking a result opens it in the Explorer.
+
+---
+
+## 🤖 AI Features
+
+This extension integrates AI capabilities to help you work with S3 more effectively. You can leverage AI through the VS Code chat interface to analyze, manage, and troubleshoot your S3 resources.
+
+### Current Capabilities & Prompts
+
+The AI can execute real S3 operations through available tools. Here are practical prompts based on actual supported operations:
+
+#### List & Browse Objects
+- "List all objects in bucket `my-bucket`"
+- "Show objects in bucket `my-bucket` with prefix `data/`"
+- "List the first 100 objects in bucket `my-bucket`"
+- "List all versions of objects in `my-bucket`"
+
+#### Read & Download Files
+- "Read the content of `my-bucket/file.txt` as text and analyze it"
+- "Get the file `my-bucket/config.json` and display its content"
+- "Download `my-bucket/report.csv` to my temp folder"
+- "Retrieve metadata for the object `my-bucket/image.jpg`"
+
+#### Create & Write Files
+- "Create a file named `settings.json` in `my-bucket` with this content: {json content here}"
+- "Write a new file `my-bucket/data.txt` containing the following text"
+- "Put an object at `my-bucket/uploads/file.txt`"
+
+#### Copy & Manage Objects
+- "Copy the file from `my-bucket/source.txt` to `my-bucket/backup/source.txt`"
+- "Duplicate the object `my-bucket/original.pdf` as `my-bucket/copy.pdf`"
+
+#### Delete Objects
+- "Delete the object `my-bucket/temp-file.txt`"
+- "Remove the file at `my-bucket/old/data.csv`"
+
+#### Query Data with S3 Select
+- "Query the CSV file at `my-bucket/sales.csv` using SQL"
+- "Use S3 Select to analyze `my-bucket/data.json` with SQL expression"
+
+#### Check Bucket Access & Policy
+- "Check if I have access to bucket `my-bucket`"
+- "Get the bucket policy for `my-bucket`"
+- "Test connection to bucket `my-bucket`"
+
+#### Session & Configuration
+- "Switch my AWS profile to `production`"
+- "What AWS profiles do I have configured?"
+- "Test my AWS connection"
 
 ---
 

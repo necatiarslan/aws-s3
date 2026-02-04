@@ -235,6 +235,12 @@ function registerCommands(context: vscode.ExtensionContext, treeView: S3TreeView
 	context.subscriptions.push(
 		vscode.commands.registerCommand('S3TreeView.AskAI', async (node: S3TreeItem) => {
 			ui.logToOutput('S3TreeView.AskAI Started');
+
+			if(!Session.Current?.IsHostSupportLanguageTools()){
+				ui.showWarningMessage('AI features are only available when using VSCode. Antigravity, Windsurf, and other hosts are not supported.');
+				return;
+			}
+
 			try {
 				const bucket = node?.Bucket ?? '';
 				const key = node?.Shortcut ?? '';
