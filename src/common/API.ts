@@ -628,7 +628,8 @@ export async function RenameFile(Bucket:string, SourceKey:string, TargetName:str
     return result;
   }
 
-  let TargetKey = s3_helper.GetParentFolderKey(SourceKey) + TargetName + "." +s3_helper.GetFileExtension(SourceKey)
+  let extension = s3_helper.GetFileExtension(SourceKey);
+  let TargetKey = s3_helper.GetParentFolderKey(SourceKey) + TargetName + (extension ? "." + extension : "");
   let move_result = await MoveObject(Bucket, SourceKey, TargetKey);
 
   result.result = move_result.result;
