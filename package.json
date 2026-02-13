@@ -2,7 +2,7 @@
   "name": "aws-s3-vscode-extension",
   "displayName": "Aws S3",
   "description": "Browse Your AWS S3 Buckets, Upload, Download, Delete Files",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "publisher": "NecatiARSLAN",
   "author": {
 		"name": "Necati ARSLAN",
@@ -44,7 +44,7 @@
     ],
     "languageModelTools": [
       {
-        "name": "TestAwsConnectionTool",
+        "name": "AwsS3-TestAwsConnectionTool",
         "toolReferenceName": "TestAwsConnectionTool",
         "displayName": "Test AWS Connection",
         "modelDescription": "Tests AWS connectivity using STS GetCallerIdentity. Returns true if the connection is successful.",
@@ -68,7 +68,7 @@
         }
       },
       {
-        "name": "SessionTool",
+        "name": "AwsS3-SessionTool",
         "toolReferenceName": "SessionTool",
         "displayName": "Session Tool",
         "modelDescription": "Get or set AWS session values (AwsProfile, AwsEndPoint, AwsRegion), list available profiles, or refresh cached credentials. Use GetSession to read current values. Use SetSession with params to update any of AwsProfile, AwsEndPoint, AwsRegion. Use ListProfiles to return profile names detected from AWS config/credentials files. Use RefreshCredentials to clear and reload cached credentials.",
@@ -120,7 +120,7 @@
         }
       },
       {
-        "name": "STSTool",
+        "name": "AwsS3-STSTool",
         "toolReferenceName": "STSTool",
         "displayName": "STS Tool",
         "modelDescription": "Execute AWS STS (Security Token Service) commands. ALWAYS provide params object. Examples: GetCallerIdentity {command:'GetCallerIdentity', params:{}}. GetAccessKeyInfo {command:'GetAccessKeyInfo', params:{AccessKeyId:'AKIA...'}}. GetSessionToken {command:'GetSessionToken', params:{DurationSeconds:3600}}. GetFederationToken {command:'GetFederationToken', params:{Name:'session-name'}}. GetWebIdentityToken {command:'GetWebIdentityToken', params:{RoleArn:'arn:aws:iam::...', RoleSessionName:'session', WebIdentityToken:'token'}}.",
@@ -223,7 +223,7 @@
         }
       },
       {
-        "name": "S3FileOperationsTool",
+        "name": "AwsS3-S3FileOperationsTool",
         "toolReferenceName": "S3FileOperationsTool",
         "displayName": "S3 File Operations Tool",
         "modelDescription": "Execute S3 file operations: UploadFile to upload one or multiple files, DownloadFile to download one or multiple files, UploadFolder to upload folders with preserved structure, DownloadFolder to download folders with preserved structure. ALWAYS provide params object.",
@@ -306,7 +306,7 @@
         }
       },
       {
-        "name": "S3Tool",
+        "name": "AwsS3-S3Tool",
         "toolReferenceName": "S3Tool",
         "displayName": "S3 Tool",
         "modelDescription": "Execute S3 commands. ALWAYS provide params object. Examples: ListObjectsV2 {command:'ListObjectsV2', params:{Bucket:'bucket-name'}}. PutObject {command:'PutObject', params:{Bucket:'name', Key:'path', Body:'content'}}. DeleteObject {command:'DeleteObject', params:{Bucket:'name', Key:'path'}}. CopyObject {command:'CopyObject', params:{Bucket:'name', CopySource:'/bucket/key', Key:'new-path'}}. OpenS3Explorer {command:'OpenS3Explorer', params:{Bucket:'bucket-name', Key:'optional/path/'}}.",
@@ -444,7 +444,7 @@
         }
       },
       {
-        "name": "FileOperationsTool",
+        "name": "AwsS3-FileOperationsTool",
         "toolReferenceName": "FileOperationsTool",
         "displayName": "File Operations Tool",
         "modelDescription": "Perform file operations: ReadFile to read file content, ReadFileStream to get file metadata, ReadFileAsBase64 to read as Base64, GetFileInfo to get file statistics, ListFiles to list directory contents, ZipTextFile to create a zip archive of a file or directory.",
@@ -508,7 +508,7 @@
         }
       },
       {
-        "name": "CloudWatchLogTool",
+        "name": "AwsS3-CloudWatchLogTool",
         "toolReferenceName": "CloudWatchLogTool",
         "displayName": "CloudWatch Logs Tool",
         "modelDescription": "Execute CloudWatch Logs commands. ALWAYS provide params object. Examples: DescribeLogGroups {command:'DescribeLogGroups', params:{logGroupNamePrefix:'app'}}. DescribeLogStreams {command:'DescribeLogStreams', params:{logGroupName:'my-group'}}. GetLogEvents {command:'GetLogEvents', params:{logGroupName:'my-group', logStreamName:'stream', limit:50}}. OpenCloudWatchLogView {command:'OpenCloudWatchLogView', params:{logGroupName:'my-group', logStreamName:'optional-stream'}}.",

@@ -56,7 +56,7 @@ function activate(context) {
         const treeView = new S3TreeView_1.S3TreeView(context);
         if (Session_1.Session.Current?.IsHostSupportLanguageTools()) {
             // Register language model tools
-            context.subscriptions.push(vscode.lm.registerTool('TestAwsConnectionTool', new TestAwsConnectionTool_1.TestAwsConnectionTool()), vscode.lm.registerTool('STSTool', new STSTool_1.STSTool()), vscode.lm.registerTool('S3Tool', new S3Tool_1.S3Tool()), vscode.lm.registerTool('S3FileOperationsTool', new S3FileOperationsTool_1.S3FileOperationsTool()), vscode.lm.registerTool('FileOperationsTool', new FileOperationsTool_1.FileOperationsTool()), vscode.lm.registerTool('SessionTool', new SessionTool_1.SessionTool()), vscode.lm.registerTool('CloudWatchLogTool', new CloudWatchLogTool_1.CloudWatchLogTool()));
+            context.subscriptions.push(vscode.lm.registerTool('AwsS3-TestAwsConnectionTool', new TestAwsConnectionTool_1.TestAwsConnectionTool()), vscode.lm.registerTool('AwsS3-STSTool', new STSTool_1.STSTool()), vscode.lm.registerTool('AwsS3-S3Tool', new S3Tool_1.S3Tool()), vscode.lm.registerTool('AwsS3-S3FileOperationsTool', new S3FileOperationsTool_1.S3FileOperationsTool()), vscode.lm.registerTool('AwsS3-FileOperationsTool', new FileOperationsTool_1.FileOperationsTool()), vscode.lm.registerTool('AwsS3-SessionTool', new SessionTool_1.SessionTool()), vscode.lm.registerTool('AwsS3-CloudWatchLogTool', new CloudWatchLogTool_1.CloudWatchLogTool()));
         }
         else {
             ui.logToOutput(`Language model tools registration skipped for ${Session_1.Session.Current?.HostAppName}`);

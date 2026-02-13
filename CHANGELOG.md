@@ -1,3 +1,9 @@
+# v1.9.1
+    - language tools renamed
+    
+# v1.9.0
+    - language tools and pro features
+
 # v1.8.10
     - Shrink vsix size
 

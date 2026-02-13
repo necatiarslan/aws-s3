@@ -61,13 +61,13 @@ export function activate(context: vscode.ExtensionContext): void {
 		if (Session.Current?.IsHostSupportLanguageTools()) {
 			// Register language model tools
 			context.subscriptions.push(
-				vscode.lm.registerTool('TestAwsConnectionTool', new TestAwsConnectionTool()),
-				vscode.lm.registerTool('STSTool', new STSTool()),
-				vscode.lm.registerTool('S3Tool', new S3Tool()),
-				vscode.lm.registerTool('S3FileOperationsTool', new S3FileOperationsTool()),
-				vscode.lm.registerTool('FileOperationsTool', new FileOperationsTool()),
-				vscode.lm.registerTool('SessionTool', new SessionTool()),
-				vscode.lm.registerTool('CloudWatchLogTool', new CloudWatchLogTool()),
+				vscode.lm.registerTool('AwsS3-TestAwsConnectionTool', new TestAwsConnectionTool()),
+				vscode.lm.registerTool('AwsS3-STSTool', new STSTool()),
+				vscode.lm.registerTool('AwsS3-S3Tool', new S3Tool()),
+				vscode.lm.registerTool('AwsS3-S3FileOperationsTool', new S3FileOperationsTool()),
+				vscode.lm.registerTool('AwsS3-FileOperationsTool', new FileOperationsTool()),
+				vscode.lm.registerTool('AwsS3-SessionTool', new SessionTool()),
+				vscode.lm.registerTool('AwsS3-CloudWatchLogTool', new CloudWatchLogTool()),
 			);
 		}
 		else {
