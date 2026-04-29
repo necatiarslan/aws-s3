@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import * as ui from './UI';
-import { Telemetry } from './Telemetry';
 
 // License status interface that represents the current state
 export interface LicenseStatus {
@@ -82,7 +81,6 @@ export async function initializeLicense(context: vscode.ExtensionContext): Promi
  * Updates the cache and returns validation result
  */
 export async function validateLicenseOnline(context: vscode.ExtensionContext): Promise<boolean> {
-    Telemetry.Current?.send('License.licenseValidationStarted');
     const licenseKey = await context.secrets.get(LICENSE_KEY_SECRET);
     if (!licenseKey) {
         // No license key, update cache to invalid
@@ -162,7 +160,6 @@ export async function validateLicenseOnline(context: vscode.ExtensionContext): P
         // Network error or server error - don't update cache
         // Return false if we have no cached status
         ui.logToOutput('License validation error:', error as Error);
-        Telemetry.Current?.sendError('License.licenseValidationError', error as Error);
         
         if (!cachedStatus) {
             cachedStatus = {
@@ -272,7 +269,6 @@ export async function clearLicense(): Promise<void> {
  * Shows VS Code input box, stores key securely, and validates online
  */
 export async function promptForLicense(context: vscode.ExtensionContext): Promise<void> {
-    Telemetry.Current?.send('License.licensePromptShown');
     // Show input box for license key
     const licenseKey = await vscode.window.showInputBox({
         prompt: 'Enter your license key',
@@ -328,7 +324,6 @@ export async function promptForLicense(context: vscode.ExtensionContext): Promis
         }
         if (isValid) {
             vscode.window.showInformationMessage(`License activated successfully! Product: ${cachedStatus?.product_name || 'Unknown'}`);
-            Telemetry.Current?.send('License.licenseActivated');
         } else {
             ui.logToOutput('License validation failed:', new Error(cachedStatus?.error || 'Unknown error'));
             vscode.window.showErrorMessage('License validation failed. Please check your license key.');

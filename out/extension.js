@@ -47,7 +47,6 @@ const ui = __importStar(require("./common/UI"));
 const S3TreeView_1 = require("./s3/S3TreeView");
 const S3TreeItem_1 = require("./s3/S3TreeItem");
 const S3Explorer_1 = require("./s3/S3Explorer");
-const Telemetry_1 = require("./common/Telemetry");
 const ClientManager_1 = require("./common/ClientManager");
 const AIHandler_1 = require("./chat/AIHandler");
 const Session_1 = require("./common/Session");
@@ -69,8 +68,6 @@ const License_1 = require("./common/License");
  */
 function activate(context) {
     ui.logToOutput('AWS S3 Extension activation started');
-    // Initialize telemetry
-    new Telemetry_1.Telemetry(context);
     (0, License_1.initializeLicense)(context);
     const session = new Session_1.Session(context);
     session.IsProVersion = (0, License_1.isLicenseValid)();
@@ -84,7 +81,6 @@ function activate(context) {
     // 	{ dispose: () => ui.dispose() }
     // );
     try {
-        Telemetry_1.Telemetry.Current?.send('extension.activated');
         // Initialize the tree view
         const treeView = new S3TreeView_1.S3TreeView(context);
         if (Session_1.Session.Current?.IsHostSupportLanguageTools()) {
@@ -100,7 +96,6 @@ function activate(context) {
         ui.logToOutput('AWS S3 Extension activation completed successfully');
     }
     catch (error) {
-        Telemetry_1.Telemetry.Current?.sendError('extension.activationFailed', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         ui.logToOutput(`AWS S3 Extension activation failed: ${errorMessage}`, error);
         ui.showErrorMessage('Failed to activate AWS S3 Extension', error);

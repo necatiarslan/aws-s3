@@ -41,7 +41,6 @@ exports.clearLicense = clearLicense;
 exports.promptForLicense = promptForLicense;
 const vscode = __importStar(require("vscode"));
 const ui = __importStar(require("./UI"));
-const Telemetry_1 = require("./Telemetry");
 // Storage keys
 const LICENSE_KEY_SECRET = 'aws-s3.licenseKey';
 const LICENSE_STATUS_KEY = 'aws-s3.licenseStatus';
@@ -100,7 +99,6 @@ async function initializeLicense(context) {
  * Updates the cache and returns validation result
  */
 async function validateLicenseOnline(context) {
-    Telemetry_1.Telemetry.Current?.send('License.licenseValidationStarted');
     const licenseKey = await context.secrets.get(LICENSE_KEY_SECRET);
     if (!licenseKey) {
         // No license key, update cache to invalid
@@ -163,7 +161,6 @@ async function validateLicenseOnline(context) {
         // Network error or server error - don't update cache
         // Return false if we have no cached status
         ui.logToOutput('License validation error:', error);
-        Telemetry_1.Telemetry.Current?.sendError('License.licenseValidationError', error);
         if (!cachedStatus) {
             cachedStatus = {
                 valid: false,
@@ -257,7 +254,6 @@ async function clearLicense() {
  * Shows VS Code input box, stores key securely, and validates online
  */
 async function promptForLicense(context) {
-    Telemetry_1.Telemetry.Current?.send('License.licensePromptShown');
     // Show input box for license key
     const licenseKey = await vscode.window.showInputBox({
         prompt: 'Enter your license key',
@@ -308,7 +304,6 @@ async function promptForLicense(context) {
         }
         if (isValid) {
             vscode.window.showInformationMessage(`License activated successfully! Product: ${cachedStatus?.product_name || 'Unknown'}`);
-            Telemetry_1.Telemetry.Current?.send('License.licenseActivated');
         }
         else {
             ui.logToOutput('License validation failed:', new Error(cachedStatus?.error || 'Unknown error'));

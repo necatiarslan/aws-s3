@@ -6,7 +6,6 @@ import * as ui from '../common/UI';
 import * as api from '../common/API';
 import { S3Explorer } from './S3Explorer';
 import { S3Search } from './S3Search';
-import { Telemetry } from '../common/Telemetry';
 
 export class S3TreeView {
 
@@ -227,7 +226,6 @@ export class S3TreeView {
 			let BucketListTemp:string[] | undefined  = this.context.globalState.get('BucketList');
 			if(BucketListTemp)
 			{
-				Telemetry.Current?.send("S3TreeView.LoadState.BucketList", { Length: BucketListTemp.length.toString() });
 				this.treeDataProvider.SetBucketList(BucketListTemp);
 			}
 			
@@ -303,7 +301,6 @@ export class S3TreeView {
 	}
 
 	async AddBucket(){
-		Telemetry.Current?.send("S3TreeView.AddBucket");
 		ui.logToOutput('S3TreeView.AddBucket Started');
 
 		let selectedBucketName = await vscode.window.showInputBox({ placeHolder: 'Enter Bucket Name / Search Text' });
@@ -324,7 +321,6 @@ export class S3TreeView {
 	}
 
 	async RemoveBucket(node: S3TreeItem) {
-		Telemetry.Current?.send("S3TreeView.RemoveBucket");
 		ui.logToOutput('S3TreeView.RemoveBucket Started');
 		
 		if(node.TreeItemType !== TreeItemType.Bucket) { return;}
@@ -348,7 +344,6 @@ export class S3TreeView {
 	}
 
 	async AddOrRemoveShortcut(Bucket:string, Key:string) {
-		Telemetry.Current?.send("S3TreeView.AddOrRemoveShortcut");
 		ui.logToOutput('S3TreeView.AddOrRemoveShortcut Started');
 		if(!Bucket || !Key) { return; }
 		
@@ -365,7 +360,6 @@ export class S3TreeView {
 	}
 
 	async RemoveShortcutByKey(Bucket:string, Key:string) {
-		Telemetry.Current?.send("S3TreeView.RemoveShortcutByKey");
 		ui.logToOutput('S3TreeView.RemoveShortcutByKey Started');
 		if(!Bucket || !Key) { return; }
 		
@@ -377,7 +371,6 @@ export class S3TreeView {
 	}
 
 	async UpdateShortcutByKey(Bucket:string, Key:string, NewKey:string) {
-		Telemetry.Current?.send("S3TreeView.UpdateShortcutByKey");
 		ui.logToOutput('S3TreeView.RemoveShortcutByKey Started');
 		if(!Bucket || !Key) { return; }
 		
@@ -394,7 +387,6 @@ export class S3TreeView {
 	}
 
 	async RemoveShortcut(node: S3TreeItem) {
-		Telemetry.Current?.send("S3TreeView.RemoveShortcut");
 		ui.logToOutput('S3TreeView.RemoveShortcut Started');
 		if(node.TreeItemType !== TreeItemType.Shortcut) { return;}
 		if(!node.Bucket || !node.Shortcut) { return; }
@@ -413,7 +405,6 @@ export class S3TreeView {
 	}
 
 	async AddShortcut(node: S3TreeItem) {
-		Telemetry.Current?.send("S3TreeView.AddShortcut");
 		ui.logToOutput('S3TreeView.AddShortcut Started');
 		if(!node.Bucket) { return; }
 		
@@ -426,21 +417,18 @@ export class S3TreeView {
 	}
 
 	async ShowS3Explorer(node: S3TreeItem) {
-		Telemetry.Current?.send("S3TreeView.ShowS3Explorer");
 		ui.logToOutput('S3TreeView.ShowS3Explorer Started');
 		
 		S3Explorer.Render(this.context.extensionUri, node);
 	}
 
 	async ShowS3Search(node: S3TreeItem) {
-		Telemetry.Current?.send("S3TreeView.ShowS3Search");
 		ui.logToOutput('S3TreeView.ShowS3Search Started');
 		
 		S3Search.Render(this.context.extensionUri, node);
 	}
 
 	async SelectAwsProfile(node: S3TreeItem) {
-		Telemetry.Current?.send("S3TreeView.SelectAwsProfile");
 		ui.logToOutput('S3TreeView.SelectAwsProfile Started');
 
 		var result = await api.GetAwsProfileList();
@@ -456,7 +444,6 @@ export class S3TreeView {
 	}
 
 	async UpdateAwsEndPoint() {
-		Telemetry.Current?.send("S3TreeView.UpdateAwsEndPoint");
 		ui.logToOutput('S3TreeView.UpdateAwsEndPoint Started');
 
 		let awsEndPointUrl = await vscode.window.showInputBox({ placeHolder: 'Enter Aws End Point URL (Leave Empty To Return To Default)', value: this.AwsEndPoint });
@@ -471,7 +458,6 @@ export class S3TreeView {
 	}
 
 	async SetAwsRegion() {
-		Telemetry.Current?.send("S3TreeView.SetAwsRegion");
 		ui.logToOutput('S3TreeView.UpdateAwsRegion Started');
 
 		let awsRegion = await vscode.window.showInputBox({ placeHolder: 'Enter Aws Region (Leave Empty To Return To Default)' });

@@ -11,7 +11,6 @@ import * as ui from './common/UI';
 import {S3TreeView} from './s3/S3TreeView';
 import { S3TreeItem, TreeItemType } from './s3/S3TreeItem';
 import { S3Explorer } from './s3/S3Explorer';
-import { Telemetry } from './common/Telemetry';
 import { ClientManager } from './common/ClientManager';
 import { AIHandler } from './chat/AIHandler';
 import { Session } from './common/Session';
@@ -35,8 +34,6 @@ import { initializeLicense, isLicenseValid, promptForLicense, clearLicense } fro
 export function activate(context: vscode.ExtensionContext): void {
 	ui.logToOutput('AWS S3 Extension activation started');
 	
-	// Initialize telemetry
-	new Telemetry(context);
 	initializeLicense(context);
 
 	const session = new Session(context);
@@ -53,7 +50,6 @@ export function activate(context: vscode.ExtensionContext): void {
 	// );
 
 	try {
-		Telemetry.Current?.send('extension.activated');
 		// Initialize the tree view
 		const treeView = new S3TreeView(context);
 
@@ -81,7 +77,6 @@ export function activate(context: vscode.ExtensionContext): void {
 
 		ui.logToOutput('AWS S3 Extension activation completed successfully');
 	} catch (error) {
-		Telemetry.Current?.sendError('extension.activationFailed', error as Error);
 		const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 		ui.logToOutput(`AWS S3 Extension activation failed: ${errorMessage}`, error as Error);
 		ui.showErrorMessage('Failed to activate AWS S3 Extension', error as Error);

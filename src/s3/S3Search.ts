@@ -8,7 +8,6 @@ import { S3ExplorerItem } from "./S3ExplorerItem";
 import * as s3_helper from "./S3Helper";
 import { S3Explorer } from './S3Explorer';
 import { _Object } from "@aws-sdk/client-s3";
-import { Telemetry } from "../common/Telemetry";
 
 export class S3Search {
     public static Current: S3Search | undefined;
@@ -58,7 +57,6 @@ export class S3Search {
     }
 
     public async Load(){
-        Telemetry.Current?.send("S3Search.Load");
         ui.logToOutput('S3Search.LoadLogs Started');
         if(!S3TreeView.Current){return;}
 
@@ -77,7 +75,6 @@ export class S3Search {
 
     public static Render(extensionUri: vscode.Uri, node:S3TreeItem) {
         ui.logToOutput('S3Search.Render Started');
-        Telemetry.Current?.send("S3Search.Render");
 
         if (S3Search.Current) {
             S3Search.Current.ResetCurrentState();
@@ -393,14 +390,12 @@ export class S3Search {
     }
   
     private AddShortcut(key: string) {
-        Telemetry.Current?.send("S3Search.AddShortcut");
         S3TreeView.Current?.AddOrRemoveShortcut(this.S3ExplorerItem.Bucket, key);
         this.RenderHtml();
     }
     
     private CopyS3URI(keys: string) 
     {
-        Telemetry.Current?.send("S3Search.CopyS3URI");
         if(!keys || keys.length === 0 || !keys.includes("|")) { return; }
         var keyList = keys.split("|");
         var listToCopy:string[] = [];
@@ -421,7 +416,6 @@ export class S3Search {
     
     private CopyURLs(keys: string) 
     {
-        Telemetry.Current?.send("S3Search.CopyURLs");
         if(!keys || keys.length === 0 || !keys.includes("|")) { return; }
         var keyList = keys.split("|");
         var listToCopy:string[] = [];
@@ -442,7 +436,6 @@ export class S3Search {
     
     private CopyFileNameWithExtension(keys: string) 
     {
-        Telemetry.Current?.send("S3Search.CopyFileNameWithExtension");
         if(!keys || keys.length === 0 || !keys.includes("|")) { return; }
         var keyList = keys.split("|");
         var listToCopy:string[] = [];
@@ -463,7 +456,6 @@ export class S3Search {
     
     private CopyFileNameWithoutExtension(keys: string) 
     {
-        Telemetry.Current?.send("S3Search.CopyFileNameWithoutExtension");
         if(!keys || keys.length === 0 || !keys.includes("|")) { return; }
         var keyList = keys.split("|");
         var listToCopy:string[] = [];
@@ -484,7 +476,6 @@ export class S3Search {
     
     private CopyKeys(keys: string) 
     {
-        Telemetry.Current?.send("S3Search.CopyKeys");
         if(!keys || keys.length === 0 || !keys.includes("|")) { return; }
         var keyList = keys.split("|");
         let result = ui.CopyListToClipboard(keyList);
@@ -496,7 +487,6 @@ export class S3Search {
     
     private CopyFileARNs(keys: string) 
     {
-        Telemetry.Current?.send("S3Search.CopyFileARNs");
         if(!keys || keys.length === 0 || !keys.includes("|")) { return; }
         var keyList = keys.split("|");
         var listToCopy:string[] = [];
