@@ -1,5 +1,5 @@
 # AWS S3 Extension for Visual Studio Code
-
+[⭐ Download New AWS Extension for All Services Including S3!](https://marketplace.visualstudio.com/items?itemName=NecatiARSLAN.aws-workbench)
 ![Main Screen](docs/readme/video1.gif)
 
 The **AWS S3** extension brings the power of Amazon S3 directly into VS Code. Browse, manage, and manipulate buckets, files, and folders without ever leaving your editor.

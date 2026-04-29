@@ -1,3 +1,8 @@
+
+# v1.10.0
+    - remove telemetry
+    - add aws wordkbench link
+
 # v1.9.1
     - language tools renamed
     
