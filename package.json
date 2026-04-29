@@ -925,14 +925,14 @@
     "@types/archiver": "^7.0.0",
     "@types/glob": "^9.0.0",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^24.10.2",
+    "@types/node": "^25.6.0",
     "@types/tmp": "^0.2.6",
     "@types/vscode": "^1.104.0",
     "@vscode/test-electron": "^2.5.2",
-    "eslint": "^9.39.1",
-    "glob": "^13.0.0",
+    "eslint": "^10.2.1",
+    "glob": "^13.0.6",
     "mocha": "^11.7.5",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   },
   "dependencies": {
     "@aws-sdk/client-cloudwatch-logs": "^3.1038.0",
@@ -940,9 +940,9 @@
     "@aws-sdk/client-s3": "^3.1038.0",
     "@aws-sdk/client-sts": "^3.1038.0",
     "@aws-sdk/credential-providers": "^3.1038.0",
-    "@vscode-elements/elements": "^1.13.1",
-    "@vscode/codicons": "^0.0.36",
-    "@vscode/extension-telemetry": "^1.2.0",
+    "@vscode-elements/elements": "^2.5.1",
+    "@vscode/codicons": "^0.0.45",
+    "@vscode/extension-telemetry": "^1.5.1",
     "archiver": "^7.0.1",
     "js-tiktoken": "^1.0.21",
     "tmp": "^0.2.5"

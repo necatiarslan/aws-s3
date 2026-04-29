@@ -1,19 +1,52 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.S3Explorer = void 0;
 /* eslint-disable @typescript-eslint/naming-convention */
-const vscode = require("vscode");
-const ui = require("../common/UI");
-const api = require("../common/API");
+const vscode = __importStar(require("vscode"));
+const ui = __importStar(require("../common/UI"));
+const api = __importStar(require("../common/API"));
 const S3TreeView_1 = require("./S3TreeView");
 const S3TreeItem_1 = require("./S3TreeItem");
 const S3ExplorerItem_1 = require("./S3ExplorerItem");
-const s3_helper = require("./S3Helper");
+const s3_helper = __importStar(require("./S3Helper"));
 const S3Search_1 = require("./S3Search");
 const Telemetry_1 = require("../common/Telemetry");
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
+const fs = __importStar(require("fs"));
+const os = __importStar(require("os"));
+const path = __importStar(require("path"));
 const Session_1 = require("../common/Session");
 class S3Explorer {
     constructor(panel, extensionUri, node) {
@@ -589,7 +622,7 @@ class S3Explorer {
                         return;
                     }
                     try {
-                        const { AIHandler } = await Promise.resolve().then(() => require('../chat/AIHandler'));
+                        const { AIHandler } = await Promise.resolve().then(() => __importStar(require('../chat/AIHandler')));
                         if (!AIHandler.Current) {
                             ui.showErrorMessage('AIHandler not initialized', new Error('AI handler is not available'));
                             return;
