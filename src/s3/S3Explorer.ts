@@ -466,7 +466,6 @@ export class S3Explorer {
             <tr>
                 <td colspan="4" style="text-align:left">
                 <vscode-button secondary id="refresh" title="Refresh">Refresh</vscode-button>
-                <vscode-button secondary id="search" ${this.S3ExplorerItem.IsFile() ? "disabled":""} title="Advanced Search">Search</vscode-button>
                 <vscode-button secondary id="download" ${this.S3ExplorerItem.IsFile() ? "disabled":""} title="Download">Download</vscode-button>
                 <vscode-button secondary id="upload" ${this.S3ExplorerItem.IsFile() ? "disabled":""} title="Upload">Upload</vscode-button>
                 <vscode-button secondary id="create_folder" ${this.S3ExplorerItem.IsFile() ? "disabled":""} title="New Folder">New Folder</vscode-button>
@@ -493,6 +492,8 @@ export class S3Explorer {
                     <vscode-textfield id="search_text" placeholder="Search" value="${this.SearchText}" ${this.S3ExplorerItem.IsFile() ? "disabled":""} style="width: 20ch; vertical-align:top">
                         <vscode-icon slot="content-before" name="search" title="search"></vscode-icon>
                     </vscode-textfield>
+                    <vscode-button secondary id="search" ${this.S3ExplorerItem.IsFile() ? "disabled":""} title="Advanced Search">.</vscode-button>
+
                 </td>
             </tr>
             </table>
@@ -581,7 +582,15 @@ export class S3Explorer {
         <br>
         <br>
         <br>
-                    
+
+        <table>
+            <tr>
+                <td>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=NecatiARSLAN.aws-workbench" style="cursor: pointer; text-decoration: none;">⭐ New AWS Extension for All Services Including S3</a>
+                </td>
+            </tr>
+        </table>
+        
         <table>
             <tr>
                 <td>
